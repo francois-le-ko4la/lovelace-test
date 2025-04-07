@@ -1,0 +1,6 @@
+{
+  "name": "test",
+  "render_readme": true,
+  "zip_release": true,
+  "filename": "test.js"
+}
