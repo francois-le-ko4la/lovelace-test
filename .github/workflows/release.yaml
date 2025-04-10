@@ -1,6 +1,8 @@
-name: Release
+name: CI & Release
 
 on:
+  push:
+  pull_request:
   release:
     types: [published]
 
@@ -19,6 +21,7 @@ jobs:
 
   release:
     name: Build & Upload Release
+    if: github.event_name == 'release'
     needs: validate-hacs
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +39,7 @@ jobs:
       - name: Minify JS files
         run: |
           mkdir -p dist
-          esbuild entity-progress-card.js --minify --outfile=dist/entity-progress-card.min.js
+          esbuild *.js --minify --outdir=dist
 
       - name: Upload to GitHub Release
         uses: svenstaro/upload-release-action@v2
@@ -46,6 +49,3 @@ jobs:
           file_glob: true
           tag: ${{ github.ref }}
           overwrite: true
-
-      - name: Clean up dist folder
-        run: rm -rf dist
