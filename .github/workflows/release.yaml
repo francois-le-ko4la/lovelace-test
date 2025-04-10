@@ -2,7 +2,7 @@ name: Release
 
 on:
   workflow_run:
-    workflows: ["Validate"]
+    workflows: ["HACS Validation"]
     types:
       - completed
 
