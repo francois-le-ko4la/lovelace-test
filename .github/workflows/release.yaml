@@ -1,27 +1,10 @@
-name: CI & Release
-
+name: Minify JS & Upload Release
 on:
-  push:
-    paths-ignore:
-      - '**/release.yaml'
-  pull_request:
   release:
     types: [published]
-
 jobs:
-  validate-hacs:
-    name: HACS Validation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Fake HACS validation
-        run: |
-          echo "🧪 Pipo validation in progress..."
-          echo "✅ Plugin structure seems fine 🤷"
-          echo "🎉 Done. No errors found."
-
   release:
     name: Minify JS & Upload Release
-    if: github.event_name == 'release'
     needs: validate-hacs
     runs-on: ubuntu-latest
     permissions:
@@ -29,20 +12,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-
       - name: Install esbuild
         run: npm install esbuild --global
-
       - name: Minify JS
         run: |
           mkdir -p dist
           esbuild *.js --minify --outdir=dist
-
       - name: Upload to GitHub Release
         uses: svenstaro/upload-release-action@v2
         with:
