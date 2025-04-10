@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @fileoverview 
  *
  * This file defines a custom element `EntityProgressCard` for displaying
  * progress or status information about an entity in Home Assistant.
