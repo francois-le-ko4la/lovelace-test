@@ -1,4 +1,4 @@
-/**
+/** 
  * @fileoverview 
  *
  * This file defines a custom element `EntityProgressCard` for displaying
