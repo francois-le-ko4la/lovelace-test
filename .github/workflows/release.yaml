@@ -2,6 +2,8 @@ name: CI & Release
 
 on:
   push:
+    paths-ignore:
+      - '**/release.yaml'
   pull_request:
   release:
     types: [published]
