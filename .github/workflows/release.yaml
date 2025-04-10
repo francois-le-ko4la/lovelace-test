@@ -1,27 +1,23 @@
-name: Minify JS & Upload Release
+name: Release Processing
 on:
   release:
     types: [published]
 jobs:
-  release:
-    name: Minify JS & Upload Release
+  build-and-upload:
+    name: Minify JS & Upload Assets
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install esbuild
-        run: npm install esbuild --global
-      - name: Minify JS
+          cache: 'npm'
+      - name: Process JS Files
         run: |
-          mkdir -p dist
-          esbuild *.js --minify --outdir=dist
-      - name: Upload to GitHub Release
+          npx esbuild *.js --minify --outdir=dist
+      - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
