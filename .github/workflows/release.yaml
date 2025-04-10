@@ -1,23 +1,31 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows: ["HACS Validation"]
-    types:
-      - completed
+  release:
+    types: [published]
 
 jobs:
-  release:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  validate-hacs:
+    name: HACS Validation
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Node.js
+      - name: HACS validation
+        uses: hacs/action@main
+        with:
+          category: plugin
+
+  release:
+    name: Build & Upload Release
+    needs: validate-hacs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
@@ -25,7 +33,7 @@ jobs:
       - name: Install esbuild
         run: npm install esbuild --global
 
-      - name: Build minified version with esbuild
+      - name: Minify JS files
         run: |
           mkdir -p dist
           esbuild entity-progress-card.js --minify --outfile=dist/entity-progress-card.min.js
