@@ -18,7 +18,7 @@ jobs:
           echo "🎉 Done. No errors found."
 
   release:
-    name: Build & Upload Release
+    name: Minify JS & Upload Release
     if: github.event_name == 'release'
     needs: validate-hacs
     runs-on: ubuntu-latest
@@ -34,7 +34,7 @@ jobs:
       - name: Install esbuild
         run: npm install esbuild --global
 
-      - name: Minify JS files
+      - name: Minify JS
         run: |
           mkdir -p dist
           esbuild *.js --minify --outdir=dist
