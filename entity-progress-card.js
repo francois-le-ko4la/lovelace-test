@@ -2284,12 +2284,6 @@ const ATTRIBUTE_MAPPING = {
   cover: { label: 'cover', attribute: 'current_position' },
   light: { label: 'light', attribute: 'brightness' },
   fan: { label: 'fan', attribute: 'percentage' },
-  climate: { label: 'climate', attribute: null },
-  humidifier: { label: 'humidifier', attribute: null },
-  media_player: { label: 'media_player', attribute: null },
-  vacuum: { label: 'vacuum', attribute: null },
-  device_tracker: { label: 'device_tracker', attribute: null },
-  weather: { label: 'weather', attribute: null },
 };
 
 const CARD_HTML = `
@@ -2826,23 +2820,22 @@ class NumberFormatter {
     const space = this.getSpaceCharacter(locale, unit);
     return `${formattedValue}${space}${unit}`;
   }
-  static formatTiming(seconds, decimal = 0, locale = 'en-US', flex = false) {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    let s = (seconds % 60).toFixed(decimal);
+  static formatTiming(totalSeconds, decimal = 0, locale = 'en-US', flex = false) {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    let seconds = (totalSeconds % 60).toFixed(decimal);
 
     const pad = (value, length = 2) => String(value).padStart(length, '0');
 
-    const [intPart, decimalPart] = s.split('.');
-    s = decimalPart !== undefined ? `${pad(intPart)}.${decimalPart}` : pad(s);
+    const [intPart, decimalPart] = seconds.split('.');
+    seconds = decimalPart !== undefined ? `${pad(intPart)}.${decimalPart}` : pad(seconds);
 
     if (flex) {
-      if (seconds < 60) return this.formatValueAndUnit(parseFloat(s), decimal, 's', locale);
-      if (seconds < 3600) return `${pad(m)}:${s}`;
+      if (totalSeconds < 60) return this.formatValueAndUnit(parseFloat(seconds), decimal, 's', locale);
+      if (totalSeconds < 3600) return `${pad(minutes)}:${seconds}`;
     }
 
-    // Formatage final avec heure, minute et seconde
-    return [pad(h), pad(m), s].join(':');
+    return [pad(hours), pad(minutes), seconds].join(':');
   }
   static durationToSeconds(value, unit) {
     switch (unit) {
@@ -3069,7 +3062,7 @@ class PercentHelper {
     return valueBasedOnPercentage || [CARD.config.unit.default, CARD.config.unit.disable].includes(this.#unit.value) ? this.#percent : value;
   }
   refresh() {
-    this.#percent = this.isValid ? +((this.correctedValue / this.range) * 100).toFixed(this.#decimal.value) : 0;
+    this.#percent = this.isValid ? Number(((this.correctedValue / this.range) * 100).toFixed(this.#decimal.value)) : 0;
   }
   calcWatermark(value) {
     return [CARD.config.unit.default, CARD.config.unit.disable].includes(this.#unit.value)
@@ -3280,7 +3273,7 @@ class HassProvider {
     return attributes && attribute in attributes ? attributes[attribute] : undefined;
   }
   hasEntity(entityId) {
-    return !!this.#hass?.states?.[entityId];
+    return entityId in (this.#hass?.states || {});
   }
   isEntityAvailable(entityId) {
     const state = this.getEntityState(entityId)?.state;
@@ -3507,7 +3500,7 @@ class EntityHelper {
     return this.#isValid && Object.keys(this.attributes ?? {}).length > 0;
   }
   get defaultAttribute() {
-    return this.#isValid && !!ATTRIBUTE_MAPPING[this.#domain] ? ATTRIBUTE_MAPPING[this.#domain].attribute : null;
+    return ATTRIBUTE_MAPPING[this.#domain]?.attribute ?? null;
   }
   get name() {
     return this.#isValid ? this.#hassProvider.getEntityName(this.#entityId) : null;
@@ -4191,9 +4184,6 @@ class CardView {
 class ResourceManager {
   #resources = new Map();
 
-  constructor() {
-  }
-
   #generateUniqueId() {
     let id;
     do {
@@ -4430,17 +4420,17 @@ class EntityProgressCard extends HTMLElement {
     }
   }
 
-  #fireAction(originalEvent, action) {
+  #fireAction(originalEvent, currentAction) {
     debugLog('👉 EntityProgressCard.#fireAction()');
     debugLog('  📎 originalEvent: ', originalEvent);
-    debugLog('  📎 original action: ', action);
+    debugLog('  📎 original action: ', currentAction);
     debugLog('    clickSource: ', this.#clickSource);
 
     const prefixAction = this.#clickSource === CARD.interactions.event.from.icon ? `${CARD.interactions.event.from.icon}_` : '';
-    action = `${prefixAction}${action}`;
-    debugLog('  📎 action: ', action);
+    currentAction = `${prefixAction}${currentAction}`;
+    debugLog('  📎 action: ', currentAction);
 
-    let config = null;
+    let currentConfig = null;
 
     if (
       [
@@ -4448,12 +4438,12 @@ class EntityProgressCard extends HTMLElement {
         CARD.interactions.event.tap.iconHoldAction,
         CARD.interactions.event.tap.iconDoubleTapAction,
         CARD.interactions.event.tap.doubleTapAction,
-      ].includes(action)
+      ].includes(currentAction)
     ) {
-      config = { entity: this.#cardView.config.entity, tap_action: this.#cardView.config[`${action}_action`] };
-      action = 'tap';
+      currentConfig = { entity: this.#cardView.config.entity, tap_action: this.#cardView.config[`${currentAction}_action`] };
+      currentAction = 'tap';
     } else {
-      config = this.#cardView.config;
+      currentConfig = this.#cardView.config;
     }
 
     this.dispatchEvent(
@@ -4461,8 +4451,8 @@ class EntityProgressCard extends HTMLElement {
         bubbles: true,
         composed: true,
         detail: {
-          config: config,
-          action: action,
+          config: currentConfig,
+          action: currentAction,
           originalEvent,
         },
       })
@@ -4742,12 +4732,13 @@ class EntityProgressCard extends HTMLElement {
     templates.badge_color = this.#cardView.config.badge_color || '';
 
     for (const key in templates) {
-      const template = templates[key];
+      if (!Object.hasOwn(templates, key)) continue;
+      const curTmpl = templates[key];
       // Skip empty templates
-      if (!template.trim()) continue;
+      if (!curTmpl.trim()) continue;
       const unsub = await this.#lastHass.connection.subscribeMessage((msg) => this.#renderJinja(key, msg.result), {
         type: 'render_template',
-        template: template,
+        template: curTmpl,
       });
       // keep it
       this.#resourceManager.addSubscription(unsub, `template-${key}`);
@@ -5461,7 +5452,7 @@ class EntityProgressCardEditor extends HTMLElement {
   #renderAccordion(parent, inputFields) {
     const accordionItem = document.createElement(CARD.editor.fields.accordion.item.element);
     accordionItem.classList.add(CARD.editor.fields.accordion.item.class);
-    this.#accordionList.push(accordionItem) - 1;
+    this.#accordionList.push(accordionItem);
 
     const accordionTitle = document.createElement(CARD.editor.fields.accordion.title.element);
     this.#accordionTitleList.push(accordionTitle);
