@@ -3227,11 +3227,11 @@ class HassProvider {
     this.#hass = hass;
     this.#isValid = true;
   }
-  get isValid() {
-    return this.#isValid;
-  }
   get hass() {
     return this.#hass;
+  }
+  get isValid() {
+    return this.#isValid;
   }
   get systemLanguage() {
     return this.#hass?.config?.language in LANGUAGES ? this.#hass.config.language : CARD.config.language;
@@ -3622,11 +3622,11 @@ class EntityOrValue {
   /******************************************************************************************
    * Proxy function
    */
-  get isEntity() {
-    return this.#isEntity;
-  }
   get value() {
     return this.#activeHelper ? this.#activeHelper.value : null;
+  }
+  get isEntity() {
+    return this.#isEntity;
   }
   set attribute(newAttribute) {
     if (this.#isEntity) this.#activeHelper.attribute = newAttribute;
@@ -3856,7 +3856,7 @@ class ConfigHelper {
       typeof this.#config.max_value === 'string' && this.#config.max_value.trim() ? this.#hassProvider.hass.states[this.#config.max_value] : null;
     const validationRules = [
       {
-        valid: !!this.#config.entity,
+        valid: this.#config.entity !== undefined,
         msg: { content: LANGUAGES[this.#hassProvider.language].card.msg.entityError, sev: 'info' },
       },
       {
@@ -3919,6 +3919,22 @@ class CardView {
   }
   get msg() {
     return this.#configHelper.msg;
+  }
+  set config(config) {
+    this.#configHelper.config = config;
+    this.#percentHelper.hasDisabledUnit = this.#configHelper.hasDisabledUnit;
+    this.#theme.theme = this.#configHelper.theme;
+    this.#theme.customTheme = this.#configHelper.custom_theme;
+    this.#currentValue.value = this.#configHelper.entity;
+    this.#currentValue.stateContent = this.#configHelper.stateContent;
+    if (this.#currentValue.isTimer) {
+      this.#isReversed = this.#configHelper.reverse === undefined ? true : this.#configHelper.reverse;
+      this.#max_value.value = CARD.config.value.max;
+    } else {
+      this.#currentValue.attribute = config.attribute || null;
+      this.#max_value.value = config.max_value ?? CARD.config.value.max;
+      this.#max_value.attribute = config.max_value_attribute || null;
+    }
   }
   get config() {
     return this.#configHelper.config;
@@ -3988,7 +4004,7 @@ class CardView {
     if (this.componentIsHidden(CARD.style.dynamic.hiddenComponent.value.label)) return additionalInfo;
     const valueInfo =
       this.#currentValue.isDuration && !this.#configHelper.unit ? this.#currentValue.formatedEntityState : this.#percentHelper.toString();
-    
+
     return additionalInfo === '' ? valueInfo : [additionalInfo, valueInfo].join(CARD.config.separator);
   }
   get name() {
@@ -4096,29 +4112,6 @@ class CardView {
     return Array.isArray(this.#configHelper.config?.hide) && this.#configHelper.config.hide.includes(component);
   }
 
-  /******************************************************************************************
-   * Sets the card configuration and updates related properties.
-   *
-   * @param {object} config - The new card configuration.
-   */
-  set config(config) {
-    this.#configHelper.config = config;
-    this.#percentHelper.hasDisabledUnit = this.#configHelper.hasDisabledUnit;
-    this.#theme.theme = this.#configHelper.theme;
-    this.#theme.customTheme = this.#configHelper.custom_theme;
-    this.#currentValue.value = this.#configHelper.entity;
-    this.#currentValue.stateContent = this.#configHelper.stateContent;
-    if (this.#currentValue.isTimer) {
-      // FMR
-      this.#isReversed = this.#configHelper.reverse === undefined ? true : this.#configHelper.reverse;
-      this.#max_value.value = CARD.config.value.max;
-    } else {
-      this.#currentValue.attribute = config.attribute || null;
-      this.#max_value.value = config.max_value ?? CARD.config.value.max;
-      this.#max_value.attribute = config.max_value_attribute || null;
-    }
-  }
-
   /**
    * Refreshes the card by updating the current value and checking for availability.
    *
@@ -4185,7 +4178,7 @@ class ResourceManager {
   #resources = new Map();
 
   #generateUniqueId() {
-    let id;
+    let id = null;
     do {
       id = Math.random().toString(36).slice(2, 8);
     } while (this.#resources.has(id));
@@ -4950,12 +4943,12 @@ class EntityProgressCardEditor extends HTMLElement {
     for (const type of haFormTypes) {
       const element = this.#elements[type];
       if (element) {
-        this.#updateHAForm(element, type, this.#config[type]);
+        this.updateHAForm(element, type, this.#config[type]);
       }
     }
 
     // Theme
-    this.#toggleFieldDisable(CARD.editor.keyMappings.theme, !!this.#config.theme);
+    this.#toggleFieldDisable(CARD.editor.keyMappings.theme, this.#config.theme !== undefined);
 
     const entityHasAttribute = this.#updateAttributFromEntity('entity', 'attribute');
     this.#toggleFieldDisable(EDITOR_INPUT_FIELDS.basicConfiguration.attribute.isInGroup, !entityHasAttribute);
@@ -4967,7 +4960,7 @@ class EntityProgressCardEditor extends HTMLElement {
     this.#updateToggleFields();
   }
 
-  #updateHAForm(form, key, newValue) {
+  static updateHAForm(form, key, newValue) {
     debugLog('👉 editor.#updateHAForm()');
     debugLog('        ✅ Update HA Form (Before) ------> ', form.data);
     debugLog('        ✅ NewValue: ', newValue);
@@ -5011,7 +5004,7 @@ class EntityProgressCardEditor extends HTMLElement {
     // que la valeur du select ne correspond pas encore au defaultAttribute :
     if (this.#config[attribute] === undefined && curEntity.hasAttribute) {
       debugLog(`        ✅ updateFields - Attribute ${attribute} (default): in progress...`);
-      this.#applySelectValueOnUpdate(this.#elements[attribute], curEntity.defaultAttribute);
+      this.applySelectValueOnUpdate(this.#elements[attribute], curEntity.defaultAttribute);
     }
 
     if (
@@ -5026,7 +5019,7 @@ class EntityProgressCardEditor extends HTMLElement {
 
     return curEntity.hasAttribute;
   }
-  async #applySelectValueOnUpdate(select, value) {
+  async applySelectValueOnUpdate(select, value) {
     await select.updateComplete;
 
     const values = Array.from(select.children).map((el) => el.getAttribute('value'));
@@ -5319,7 +5312,7 @@ class EntityProgressCardEditor extends HTMLElement {
     });
   }
 
-  #computeCustomLabel(s, label) {
+  static computeCustomLabel(s, label) {
     debugLog('👉 computeCustomLabel()');
     debugLog('  📎 name: ', s.name);
     debugLog('  📎 label: ', label);
@@ -5331,7 +5324,7 @@ class EntityProgressCardEditor extends HTMLElement {
    */
   #createField({ name, label, type, required, isInGroup, width, schema = null }) {
     debugLog('👉 editor.#createField()');
-    let inputElement;
+    let inputElement = null;
     const value = this.#config[name] ?? '';
 
     switch (type) {
@@ -5352,7 +5345,7 @@ class EntityProgressCardEditor extends HTMLElement {
         inputElement.id = name;
         inputElement.hass = this.#hassProvider.hass;
         inputElement.schema = schema;
-        inputElement.computeLabel = (s) => this.#computeCustomLabel(s, label);
+        inputElement.computeLabel = (s) => this.computeCustomLabel(s, label);
         inputElement.data = {};
         this.#elements[name] = inputElement;
         return inputElement; //break;
@@ -5410,7 +5403,7 @@ class EntityProgressCardEditor extends HTMLElement {
     return inputElement;
   }
 
-  #makeHelpIcon() {
+  static makeHelpIcon() {
     const link = document.createElement(CARD.documentation.link.element);
     link.href = CARD.documentation.link.documentationUrl;
     link.target = CARD.documentation.link.linkTarget;
@@ -5498,7 +5491,7 @@ class EntityProgressCardEditor extends HTMLElement {
     this.#renderAccordion(this.#container, EDITOR_INPUT_FIELDS.interaction);
     this.#renderAccordion(this.#container, EDITOR_INPUT_FIELDS.theme);
 
-    this.#container.appendChild(this.#makeHelpIcon());
+    this.#container.appendChild(this.makeHelpIcon());
     fragment.appendChild(this.#container);
     this.shadowRoot.appendChild(fragment);
   }
