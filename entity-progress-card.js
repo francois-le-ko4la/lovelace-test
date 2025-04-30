@@ -2873,17 +2873,8 @@ class ValueHelper {
   #value = null;
   #isValid = false;
 
-  constructor(initialValue = null) {
-    if (initialValue !== null) {
-      this.value = initialValue;
-    }
-  }
-
-  /******************************************************************************************
-   * Getter/Setter
-   */
   set value(newValue) {
-    this.#isValid = this.#validate(newValue);
+    this.#isValid = ValueHelper.#validate(newValue);  // Appel à la méthode statique
     this.#value = this.#isValid ? newValue : null;
   }
   get value() {
@@ -2895,8 +2886,9 @@ class ValueHelper {
 
   /******************************************************************************************
    * Validates if a value is a valid float.
+   * Méthode statique maintenant
    */
-  #validate(value) {
+  static #validate(value) {
     return Number.isFinite(value);
   }
 }
@@ -2910,11 +2902,8 @@ class DecimalHelper {
   #value = CARD.config.decimal.percentage;
   #isValid = false;
 
-  /******************************************************************************************
-   * Getter/Setter
-   */
   set value(newValue) {
-    this.#isValid = this.#validate(newValue);
+    this.#isValid = DecimalHelper.#validate(newValue);
     this.#value = this.#isValid ? newValue : null;
   }
   get value() {
@@ -2926,11 +2915,8 @@ class DecimalHelper {
 
   /******************************************************************************************
    * Validates if a value is a valid non-negative integer.
-   *
-   * @param {number} value - The value to validate.
-   * @returns {boolean} True if the value is a valid non-negative integer, false otherwise.
    */
-  #validate(value) {
+  static #validate(value) {
     return Number.isInteger(value) && value >= 0;
   }
 }
@@ -2944,9 +2930,6 @@ class UnitHelper {
   #value = CARD.config.unit.default;
   #isDisabled = false;
 
-  /******************************************************************************************
-   * Getter/Setter
-   */
   set value(newValue) {
     this.#value = newValue.trim() ?? CARD.config.unit.default;
   }
@@ -3119,7 +3102,7 @@ class ThemeManager {
     return this.#theme;
   }
   set customTheme(newTheme) {
-    if (!this.#validateCustomTheme(newTheme)) {
+    if (!ThemeManager.#validateCustomTheme(newTheme)) {
       return;
     }
     this.#theme = CARD.theme.default;
@@ -3182,8 +3165,7 @@ class ThemeManager {
       this.#color = themeData.color;
     }
   }
-
-  #validateCustomTheme(customTheme) {
+  static #validateCustomTheme(customTheme) {
     if (!Array.isArray(customTheme) || customTheme.length === 0) return false;
 
     let isFirstItem = true;
@@ -3200,6 +3182,9 @@ class ThemeManager {
 
       return true;
     });
+  }
+  static adaptColor(curColor) {
+    return curColor == null ? null : DEF_COLORS.has(curColor) ? `var(--${curColor}-color)` : curColor;
   }
 }
 
@@ -3279,7 +3264,7 @@ class HassProvider {
     const state = this.getEntityState(entityId)?.state;
     return state !== 'unavailable' && state !== 'unknown';
   }
-  getEntityDomain(entityId) {
+  static getEntityDomain(entityId) {
     return typeof entityId === 'string' && entityId.includes('.') ? entityId.split('.')[0] : null;
   }
   getDeviceClass(entityId) {
@@ -3304,7 +3289,7 @@ class HassProvider {
     return this.#hass?.formatEntityAttributeValue?.(stateObj, attribute) ?? '';
   }
   isTimerEntity(entityId) {
-    return this.getEntityDomain(entityId) === CARD.config.entity.type.timer;
+    return HassProvider.getEntityDomain(entityId) === CARD.config.entity.type.timer;
   }
   getTimerFinishAt(entityId) {
     return this.getEntityAttribute(entityId, 'finishes_at') ?? null;
@@ -3353,7 +3338,7 @@ class EntityHelper {
   set entityId(entityId) {
     this.#entityId = entityId;
     this.#value = 0;
-    this.#domain = this.#hassProvider.getEntityDomain(entityId);
+    this.#domain = HassProvider.getEntityDomain(entityId);
     this.#isValid = this.#hassProvider.hasEntity(this.#entityId); // for editor
   }
 
@@ -3972,12 +3957,12 @@ class CardView {
   get color() {
     if (this.isUnavailable) return CARD.style.color.unavailable;
     if (this.isNotFound) return CARD.style.color.notFound;
-    return this.#convertColorFromConfig(this.#theme.color || this.#configHelper.color) || this.#currentValue.defaultColor || CARD.style.color.default;
+    return ThemeManager.adaptColor(this.#theme.color || this.#configHelper.color) || this.#currentValue.defaultColor || CARD.style.color.default;
   }
   get bar_color() {
     if (this.isAvailable) {
       return (
-        this.#convertColorFromConfig(this.#theme.color || this.#configHelper.bar.color) || this.#currentValue.defaultColor || CARD.style.color.default
+        ThemeManager.adaptColor(this.#theme.color || this.#configHelper.bar.color) || this.#currentValue.defaultColor || CARD.style.color.default
       );
     }
     if (this.isUnknown) {
@@ -4099,9 +4084,9 @@ class CardView {
     const result = this.#configHelper.watermark;
     return {
       low: this.#percentHelper.calcWatermark(result.low),
-      low_color: this.#convertColorFromConfig(result.low_color),
+      low_color: ThemeManager.adaptColor(result.low_color),
       high: this.#percentHelper.calcWatermark(result.high),
-      high_color: this.#convertColorFromConfig(result.high_color),
+      high_color: ThemeManager.adaptColor(result.high_color),
       opacity: result.opacity,
       type: result.type,
       disable_low: result.disable_low,
@@ -4167,9 +4152,6 @@ class CardView {
     if (currentUnit === CARD.config.unit.default) return CARD.config.decimal.percentage;
 
     return CARD.config.decimal.other;
-  }
-  #convertColorFromConfig(curColor) {
-    return curColor == null ? null : DEF_COLORS.has(curColor) ? `var(--${curColor}-color)` : curColor;
   }
 }
 
@@ -4644,7 +4626,7 @@ class EntityProgressCard extends HTMLElement {
         break;
       }
       case 'badge_color': {
-        const backgroundColor = DEF_COLORS.has(content) ? `var(--${content}-color)` : content;
+        const backgroundColor = ThemeManager.adaptColor(content);
         const color = 'var(--white-color)';
         this.#setBadgeColor(color, backgroundColor);
         break;
@@ -4943,7 +4925,7 @@ class EntityProgressCardEditor extends HTMLElement {
     for (const type of haFormTypes) {
       const element = this.#elements[type];
       if (element) {
-        this.updateHAForm(element, type, this.#config[type]);
+        EntityProgressCardEditor.#updateHAForm(element, type, this.#config[type]);
       }
     }
 
@@ -4960,7 +4942,7 @@ class EntityProgressCardEditor extends HTMLElement {
     this.#updateToggleFields();
   }
 
-  static updateHAForm(form, key, newValue) {
+  static #updateHAForm(form, key, newValue) {
     debugLog('👉 editor.#updateHAForm()');
     debugLog('        ✅ Update HA Form (Before) ------> ', form.data);
     debugLog('        ✅ NewValue: ', newValue);
@@ -5004,7 +4986,7 @@ class EntityProgressCardEditor extends HTMLElement {
     // que la valeur du select ne correspond pas encore au defaultAttribute :
     if (this.#config[attribute] === undefined && curEntity.hasAttribute) {
       debugLog(`        ✅ updateFields - Attribute ${attribute} (default): in progress...`);
-      this.applySelectValueOnUpdate(this.#elements[attribute], curEntity.defaultAttribute);
+      EntityProgressCardEditor.#applySelectValueOnUpdate(this.#elements[attribute], curEntity.defaultAttribute);
     }
 
     if (
@@ -5019,7 +5001,7 @@ class EntityProgressCardEditor extends HTMLElement {
 
     return curEntity.hasAttribute;
   }
-  async applySelectValueOnUpdate(select, value) {
+  static async #applySelectValueOnUpdate(select, value) {
     await select.updateComplete;
 
     const values = Array.from(select.children).map((el) => el.getAttribute('value'));
@@ -5312,7 +5294,7 @@ class EntityProgressCardEditor extends HTMLElement {
     });
   }
 
-  static computeCustomLabel(s, label) {
+  static #computeCustomLabel(s, label) {
     debugLog('👉 computeCustomLabel()');
     debugLog('  📎 name: ', s.name);
     debugLog('  📎 label: ', label);
@@ -5345,7 +5327,7 @@ class EntityProgressCardEditor extends HTMLElement {
         inputElement.id = name;
         inputElement.hass = this.#hassProvider.hass;
         inputElement.schema = schema;
-        inputElement.computeLabel = (s) => this.computeCustomLabel(s, label);
+        inputElement.computeLabel = (s) => EntityProgressCardEditor.#computeCustomLabel(s, label);
         inputElement.data = {};
         this.#elements[name] = inputElement;
         return inputElement; //break;
@@ -5402,8 +5384,7 @@ class EntityProgressCardEditor extends HTMLElement {
 
     return inputElement;
   }
-
-  static makeHelpIcon() {
+  static #makeHelpIcon() {
     const link = document.createElement(CARD.documentation.link.element);
     link.href = CARD.documentation.link.documentationUrl;
     link.target = CARD.documentation.link.linkTarget;
@@ -5491,7 +5472,7 @@ class EntityProgressCardEditor extends HTMLElement {
     this.#renderAccordion(this.#container, EDITOR_INPUT_FIELDS.interaction);
     this.#renderAccordion(this.#container, EDITOR_INPUT_FIELDS.theme);
 
-    this.#container.appendChild(this.makeHelpIcon());
+    this.#container.appendChild(EntityProgressCardEditor.#makeHelpIcon());
     fragment.appendChild(this.#container);
     this.shadowRoot.appendChild(fragment);
   }
