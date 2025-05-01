@@ -2971,7 +2971,7 @@ class PercentHelper {
   #isReversed = false;
 
   constructor() {
-    this.#hassProvider = new HassProvider();
+    this.#hassProvider = HassProviderSingleton.getInstance();
   }
 
   /******************************************************************************************
@@ -3194,17 +3194,26 @@ class ThemeManager {
  *
  * @class HassProvider
  */
-class HassProvider {
+class HassProviderSingleton {
   static #instance = null;
+  static #allowInit = false;
+
   #hass = null;
   #isValid = false;
 
   constructor() {
-    debugLog('👉 HassProvider()');
-    if (HassProvider.#instance) {
-      return HassProvider.#instance;
+    if (!HassProviderSingleton.#allowInit) {
+      throw new Error('Use HassProviderSingleton.getInstance() instead of new.');
     }
-    HassProvider.#instance = this;
+    HassProviderSingleton.#allowInit = false;
+  }
+
+  static getInstance() {
+    if (!HassProviderSingleton.#instance) {
+      HassProviderSingleton.#allowInit = true;
+      HassProviderSingleton.#instance = new HassProviderSingleton();
+    }
+    return HassProviderSingleton.#instance;
   }
 
   set hass(hass) {
@@ -3289,7 +3298,7 @@ class HassProvider {
     return this.#hass?.formatEntityAttributeValue?.(stateObj, attribute) ?? '';
   }
   isTimerEntity(entityId) {
-    return HassProvider.getEntityDomain(entityId) === CARD.config.entity.type.timer;
+    return HassProviderSingleton.getEntityDomain(entityId) === CARD.config.entity.type.timer;
   }
   getTimerFinishAt(entityId) {
     return this.getEntityAttribute(entityId, 'finishes_at') ?? null;
@@ -3329,7 +3338,7 @@ class EntityHelper {
   stateContent = [];
 
   constructor() {
-    this.#hassProvider = new HassProvider();
+    this.#hassProvider = HassProviderSingleton.getInstance();
   }
 
   /**
@@ -3338,7 +3347,7 @@ class EntityHelper {
   set entityId(entityId) {
     this.#entityId = entityId;
     this.#value = 0;
-    this.#domain = HassProvider.getEntityDomain(entityId);
+    this.#domain = HassProviderSingleton.getEntityDomain(entityId);
     this.#isValid = this.#hassProvider.hasEntity(this.#entityId); // for editor
   }
 
@@ -3692,7 +3701,7 @@ class ConfigHelper {
   #hassProvider = null;
 
   constructor() {
-    this.#hassProvider = new HassProvider();
+    this.#hassProvider = HassProviderSingleton.getInstance();
   }
 
   /******************************************************************************************
@@ -3893,7 +3902,7 @@ class CardView {
   #isReversed = false;
 
   constructor() {
-    this.#hassProvider = new HassProvider();
+    this.#hassProvider = HassProviderSingleton.getInstance();
   }
 
   /******************************************************************************************
@@ -4831,7 +4840,7 @@ class EntityProgressCardEditor extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: CARD.config.shadowMode });
-    this.#hassProvider = new HassProvider();
+    this.#hassProvider = HassProviderSingleton.getInstance();
   }
 
   connectedCallback() {
