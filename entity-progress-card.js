@@ -2936,8 +2936,8 @@ class UnitHelper {
   get value() {
     return this.#isDisabled ? '' : this.#value;
   }
-  set isDisabled(disabled) {
-    this.#isDisabled = disabled === true;
+  set isDisabled(newValue) {
+    this.#isDisabled = typeof newValue === 'boolean' ? newValue : false;
   }
   get isDisabled() {
     return this.#isDisabled;
@@ -2977,44 +2977,65 @@ class PercentHelper {
   /******************************************************************************************
    * Getter/Setter
    */
-  set isTimer(isTimer) {
-    this.#isTimer = typeof isTimer === 'boolean' ? isTimer : false;
+  set isTimer(newValue) {
+    this.#isTimer = typeof newValue === 'boolean' ? newValue : false;
   }
-  set isReversed(isReversed) {
-    this.#isReversed = typeof isReversed === 'boolean' ? isReversed : CARD.config.reverse;
+  get isTimer() {
+    return this.#isTimer;
   }
-  set min(newMin) {
-    this.#min.value = Number.isFinite(newMin) ? newMin : CARD.config.value.min;
+  set isReversed(newValue) {
+    this.#isReversed = typeof newValue === 'boolean' ? newValue : CARD.config.reverse;
   }
-  set max(newMax) {
-    this.#max.value = Number.isFinite(newMax) ? newMax : CARD.config.value.min;
+  get isReversed() {
+    return this.#isReversed;
+  }
+  set min(newValue) {
+    this.#min.value = newValue;
+  }
+  get min() {
+    return this.#min.isValid ? this.#min.value : CARD.config.value.min;
+  }
+  set max(newValue) {
+    this.#max.value = newValue;
+  }
+  get max() {
+    return this.#max.isValid ? this.#max.value : CARD.config.value.max;
   }
   set current(newCurrent) {
     this.#current.value = newCurrent;
   }
+  get current() {
+    return this.#current.isValid ? this.#current.value : 0;
+  }
   get actual() {
-    return this.#isReversed ? this.#max.value - this.#current.value : this.#current.value;
+    return this.#isReversed ? this.max - this.current : this.current;
   }
   get unit() {
     return this.#unit.value;
   }
-  set unit(newUnit) {
-    this.#unit.value = newUnit ?? '';
+  set unit(newValue) {
+    this.#unit.value = newValue ?? '';
   }
-  set hasDisabledUnit(disabled) {
-    this.#unit.isDisabled = disabled;
+  set hasDisabledUnit(newValue) {
+    this.#unit.isDisabled = newValue;
   }
-  set decimal(newDecimal) {
-    this.#decimal.value = Number.isFinite(newDecimal) ? newDecimal : CARD.config.decimal.percentage;
+  get hasDisabledUnit() {
+    return this.#unit.isDisabled;
+  }
+  set decimal(newValue) {
+    this.#decimal.value = newValue;
+  }
+  get decimal() {
+    return this.#decimal.value;
   }
   get isValid() {
     return this.#min.isValid && this.#max.isValid && this.#current.isValid && this.#decimal.isValid && this.range !== 0;
   }
   get range() {
-    return this.#max.value - this.#min.value;
+    return this.max - this.min;
   }
   get correctedValue() {
-    return this.actual - this.#min.value;
+    return this.actual - this.min;
   }
   get percent() {
     return this.isValid ? this.#percent : null;
@@ -3029,7 +3050,7 @@ class PercentHelper {
     return this.hasTimerUnit || this.hasFlexTimerUnit;
   }
   get processedValue() {
-    return this.#unit.value === CARD.config.unit.default ? this.percent : this.actual;
+    return this.unit === CARD.config.unit.default ? this.percent : this.actual;
   }
   valueForThemes(valueBasedOnPercentage) {
     /****************************************************************************************
@@ -3039,27 +3060,25 @@ class PercentHelper {
      * - If the theme is linear or the unit is the default, the percentage value is returned.
      */
     let value = this.actual;
-    if (this.#unit.value === CARD.config.unit.fahrenheit) {
+    if (this.unit === CARD.config.unit.fahrenheit) {
       value = ((value - 32) * 5) / 9;
     }
-    return valueBasedOnPercentage || [CARD.config.unit.default, CARD.config.unit.disable].includes(this.#unit.value) ? this.#percent : value;
+    return valueBasedOnPercentage || [CARD.config.unit.default, CARD.config.unit.disable].includes(this.unit) ? this.percent : value;
   }
   refresh() {
-    this.#percent = this.isValid ? Number(((this.correctedValue / this.range) * 100).toFixed(this.#decimal.value)) : 0;
+    this.#percent = this.isValid ? Number(((this.correctedValue / this.range) * 100).toFixed(this.decimal)) : 0;
   }
   calcWatermark(value) {
-    return [CARD.config.unit.default, CARD.config.unit.disable].includes(this.#unit.value)
-      ? value
-      : ((value - this.#min.value) / this.range) * 100;
+    return [CARD.config.unit.default, CARD.config.unit.disable].includes(this.unit) ? value : ((value - this.min) / this.range) * 100;
   }
   toString() {
     if (!this.isValid) {
       return 'Div0';
     } else if (this.hasTimerOrFlexTimerUnit) {
       // timer with time format
-      return NumberFormatter.formatTiming(this.actual, this.#decimal.value, this.#hassProvider.numberFormat, this.hasFlexTimerUnit);
+      return NumberFormatter.formatTiming(this.actual, this.decimal, this.#hassProvider.numberFormat, this.hasFlexTimerUnit);
     }
-    return NumberFormatter.formatValueAndUnit(this.processedValue, this.#decimal.value, this.#unit.value, this.#hassProvider.numberFormat);
+    return NumberFormatter.formatValueAndUnit(this.processedValue, this.decimal, this.unit, this.#hassProvider.numberFormat);
   }
 }
 
@@ -3109,6 +3128,9 @@ class ThemeManager {
     this.#currentStyle = newTheme;
     this.#isValid = true;
     this.#isLinear = false;
+  }
+  get customTheme() {
+    return this.#currentStyle;
   }
   get isLinear() {
     return this.#isLinear;
@@ -3297,9 +3319,6 @@ class HassProviderSingleton {
     const stateObj = this.getEntityState(entityId);
     return this.#hass?.formatEntityAttributeValue?.(stateObj, attribute) ?? '';
   }
-  isTimerEntity(entityId) {
-    return HassProviderSingleton.getEntityDomain(entityId) === CARD.config.entity.type.timer;
-  }
   getTimerFinishAt(entityId) {
     return this.getEntityAttribute(entityId, 'finishes_at') ?? null;
   }
@@ -3344,18 +3363,23 @@ class EntityHelper {
   /**
    * @param {String} entityId
    */
-  set entityId(entityId) {
-    this.#entityId = entityId;
+  set entityId(newValue) {
+    this.#entityId = newValue;
     this.#value = 0;
-    this.#domain = HassProviderSingleton.getEntityDomain(entityId);
+    this.#domain = HassProviderSingleton.getEntityDomain(newValue);
     this.#isValid = this.#hassProvider.hasEntity(this.#entityId); // for editor
   }
-
+  get entityId() {
+    return this.#entityId;
+  }
   /**
    * @param {String} newAttribute
    */
-  set attribute(newAttribute) {
-    this.#attribute = newAttribute;
+  set attribute(newValue) {
+    this.#attribute = newValue;
+  }
+  get attribute() {
+    return this.#attribute;
   }
   get value() {
     return this.#isValid ? this.#value : 0;
@@ -3466,7 +3490,7 @@ class EntityHelper {
       const state = this.#hassProvider.getEntityStateValue(this.#entityId);
       dynIcon = state === 'open' || state === 'opening' ? dynIconMap.open : dynIconMap.closed;
     }
-    
+
     return dynIcon || deviceClassIcon || domainIcon || null;
   }
 
@@ -3601,13 +3625,13 @@ class EntityOrValue {
    * Dynamically delegates to the appropriate helper.
    * @param {string|number} input - The value or entity ID.
    */
-  set value(input) {
-    if (typeof input === 'string') {
+  set value(newValue) {
+    if (typeof newValue === 'string') {
       this.#createHelper(this.#helperType.entity);
-      this.#activeHelper.entityId = input;
-    } else if (Number.isFinite(input)) {
+      this.#activeHelper.entityId = newValue;
+    } else if (Number.isFinite(newValue)) {
       this.#createHelper(this.#helperType.value);
-      this.#activeHelper.value = input;
+      this.#activeHelper.value = newValue;
     } else {
       this.#activeHelper = null;
     }
@@ -3622,8 +3646,11 @@ class EntityOrValue {
   get isEntity() {
     return this.#isEntity;
   }
-  set attribute(newAttribute) {
-    if (this.#isEntity) this.#activeHelper.attribute = newAttribute;
+  set attribute(newValue) {
+    if (this.#isEntity) this.#activeHelper.attribute = newValue;
+  }
+  get attribute() {
+    return this.#isEntity ? this.#activeHelper.attribute : null;
   }
   get state() {
     return this.#activeHelper && this.#isEntity ? this.#activeHelper.state : null;
@@ -3643,8 +3670,11 @@ class EntityOrValue {
   get formatedEntityState() {
     return this.#activeHelper && this.#isEntity ? this.#activeHelper.formatedEntityState : null;
   }
-  set stateContent(newstateContent) {
-    if (this.#activeHelper && this.#isEntity) this.#activeHelper.stateContent = newstateContent;
+  set stateContent(newValue) {
+    if (this.#activeHelper && this.#isEntity) this.#activeHelper.stateContent = newValue;
+  }
+  get stateContent() {
+    return this.#activeHelper && this.#isEntity ? this.#activeHelper.stateContent : null;
   }
   get stateContentToString() {
     return this.#activeHelper && this.#isEntity ? this.#activeHelper.stateContentToString : null;
@@ -3945,9 +3975,9 @@ class CardView {
   get isAvailable() {
     return !(!this.#currentValue.isAvailable || (!this.#max_value.isAvailable && this.#configHelper.max_value));
   }
-  set currentLanguage(newLanguage) {
-    if (Object.keys(LANGUAGES).includes(newLanguage)) {
-      this.#currentLanguage = newLanguage;
+  set currentLanguage(newValue) {
+    if (Object.keys(LANGUAGES).includes(newValue)) {
+      this.#currentLanguage = newValue;
     }
   }
   get currentLanguage() {
@@ -4273,7 +4303,7 @@ class EntityProgressCard extends HTMLElement {
   #cardView = new CardView();
   #elements = {};
   #lastMessage = null;
-  #lastHass = null;
+  #hass = null;
   #clickCount = 0;
   #downTime = null;
   #isHolding = null;
@@ -4468,24 +4498,28 @@ class EntityProgressCard extends HTMLElement {
    */
   set hass(hass) {
     // On garde toujours la dernière valeur de hass
-    this.#lastHass = hass;
+    this.#hass = hass;
 
     // Si ce n'est pas un timer actif, on fait un rafraîchissement immédiat
     if (!this.#cardView.isActiveTimer) {
-      this.refresh(hass);
+      this.refresh();
       this.#stopAutoRefresh();
       return;
     }
     if (!this.#resourceManager.hasInterval('autoRefresh')) {
-      this.refresh(hass);
+      this.refresh();
       this.#startAutoRefresh();
     }
   }
 
-  refresh(hass) {
+  get hass() {
+    return this.#hass;
+  }
+
+  refresh() {
     debugLog('👉 EntityProgressCard.refresh()');
 
-    this.#cardView.refresh(hass);
+    this.#cardView.refresh(this.hass);
     if (this.#manageErrorMessage()) return;
     this.#updateDynamicElements();
   }
@@ -4503,7 +4537,7 @@ class EntityProgressCard extends HTMLElement {
     if(!this.#resourceManager) return;
     this.#resourceManager.setInterval(
       () => {
-        this.refresh(this.#lastHass);
+        this.refresh(this.hass);
         debugLog('👉 EntityProgressCard.#startAutoRefresh()');
         if (!this.#cardView.isActiveTimer) {
           this.#stopAutoRefresh();
@@ -4720,7 +4754,7 @@ class EntityProgressCard extends HTMLElement {
       const curTmpl = templates[key];
       // Skip empty templates
       if (!curTmpl.trim()) continue;
-      const unsub = await this.#lastHass.connection.subscribeMessage((msg) => this.#renderJinja(key, msg.result), {
+      const unsub = await this.hass.connection.subscribeMessage((msg) => this.#renderJinja(key, msg.result), {
         type: 'render_template',
         template: curTmpl,
       });
@@ -4869,6 +4903,10 @@ class EntityProgressCardEditor extends HTMLElement {
       this.#hassProvider.hass = hass;
     }
     this.#currentLanguage = this.#hassProvider.language;
+  }
+
+  get hass() {
+    return this.#hassProvider.hass;
   }
 
   setConfig(config) {
