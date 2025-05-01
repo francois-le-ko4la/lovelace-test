@@ -2872,13 +2872,18 @@ class NumberFormatter {
 class ValueHelper {
   #value = null;
   #isValid = false;
+  #defaultValue = null;
+
+  constructor(newValue = null) {
+    if (ValueHelper.#validate(newValue)) this.#defaultValue = newValue;
+  }
 
   set value(newValue) {
     this.#isValid = ValueHelper.#validate(newValue);  // Appel à la méthode statique
     this.#value = this.#isValid ? newValue : null;
   }
   get value() {
-    return this.#value;
+    return this.#isValid ? this.#value : this.#defaultValue;
   }
   get isValid() {
     return this.#isValid;
@@ -2901,13 +2906,17 @@ class ValueHelper {
 class DecimalHelper {
   #value = CARD.config.decimal.percentage;
   #isValid = false;
+  #defaultValue = null;
 
+  constructor(newValue = null) {
+    if (DecimalHelper.#validate(newValue)) this.#defaultValue = newValue;
+  }
   set value(newValue) {
     this.#isValid = DecimalHelper.#validate(newValue);
     this.#value = this.#isValid ? newValue : null;
   }
   get value() {
-    return this.#value;
+    return this.#isValid ? this.#value : this.#defaultValue;
   }
   get isValid() {
     return this.#isValid;
@@ -2965,7 +2974,7 @@ class PercentHelper {
   #max = new ValueHelper(CARD.config.value.max);
   #current = new ValueHelper(0);
   #unit = new UnitHelper();
-  #decimal = new DecimalHelper();
+  #decimal = new DecimalHelper(CARD.config.decimal.percentage);
   #percent = 0;
   #isTimer = false;
   #isReversed = false;
@@ -2993,19 +3002,19 @@ class PercentHelper {
     this.#min.value = newValue;
   }
   get min() {
-    return this.#min.isValid ? this.#min.value : CARD.config.value.min;
+    return this.#min.value;
   }
   set max(newValue) {
     this.#max.value = newValue;
   }
   get max() {
-    return this.#max.isValid ? this.#max.value : CARD.config.value.max;
+    return this.#max.value;
   }
   set current(newCurrent) {
     this.#current.value = newCurrent;
   }
   get current() {
-    return this.#current.isValid ? this.#current.value : 0;
+    return this.#current.value;
   }
   get actual() {
     return this.#isReversed ? this.max - this.current : this.current;
@@ -3029,7 +3038,7 @@ class PercentHelper {
     return this.#decimal.value;
   }
   get isValid() {
-    return this.#min.isValid && this.#max.isValid && this.#current.isValid && this.#decimal.isValid && this.range !== 0;
+    return this.range !== 0;
   }
   get range() {
     return this.max - this.min;
@@ -3144,6 +3153,9 @@ class ThemeManager {
   set value(newValue) {
     this.#value = newValue;
     this.#refresh();
+  }
+  get value() {
+    return this.#value;
   }
   get icon() {
     return this.#icon;
@@ -3929,7 +3941,6 @@ class CardView {
   #currentValue = new EntityOrValue();
   #max_value = new EntityOrValue();
   #currentLanguage = CARD.config.language;
-  #isReversed = false;
 
   constructor() {
     this.#hassProvider = HassProviderSingleton.getInstance();
@@ -3952,12 +3963,11 @@ class CardView {
     this.#currentValue.value = this.#configHelper.entity;
     this.#currentValue.stateContent = this.#configHelper.stateContent;
     if (this.#currentValue.isTimer) {
-      this.#isReversed = this.#configHelper.reverse === undefined ? true : this.#configHelper.reverse;
       this.#max_value.value = CARD.config.value.max;
     } else {
-      this.#currentValue.attribute = config.attribute || null;
+      this.#currentValue.attribute = config.attribute;
       this.#max_value.value = config.max_value ?? CARD.config.value.max;
-      this.#max_value.attribute = config.max_value_attribute || null;
+      this.#max_value.attribute = config.max_value_attribute;
     }
   }
   get config() {
@@ -4116,6 +4126,9 @@ class CardView {
           ].includes(this.#configHelper.iconTapAction)
       : true;
   }
+  get isReversed() {
+    return this.#configHelper.reverse !== false && this.#currentValue.value.state !== CARD.config.entity.state.idle;
+  }
   get hasWatermark() {
     return this.#configHelper.config.watermark !== undefined;
   }
@@ -4157,8 +4170,7 @@ class CardView {
     this.#percentHelper.decimal = this.#getCurrentDecimal(currentUnit);
 
     if (this.#currentValue.isTimer) {
-      this.#percentHelper.isReversed =
-        typeof this.#isReversed === 'boolean' && this.#isReversed && this.#currentValue.value.state !== CARD.config.entity.state.idle;
+      this.#percentHelper.isReversed = this.isReversed;
       this.#percentHelper.current = this.#currentValue.value.current;
       this.#percentHelper.min = this.#currentValue.value.min;
       this.#percentHelper.max = this.#currentValue.value.max;
