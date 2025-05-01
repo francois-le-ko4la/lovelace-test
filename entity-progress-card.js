@@ -2778,15 +2778,14 @@ const CARD_CSS = `
  * @param {string} msg
  * @param {any} val
  */
-function debugLog(msg, val) {
-  if (CARD.config.debug) {
-    if (val !== undefined) {
-      console.debug(`${msg}`, val);
-    } else {
-      console.debug(`${msg}`);
-    }
+const debugLog = (msg, val) => {
+  if (!CARD.config?.debug) return;
+  if (val !== undefined && val !== null) {
+    console.debug(msg, val);
+  } else {
+    console.debug(msg);
   }
-}
+};
 
 /******************************************************************************************
  * Helper class for formatting value && unit.
@@ -2891,7 +2890,6 @@ class ValueHelper {
 
   /******************************************************************************************
    * Validates if a value is a valid float.
-   * Méthode statique maintenant
    */
   static #validate(value) {
     return Number.isFinite(value);
@@ -4126,7 +4124,7 @@ class CardView {
           ].includes(this.#configHelper.iconTapAction)
       : true;
   }
-  get isReversed() {
+  get timerIsReversed() {
     return this.#configHelper.reverse !== false && this.#currentValue.value.state !== CARD.config.entity.state.idle;
   }
   get hasWatermark() {
@@ -4170,7 +4168,7 @@ class CardView {
     this.#percentHelper.decimal = this.#getCurrentDecimal(currentUnit);
 
     if (this.#currentValue.isTimer) {
-      this.#percentHelper.isReversed = this.isReversed;
+      this.#percentHelper.isReversed = this.timerIsReversed;
       this.#percentHelper.current = this.#currentValue.value.current;
       this.#percentHelper.min = this.#currentValue.value.min;
       this.#percentHelper.max = this.#currentValue.value.max;
@@ -4205,7 +4203,6 @@ class CardView {
     return CARD.config.decimal.other;
   }
 }
-
 
 class ResourceManager {
   #resources = new Map();
