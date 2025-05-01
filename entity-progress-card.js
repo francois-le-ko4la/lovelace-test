@@ -4862,6 +4862,165 @@ window.customCards.push({
 });
 
 /** --------------------------------------------------------------------------
+ * EDITOR PART
+ */
+
+class ConfigUpdateEventHandler {
+  constructor(config) {
+    this.config = { ...config };
+
+    this.updateFunctions = new Map([
+      [EDITOR_INPUT_FIELDS.basicConfiguration.attribute.name, this.updateField],
+      [EDITOR_INPUT_FIELDS.content.field.max_value_attribute.name, this.updateField],
+      [EDITOR_INPUT_FIELDS.content.field.name.name, this.updateField],
+      [EDITOR_INPUT_FIELDS.content.field.unit.name, this.updateField],
+      [EDITOR_INPUT_FIELDS.theme.field.bar_size.name, this.updateField],
+      [EDITOR_INPUT_FIELDS.theme.field.layout.name, this.updateField],
+      [EDITOR_INPUT_FIELDS.theme.field.theme.name, this.updateField],
+
+      [EDITOR_INPUT_FIELDS.content.field.decimal.name, this.updateNumericField],
+      [EDITOR_INPUT_FIELDS.content.field.min_value.name, this.updateNumericField],
+
+      [EDITOR_INPUT_FIELDS.content.field.max_value.name, this.updateMaxValueField],
+
+      [EDITOR_INPUT_FIELDS.interaction.field.icon_tap_action.name, this.updateInteractionField],
+      [EDITOR_INPUT_FIELDS.interaction.field.icon_double_tap_action.name, this.updateInteractionField],
+      [EDITOR_INPUT_FIELDS.interaction.field.icon_hold_action.name, this.updateInteractionField],
+      [EDITOR_INPUT_FIELDS.interaction.field.tap_action.name, this.updateInteractionField],
+      [EDITOR_INPUT_FIELDS.interaction.field.double_tap_action.name, this.updateInteractionField],
+      [EDITOR_INPUT_FIELDS.interaction.field.hold_action.name, this.updateInteractionField],
+
+      [EDITOR_INPUT_FIELDS.basicConfiguration.entity.name, this.updateEntityOrValueField],
+      [EDITOR_INPUT_FIELDS.theme.field.icon.name, this.updateEntityOrValueField],
+      [EDITOR_INPUT_FIELDS.theme.field.bar_color.name, this.updateEntityOrValueField],
+      [EDITOR_INPUT_FIELDS.theme.field.color.name, this.updateEntityOrValueField],
+
+      [EDITOR_INPUT_FIELDS.theme.field.toggleBar.name, this.updateToggleField],
+      [EDITOR_INPUT_FIELDS.theme.field.toggleIcon.name, this.updateToggleField],
+      [EDITOR_INPUT_FIELDS.theme.field.toggleName.name, this.updateToggleField],
+      [EDITOR_INPUT_FIELDS.theme.field.toggleValue.name, this.updateToggleField],
+      [EDITOR_INPUT_FIELDS.theme.field.toggleSecondaryInfo.name, this.updateToggleField],
+
+      [EDITOR_INPUT_FIELDS.theme.field.toggleCircular.name, this.updateCircularField],
+      [EDITOR_INPUT_FIELDS.theme.field.toggleUnit.name, this.updateUnitField],
+    ]);
+  }
+
+  updateConfig(changedEvent) {
+    debugLog('👉 ConfigUpdateEventHandler.updateConfig()');
+    debugLog('  📎 ', changedEvent);
+    debugLog(`  📎 ${changedEvent.target.id} -> ${changedEvent.target.value !== undefined ? changedEvent.target.value : changedEvent.detail}`);
+
+    const targetId = changedEvent.target.id;
+
+    if (this.updateFunctions.has(targetId)) {
+      const updateFunction = this.updateFunctions.get(targetId);
+      updateFunction.call(this, targetId, changedEvent);
+    } else {
+      throw new Error('Unknown case in message update');
+    }
+    if (
+      changedEvent.target.id === EDITOR_INPUT_FIELDS.basicConfiguration.entity.name ||
+      changedEvent.target.id === EDITOR_INPUT_FIELDS.content.field.max_value.name
+    ) {
+      const curAttribute =
+        changedEvent.target.id === EDITOR_INPUT_FIELDS.basicConfiguration.entity.name
+          ? EDITOR_INPUT_FIELDS.basicConfiguration.attribute.name
+          : EDITOR_INPUT_FIELDS.content.field.max_value_attribute.name;
+      const curEntity = new EntityOrValue();
+      curEntity.value = changedEvent.target.value;
+      if (!curEntity.hasAttribute) {
+        delete this.config[curAttribute];
+      }
+      if (changedEvent.target.id === EDITOR_INPUT_FIELDS.basicConfiguration.entity.name && curEntity.unit && this.config.unit === undefined) {
+        this.config.unit = curEntity.unit;
+      }
+    }
+
+    return this.config;
+  }
+
+  updateField(targetId, changedEvent) {
+    if (changedEvent.target.value === undefined || changedEvent.target.value === null || changedEvent.target.value.trim() === '') {
+      delete this.config[targetId];
+    } else {
+      this.config[targetId] = changedEvent.target.value;
+    }
+  }
+
+  updateNumericField(targetId, changedEvent) {
+    const curValue = parseFloat(changedEvent.target.value);
+    if (isNaN(curValue)) {
+      delete this.config[targetId];
+    } else {
+      this.config[targetId] = curValue;
+    }
+  }
+
+  updateMaxValueField(targetId, changedEvent) {
+    if (!isNaN(changedEvent.target.value) && changedEvent.target.value.trim() !== '') {
+      this.config[targetId] = parseFloat(changedEvent.target.value);
+    } else if (changedEvent.target.value.trim() !== '') {
+      this.config[targetId] = changedEvent.target.value;
+    } else {
+      delete this.config[targetId];
+    }
+  }
+
+  updateInteractionField(targetId, changedEvent) {
+    this.config[targetId] = changedEvent.detail.value[targetId];
+  }
+
+  updateEntityOrValueField(targetId, changedEvent) {
+    if (
+      changedEvent?.detail?.value &&
+      typeof changedEvent.detail.value[targetId] === 'string' &&
+      changedEvent.detail.value[targetId].trim() !== ''
+    ) {
+      this.config[targetId] = changedEvent.detail.value[targetId];
+    } else {
+      delete this.config[targetId];
+    }
+  }
+
+  updateToggleField(targetId, changedEvent) {
+    const key = targetId.replace('toggle_', '');
+    this.config.hide ??= [];
+
+    if (!changedEvent.target.checked) {
+      if (!this.config.hide.includes(key)) {
+        this.config.hide.push(key);
+      }
+    } else {
+      const index = this.config.hide.indexOf(key);
+      if (index !== -1) {
+        this.config.hide.splice(index, 1);
+      }
+      if (this.config.hide.length === 0) {
+        delete this.config.hide;
+      }
+    }
+  }
+
+  updateCircularField(targetId, changedEvent) {
+    if (changedEvent.target.checked) {
+      this.config.force_circular_background = true;
+    } else {
+      delete this.config.force_circular_background;
+    }
+  }
+
+  updateUnitField(targetId, changedEvent) {
+    if (!changedEvent.srcElement.checked) {
+      this.config.disable_unit = true;
+    } else {
+      delete this.config.disable_unit;
+    }
+  }
+
+}
+
+/* 
  * Custom editor component for configuring the `EntityProgressCard`.
  * HA Components:
  *  - https://github.com/home-assistant/frontend/blob/28304bb1dcebfddf3ab991e2f9e38f44427fe0f8/src/data/selector.ts
@@ -4894,7 +5053,6 @@ class EntityProgressCardEditor extends HTMLElement {
       this.#isListenersAttached = true;
       this.#isYAML = false;
     }
-
   }
 
   disconnectedCallback() {
@@ -5088,13 +5246,6 @@ class EntityProgressCardEditor extends HTMLElement {
     }
   }
 
-  #onChanged(event) {
-    debugLog('👉 editor.#onChanged()');
-    debugLog('  📎 event: ', event);
-    debugLog('  📎 event.target.id: ', event.target.id);
-    this.#sendMessageForUpdate(event);
-  }
-
   #addEventListener() {
     debugLog('👉 editor.#addEventListener');
     const fieldsToProcess = [
@@ -5120,7 +5271,6 @@ class EntityProgressCardEditor extends HTMLElement {
         `accordionTitle-${index}`
       );
     });
-
   }
 
   #addEventListenerFor(name, type) {
@@ -5147,141 +5297,17 @@ class EntityProgressCardEditor extends HTMLElement {
       );
     }
     events.forEach((eventType) => {
-
-      this.#resourceManager.addEventListener(
-        this.#elements[name],
-        eventType,
-        this.#onChanged.bind(this),
-        undefined,
-        `${eventType}-${name}`
-      );
-
+      this.#resourceManager.addEventListener(this.#elements[name], eventType, this.#onChanged.bind(this), undefined, `${eventType}-${name}`);
     });
   }
 
-  #sendMessageForUpdate(changedEvent) {
+  #onChanged(changedEvent) {
     debugLog('👉 editor.#sendMessageForUpdate()');
     debugLog('  📎 ', changedEvent);
     debugLog(`  📎 ${changedEvent.target.id} -> ${changedEvent.target.value !== undefined ? changedEvent.target.value : changedEvent.detail}`);
-    const newConfig = Object.assign({}, this.#config);
 
-    switch (changedEvent.target.id) {
-      case EDITOR_INPUT_FIELDS.basicConfiguration.attribute.name:
-      case EDITOR_INPUT_FIELDS.content.field.max_value_attribute.name:
-      case EDITOR_INPUT_FIELDS.content.field.name.name:
-      case EDITOR_INPUT_FIELDS.content.field.unit.name:
-      case EDITOR_INPUT_FIELDS.theme.field.bar_size.name:
-      case EDITOR_INPUT_FIELDS.theme.field.layout.name:
-      case EDITOR_INPUT_FIELDS.theme.field.theme.name:
-        if (changedEvent.target.value === undefined || changedEvent.target.value === null || changedEvent.target.value.trim() === '') {
-          delete newConfig[changedEvent.target.id];
-        } else {
-          newConfig[changedEvent.target.id] = changedEvent.target.value;
-        }
-        break;
-      case EDITOR_INPUT_FIELDS.content.field.decimal.name:
-      case EDITOR_INPUT_FIELDS.content.field.min_value.name: {
-        const curValue = parseFloat(changedEvent.target.value);
-        if (isNaN(curValue)) {
-          delete newConfig[changedEvent.target.id];
-        } else {
-          newConfig[changedEvent.target.id] = curValue;
-        }
-        break;
-      }
-      case EDITOR_INPUT_FIELDS.content.field.max_value.name:
-        if (!isNaN(changedEvent.target.value) && changedEvent.target.value.trim() !== '') {
-          newConfig[changedEvent.target.id] = parseFloat(changedEvent.target.value);
-        } else if (changedEvent.target.value.trim() !== '') {
-          newConfig[changedEvent.target.id] = changedEvent.target.value;
-        } else {
-          delete newConfig[changedEvent.target.id];
-        }
-        break;
-
-      case EDITOR_INPUT_FIELDS.interaction.field.icon_tap_action.name:
-      case EDITOR_INPUT_FIELDS.interaction.field.icon_double_tap_action.name:
-      case EDITOR_INPUT_FIELDS.interaction.field.icon_hold_action.name:
-      case EDITOR_INPUT_FIELDS.interaction.field.tap_action.name:
-      case EDITOR_INPUT_FIELDS.interaction.field.double_tap_action.name:
-      case EDITOR_INPUT_FIELDS.interaction.field.hold_action.name: {
-        newConfig[changedEvent.target.id] = changedEvent.detail.value[changedEvent.target.id];
-        break;
-      }
-      case EDITOR_INPUT_FIELDS.basicConfiguration.entity.name:
-      case EDITOR_INPUT_FIELDS.theme.field.icon.name:
-      case EDITOR_INPUT_FIELDS.theme.field.bar_color.name:
-      case EDITOR_INPUT_FIELDS.theme.field.color.name: {
-        if (
-          changedEvent?.detail?.value &&
-          typeof changedEvent.detail.value[changedEvent.target.id] === 'string' &&
-          changedEvent.detail.value[changedEvent.target.id].trim() !== ''
-        ) {
-          newConfig[changedEvent.target.id] = changedEvent.detail.value[changedEvent.target.id];
-        } else {
-          delete newConfig[changedEvent.target.id];
-        }
-        break;
-      }
-      case EDITOR_INPUT_FIELDS.theme.field.toggleBar.name:
-      case EDITOR_INPUT_FIELDS.theme.field.toggleIcon.name:
-      case EDITOR_INPUT_FIELDS.theme.field.toggleName.name:
-      case EDITOR_INPUT_FIELDS.theme.field.toggleValue.name:
-      case EDITOR_INPUT_FIELDS.theme.field.toggleSecondaryInfo.name: {
-        const key = changedEvent.target.id.replace('toggle_', '');
-        newConfig.hide ??= [];
-
-        if (!changedEvent.target.checked) {
-          // Toggle désactivé → on cache
-          if (!newConfig.hide.includes(key)) {
-            newConfig.hide.push(key);
-          }
-        } else {
-          // Toggle activé → on montre
-          const index = newConfig.hide.indexOf(key);
-          if (index !== -1) {
-            newConfig.hide.splice(index, 1);
-          }
-          if (newConfig.hide.length === 0) {
-            delete newConfig.hide;
-          }
-        }
-        break;
-      }
-      case EDITOR_INPUT_FIELDS.theme.field.toggleCircular.name:
-        if (changedEvent.target.checked) {
-          newConfig.force_circular_background = true;
-        } else {
-          delete newConfig.force_circular_background;
-        }
-        break;
-      case EDITOR_INPUT_FIELDS.theme.field.toggleUnit.name:
-        if (!changedEvent.srcElement.checked) {
-          newConfig.disable_unit = true;
-        } else {
-          delete newConfig.disable_unit;
-        }
-        break;
-      default:
-        throw new Error('Message update - Unknown case');
-    }
-    if (
-      changedEvent.target.id === EDITOR_INPUT_FIELDS.basicConfiguration.entity.name ||
-      changedEvent.target.id === EDITOR_INPUT_FIELDS.content.field.max_value.name
-    ) {
-      const curAttribute =
-        changedEvent.target.id === EDITOR_INPUT_FIELDS.basicConfiguration.entity.name
-          ? EDITOR_INPUT_FIELDS.basicConfiguration.attribute.name
-          : EDITOR_INPUT_FIELDS.content.field.max_value_attribute.name;
-      const curEntity = new EntityOrValue();
-      curEntity.value = changedEvent.target.value;
-      if (!curEntity.hasAttribute) {
-        delete newConfig[curAttribute];
-      }
-      if (changedEvent.target.id === EDITOR_INPUT_FIELDS.basicConfiguration.entity.name && curEntity.unit && newConfig.unit === undefined) {
-        newConfig.unit = curEntity.unit;
-      }
-    }
+    const configUpdateEventHandler = new ConfigUpdateEventHandler(Object.assign({}, this.#config));
+    const newConfig = configUpdateEventHandler.updateConfig(changedEvent);
 
     this.#sendNewConfig(newConfig);
   }
