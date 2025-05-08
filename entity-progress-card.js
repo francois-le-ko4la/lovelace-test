@@ -15,7 +15,7 @@
  * More informations here: https://github.com/francois-le-ko4la/lovelace-entity-progress-card/
  *
  * @author ko4la
- * @version 1.3.4
+ * @version 1.3.7
  *
  */
 
@@ -23,7 +23,7 @@
  * PARAMETERS
  */
 
-const VERSION = '1.3.4';
+const VERSION = '1.3.7';
 const CARD = {
   meta: {
     typeName: 'entity-progress-card',
@@ -34,7 +34,16 @@ const CARD = {
   config: {
     language: 'en',
     value: { min: 0, max: 100 },
-    unit: { default: '%', fahrenheit: '°F', timer: 'timer', flexTimer: 'flextimer', second: 's', disable: '' },
+    unit: {
+      default: '%',
+      fahrenheit: '°F',
+      timer: 'timer',
+      flexTimer: 'flextimer',
+      second: 's',
+      disable: '',
+      space: ' ', // HA dont use '\u202F'
+      unitSpacing: { auto: 'auto', space: 'space', noSpace: 'no-space' },
+    },
     showMoreInfo: true,
     reverse: false,
     decimal: { percentage: 0, timer: 0, counter: 0, duration: 0, other: 2 },
@@ -111,7 +120,8 @@ const CARD = {
       'zh-Hant': 'zh-TW',
     },
     separator: ' · ',
-    debug: false,
+    debug: true,
+    dev: false,
   },
   htmlStructure: {
     card: { element: 'ha-card' },
@@ -121,8 +131,8 @@ const CARD = {
       right: { element: 'div', class: 'right' },
     },
     elements: {
-      icon: { element: 'ha-icon', class: 'icon' },
-      shape: { element: 'ha-shape', class: 'shape' },
+      icon: { element: 'div', class: 'icon' },
+      shape: { element: 'div', class: 'shape' },
       nameGroup: { element: 'div', class: 'name-group' },
       nameCombined: { element: 'span', class: 'name-combined' },
       name: { element: 'span', class: 'name' },
@@ -182,72 +192,6 @@ const CARD = {
           paused: { icon: 'mdi:pause', color: 'white', backgroundColor: 'var(--state-icon-color)', attribute: 'icon' },
         },
       },
-      byDeviceDomain: new Map([
-        ['binary_sensor', 'mdi:circle-outline'],
-        ['climate', 'mdi:thermostat'],
-        ['counter', 'mdi:counter'],
-        ['cover', 'mdi:window-shutter'],
-        ['fan', 'mdi:fan'],
-        ['input_boolean', 'mdi:toggle-switch'],
-        ['input_number', 'mdi:numeric'],
-        ['input_select', 'mdi:form-dropdown'],
-        ['media_player', 'mdi:speaker'],
-        ['light', 'mdi:lightbulb'],
-        ['lock', 'mdi:lock'],
-        ['person', 'mdi:account'],
-        ['sensor', 'mdi:eye'],
-        ['scene', 'mdi:palette'],
-        ['switch', 'mdi:toggle-switch'],
-        ['timer', 'mdi:timer-outline'],
-        ['weather', 'mdi:weather-cloudy'],
-        ['sun', 'mdi:white-balance-sunny'],
-      ]),
-      byDeviceClass: new Map([
-        ['battery', 'mdi:battery'],
-        ['carbon_dioxide', 'mdi:molecule-co2'],
-        ['cold', 'mdi:snowflake'],
-        ['connectivity', 'mdi:wifi'],
-        ['current', 'mdi:current-ac'],
-        ['duration', 'mdi:timer-outline'],
-        ['energy', 'mdi:flash'],
-        ['gas', 'mdi:fire'],
-        ['heat', 'mdi:fire'],
-        ['humidity', 'mdi:water-percent'],
-        ['illuminance', 'mdi:brightness-5'],
-        ['lock', 'mdi:lock'],
-        ['moisture', 'mdi:water'],
-        ['motion', 'mdi:motion-sensor'],
-        ['occupancy', 'mdi:account'],
-        ['opening', 'mdi:window-open'],
-        ['plug', 'mdi:power-plug'],
-        ['pm25', 'mdi:molecule'],
-        ['power', 'mdi:flash'],
-        ['power_factor', 'mdi:flash'],
-        ['pressure', 'mdi:gauge'],
-        ['problem', 'mdi:alert'],
-        ['safety', 'mdi:shield-check'],
-        ['smoke', 'mdi:smoke-detector'],
-        ['sound', 'mdi:volume-high'],
-        ['switch', 'mdi:power-socket'],
-        ['temperature', 'mdi:thermometer'],
-        ['timestamp', 'mdi:calendar-clock'],
-        ['tv', 'mdi:television'],
-        ['vibration', 'mdi:vibrate'],
-        ['volatile_organic_compounds_parts', 'mdi:molecule'],
-        ['voltage', 'mdi:flash'],
-      ]),
-      byDynamicDeviceClass: new Map([
-        ['curtain',       { open: 'mdi:curtains', closed: 'mdi:curtains-closed' }],
-        ['blind',         { open: 'mdi:blinds-horizontal', closed: 'mdi:blinds-horizontal-closed' }],
-        ['garage',        { open: 'mdi:garage-open', closed: 'mdi:garage' }],
-        ['gate',          { open: 'mdi:gate-open', closed: 'mdi:gate' }],
-        ['shutter',       { open: 'mdi:window-shutter-open', closed: 'mdi:window-shutter' }],
-        ['window',        { open: 'mdi:window-open', closed: 'mdi:window-closed' }],
-        ['door',          { open: 'mdi:door-open', closed: 'mdi:door-closed' }],
-        ['shade',         { open: 'mdi:roller-shade', closed: 'mdi:roller-shade-closed' }],
-        ['damper',        { open: 'mdi:circle', closed: 'mdi:circle-slice-8' }],
-      ]),
-      suffix: { open: '-open' },
     },
     bar: {
       radius: '4px',
@@ -399,6 +343,51 @@ const CARD = {
   },
 };
 
+CARD.config.defaults = {
+  tap_action: { action: 'more-info' },
+  hold_action: { action: 'none' },
+  double_tap_action: { action: 'none' },
+  icon_tap_action: { action: 'none' },
+  icon_hold_action: { action: 'none' },
+  icon_double_tap_action: { action: 'none' },
+  unit: null,
+  layout: CARD.layout.orientations.horizontal.label,
+  decimal: null,
+  force_circular_background: false,
+  disable_unit: false,
+  unit_spacing: CARD.config.unit.unitSpacing.auto,
+  entity: null,
+  attribute: null,
+  icon: null,
+  name: null,
+  max_value_attribute: null,
+  color: null,
+  theme: null,
+  custom_theme: null,
+  bar_size: CARD.style.bar.sizeOptions.small.label,
+  bar_color: null,
+  bar_orientation: null,
+  reverse: null,
+  min_value: CARD.config.value.min,
+  max_value: CARD.config.value.max,
+  hide: [],
+  badge_icon: null,
+  badge_color: null,
+  name_info: null,
+  custom_info: null,
+  state_content: [],
+  watermark: {
+    low: 20,
+    low_color: 'red',
+    high: 80,
+    high_color: 'red',
+    opacity: 0.8,
+    type: 'block',
+    disable_low: false,
+    disable_high: false,
+  },
+};
+
 CARD.console = {
   message: `%c✨${CARD.meta.typeName.toUpperCase()} ${VERSION} IS INSTALLED.`,
   css: 'color:orange; background-color:black; font-weight: bold;',
@@ -529,8 +518,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: The 'entity' parameter is required!",
         entityNotFound: 'Entity not found',
-        entityUnknown: 'Unknown',
-        entityUnavailable: 'Unavailable',
         attributeNotFound: 'attribute: Attribute not found in HA.',
         minValueError: 'min_value: Check your min_value.',
         maxValueError: 'max_value: Check your max_value.',
@@ -600,8 +587,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: Le paramètre 'entity' est requis !",
         entityNotFound: 'Entité introuvable',
-        entityUnknown: 'Inconnu',
-        entityUnavailable: 'Indisponible',
         attributeNotFound: 'attribute: Attribut introuvable dans HA.',
         minValueError: 'min_value: Vérifiez votre min_value.',
         maxValueError: 'max_value: Vérifiez votre max_value.',
@@ -671,8 +656,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: ¡El parámetro 'entity' es obligatorio!",
         entityNotFound: 'Entidad no encontrada',
-        entityUnknown: 'Desconocido',
-        entityUnavailable: 'No disponible',
         attributeNotFound: 'attribute: Atributo no encontrado en HA.',
         minValueError: 'min_value: Verifique su min_value.',
         maxValueError: 'max_value: Verifique su max_value.',
@@ -742,8 +725,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: Il parametro 'entity' è obbligatorio!",
         entityNotFound: 'Entità non trovata',
-        entityUnknown: 'Sconosciuto',
-        entityUnavailable: 'Non disponibile',
         attributeNotFound: 'attribute: Attributo non trovato in HA.',
         minValueError: 'min_value: Controlla il tuo min_value.',
         maxValueError: 'max_value: Controlla il tuo max_value.',
@@ -813,8 +794,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: Der Parameter 'entity' ist erforderlich!",
         entityNotFound: 'Entität nicht gefunden',
-        entityUnknown: 'Unbekannt',
-        entityUnavailable: 'Nicht verfügbar',
         attributeNotFound: 'attribute: Attribut in HA nicht gefunden.',
         minValueError: 'min_value: Überprüfen Sie Ihren min_value.',
         maxValueError: 'max_value: Überprüfen Sie Ihren max_value.',
@@ -884,8 +863,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: De parameter 'entity' is verplicht!",
         entityNotFound: 'Entiteit niet gevonden',
-        entityUnknown: 'Onbekend',
-        entityUnavailable: 'Niet beschikbaar',
         attributeNotFound: 'attribute: Attribuut niet gevonden in HA.',
         minValueError: 'min_value: Controleer je min_value.',
         maxValueError: 'max_value: Controleer je max_value.',
@@ -955,8 +932,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: Parametar 'entity' je obavezan!",
         entityNotFound: 'Entitet nije pronađen',
-        entityUnknown: 'Nepoznat',
-        entityUnavailable: 'Nedostupno',
         attributeNotFound: 'attribute: Atribut nije pronađen u HA.',
         minValueError: 'min_value: Provjerite svoj min_value.',
         maxValueError: 'max_value: Provjerite svoj max_value.',
@@ -1026,8 +1001,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: Parametr 'entity' jest wymagany!",
         entityNotFound: 'Encji nie znaleziono',
-        entityUnknown: 'Nieznany',
-        entityUnavailable: 'Niedostępny',
         attributeNotFound: 'attribute: Atrybut nie znaleziony w HA.',
         minValueError: 'min_value: Sprawdź swój min_value.',
         maxValueError: 'max_value: Sprawdź swój max_value.',
@@ -1097,8 +1070,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: Параметарот 'entity' е задолжителен!",
         entityNotFound: 'Ентитетот не е пронајден',
-        entityUnknown: 'Непознат',
-        entityUnavailable: 'Недостапно',
         attributeNotFound: 'attribute: Атрибутот не е пронајден во HA.',
         minValueError: 'min_value: Проверете го вашиот min_value.',
         maxValueError: 'max_value: Проверете го вашиот max_value.',
@@ -1168,8 +1139,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: O parâmetro 'entity' é obrigatório!",
         entityNotFound: 'Entidade não encontrada',
-        entityUnknown: 'Desconhecido',
-        entityUnavailable: 'Indisponível',
         attributeNotFound: 'attribute: Atributo não encontrado no HA.',
         minValueError: 'min_value: Verifique o seu min_value.',
         maxValueError: 'max_value: Verifique o seu max_value.',
@@ -1239,8 +1208,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: Parameteren 'entity' er påkrævet!",
         entityNotFound: 'Enheden blev ikke fundet',
-        entityUnknown: 'Ukendt',
-        entityUnavailable: 'Utilgængelig',
         attributeNotFound: 'attribute: Attribut ikke fundet i HA.',
         minValueError: 'min_value: Tjekk din min_value.',
         maxValueError: 'max_value: Tjekk din max_value.',
@@ -1310,8 +1277,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: Parameteret 'entity' er påkrevd!",
         entityNotFound: 'Enheten ble ikke funnet',
-        entityUnknown: 'Ukjent',
-        entityUnavailable: 'Utilgjengelig',
         attributeNotFound: 'attribute: Attributt ikke funnet i HA.',
         minValueError: 'min_value: Sjekk din min_value.',
         maxValueError: 'max_value: Sjekk din max_value.',
@@ -1381,8 +1346,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: Parametern 'entity' är obligatorisk!",
         entityNotFound: 'Enhet ej funnen',
-        entityUnknown: 'Okänd',
-        entityUnavailable: 'Otillgänglig',
         attributeNotFound: 'attribute: Attributet hittades inte i HA.',
         minValueError: 'min_value: Kontrollera ditt min_value.',
         maxValueError: 'max_value: Kontrollera ditt max_value.',
@@ -1452,8 +1415,6 @@ const LANGUAGES = {
       msg: {
         entityError: "οντότητα: Η παράμετρος 'entity' είναι υποχρεωτική!",
         entityNotFound: 'Η οντότητα δεν βρέθηκε',
-        entityUnknown: 'Άγνωστο',
-        entityUnavailable: 'Μη διαθέσιμο',
         attributeNotFound: 'χαρακτηριστικό: Το χαρακτηριστικό δεν βρέθηκε στο HA.',
         minValueError: 'min_value: Ελέγξτε την ελάχιστη τιμή.',
         maxValueError: 'max_value: Ελέγξτε τη μέγιστη τιμή.',
@@ -1523,8 +1484,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entiteetti: 'entity'-parametri on pakollinen!",
         entityNotFound: 'Entiteettiä ei löydy',
-        entityUnknown: 'Tuntematon',
-        entityUnavailable: 'Ei saatavilla',
         attributeNotFound: 'attribuutti: Attribuuttia ei löydy HA:sta.',
         minValueError: 'min_value: Tarkista minimiarvo.',
         maxValueError: 'max_value: Tarkista maksimiarvo.',
@@ -1594,8 +1553,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entitate: Parametrul 'entity' este obligatoriu!",
         entityNotFound: 'Entitatea nu a fost găsită',
-        entityUnknown: 'Necunoscut',
-        entityUnavailable: 'Indisponibil',
         attributeNotFound: 'atribut: Atributul nu a fost găsit în HA.',
         minValueError: 'min_value: Verifică valoarea minimă.',
         maxValueError: 'max_value: Verifică valoarea maximă.',
@@ -1665,8 +1622,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity：必须提供 'entity' 参数！",
         entityNotFound: '未找到实体',
-        entityUnknown: '未知',
-        entityUnavailable: '不可用',
         attributeNotFound: 'attribute：HA 中未找到该属性。',
         minValueError: 'min_value：请检查最小值。',
         maxValueError: 'max_value：请检查最大值。',
@@ -1736,8 +1691,6 @@ const LANGUAGES = {
       msg: {
         entityError: 'entity：「entity」パラメータは必須です！',
         entityNotFound: 'エンティティが見つかりません',
-        entityUnknown: '不明',
-        entityUnavailable: '利用不可',
         attributeNotFound: 'attribute：HA に属性が見つかりませんでした。',
         minValueError: 'min_value：最小値を確認してください。',
         maxValueError: 'max_value：最大値を確認してください。',
@@ -1807,8 +1760,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: 'entity' 매개변수는 필수입니다!",
         entityNotFound: '엔티티를 찾을 수 없습니다',
-        entityUnknown: '알 수 없음',
-        entityUnavailable: '사용 불가',
         attributeNotFound: 'attribute: HA에서 속성을 찾을 수 없습니다.',
         minValueError: 'min_value: 최소값을 확인하세요.',
         maxValueError: 'max_value: 최대값을 확인하세요.',
@@ -1878,8 +1829,6 @@ const LANGUAGES = {
       msg: {
         entityError: "entity: 'entity' parametresi gereklidir!",
         entityNotFound: 'Varlık bulunamadı',
-        entityUnknown: 'Bilinmeyen',
-        entityUnavailable: 'Kullanılamıyor',
         attributeNotFound: 'attribute: HA içinde öznitelik bulunamadı.',
         minValueError: 'min_value: Minimum değeri kontrol edin.',
         maxValueError: 'max_value: Maksimum değeri kontrol edin.',
@@ -1949,8 +1898,6 @@ const LANGUAGES = {
       msg: {
         entityError: "الكيان: المعامل 'entity' مطلوب!",
         entityNotFound: 'لم يتم العثور على الكيان',
-        entityUnknown: 'غير معروف',
-        entityUnavailable: 'غير متاح',
         attributeNotFound: 'السمة: السمة غير موجودة في HA.',
         minValueError: 'min_value: تحقق من القيمة الدنيا.',
         maxValueError: 'max_value: تحقق من القيمة القصوى.',
@@ -2110,21 +2057,21 @@ const EDITOR_INPUT_FIELDS = {
         type: CARD.editor.fields.icon_tap_action.type,
         isInGroup: null,
         width: '100%',
-        schema: [{ name: 'icon_tap_action', selector: { 'ui-action': {} }}],
+        schema: [{ name: 'icon_tap_action', selector: { 'ui-action': {} } }],
       },
       icon_hold_action: {
         name: 'icon_hold_action',
         type: CARD.editor.fields.icon_hold_action.type,
         isInGroup: null,
         width: '100%',
-        schema: [{ name: 'icon_hold_action', selector: { 'ui-action': {} }}],
+        schema: [{ name: 'icon_hold_action', selector: { 'ui-action': {} } }],
       },
       icon_double_tap_action: {
         name: 'icon_double_tap_action',
         type: CARD.editor.fields.icon_double_tap_action.type,
         isInGroup: null,
         width: '100%',
-        schema: [{ name: 'icon_double_tap_action', selector: { 'ui-action': {} }}],
+        schema: [{ name: 'icon_double_tap_action', selector: { 'ui-action': {} } }],
       },
     },
   },
@@ -2720,7 +2667,7 @@ const CARD_CSS = `
     }
     .${CARD.editor.fields.accordion.content.class} {
         display: flex;
-        flex-direction: row; /* Pour espacer les éléments verticalement */
+        flex-direction: row;
         flex-wrap: wrap;
         align-content: flex-start;
         column-gap: 10px;
@@ -2728,23 +2675,28 @@ const CARD_CSS = `
         padding: 0px 18px;
         background-color: transparent;
         max-height: 0;
-        transition:
-            max-height 0.2s cubic-bezier(0.33, 0, 0.2, 1),
-            padding 0.4s cubic-bezier(0.33, 0, 0.2, 1);
+        opacity: 0;
         overflow: hidden;
+        transition:
+          max-height 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+          padding 0.5s cubic-bezier(0.33, 0, 0.2, 1),
+          opacity 0.5s ease;
     }
 
     .accordion.expanded .${CARD.editor.fields.accordion.content.class} {
-        max-height: 500000px;
-        overflow: visible;
+        /* max-height: défini par script JS */
         padding-top: 30px;
         padding-bottom: 30px;
+        opacity: 1;
+        overflow: visible;
     }
+
     .${CARD.editor.fields.accordion.content.class} > * {
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.4s ease 0.15s;
     }
-    .${CARD.editor.fields.accordion.content.class} > * {
+
+    .accordion.expanded .${CARD.editor.fields.accordion.content.class} > * {
         opacity: 1;
     }
     ha-select {
@@ -2774,7 +2726,7 @@ const CARD_CSS = `
 
 /******************************************************************************************
  * Debug
- * 
+ *
  * @param {string} msg
  * @param {any} val
  */
@@ -2796,17 +2748,17 @@ const debugLog = (msg, val) => {
 
 class NumberFormatter {
   static unitsNoSpace = {
-    'fr-FR': new Set(['j', 'd', 'h', 'min', '°']),
-    'de-DE': new Set(['d', 'h', 'min', '°']),
-    'en-US': new Set(['d', 'h', 'min', '°', '%']),
+    'fr-FR': new Set(['j', 'd', 'h', 'min', 'ms', 'μs', '°']),
+    'de-DE': new Set(['d', 'h', 'min', 'ms', 'μs', '°']),
+    'en-US': new Set(['d', 'h', 'min', 'ms', 'μs', '°', '%']),
   };
 
   static getSpaceCharacter(locale, unit) {
     const set = this.unitsNoSpace[locale] || this.unitsNoSpace['en-US'];
-    return set.has(unit.toLowerCase()) ? '' : '\u202F'; // espace fine insécable si besoin
+    return set.has(unit.toLowerCase()) ? '' : CARD.config.unit.space;
   }
 
-  static formatValueAndUnit(value, decimal = 2, unit = '', locale = 'en-US') {
+  static formatValueAndUnit(value, decimal = 2, unit = '', locale = 'en-US', unitSpacing = CARD.config.unit.unitSpacing.auto) {
     if (value === undefined || value === null) return '';
 
     const formattedValue = new Intl.NumberFormat(locale, {
@@ -2816,10 +2768,16 @@ class NumberFormatter {
 
     if (!unit) return formattedValue;
 
-    const space = this.getSpaceCharacter(locale, unit);
+    const spaceMap = {
+      space: CARD.config.unit.space,
+      'no-space': '',
+      auto: () => this.getSpaceCharacter(locale, unit),
+    };
+    const space = typeof spaceMap[unitSpacing] === 'function' ? spaceMap[unitSpacing]() : spaceMap[unitSpacing];
+
     return `${formattedValue}${space}${unit}`;
   }
-  static formatTiming(totalSeconds, decimal = 0, locale = 'en-US', flex = false) {
+  static formatTiming(totalSeconds, decimal = 0, locale = 'en-US', flex = false, unitSpacing = CARD.config.unit.unitSpacing.auto) {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     let seconds = (totalSeconds % 60).toFixed(decimal);
@@ -2830,7 +2788,7 @@ class NumberFormatter {
     seconds = decimalPart !== undefined ? `${pad(intPart)}.${decimalPart}` : pad(seconds);
 
     if (flex) {
-      if (totalSeconds < 60) return this.formatValueAndUnit(parseFloat(seconds), decimal, 's', locale);
+      if (totalSeconds < 60) return this.formatValueAndUnit(parseFloat(seconds), decimal, 's', locale, unitSpacing);
       if (totalSeconds < 3600) return `${pad(minutes)}:${seconds}`;
     }
 
@@ -2878,7 +2836,7 @@ class ValueHelper {
   }
 
   set value(newValue) {
-    this.#isValid = ValueHelper.#validate(newValue);  // Appel à la méthode statique
+    this.#isValid = ValueHelper.#validate(newValue); // Appel à la méthode statique
     this.#value = this.#isValid ? newValue : null;
   }
   get value() {
@@ -2976,6 +2934,7 @@ class PercentHelper {
   #percent = 0;
   #isTimer = false;
   #isReversed = false;
+  unitSpacing = CARD.config.unit.unitSpacing.auto;
 
   constructor() {
     this.#hassProvider = HassProviderSingleton.getInstance();
@@ -3083,9 +3042,9 @@ class PercentHelper {
       return 'Div0';
     } else if (this.hasTimerOrFlexTimerUnit) {
       // timer with time format
-      return NumberFormatter.formatTiming(this.actual, this.decimal, this.#hassProvider.numberFormat, this.hasFlexTimerUnit);
+      return NumberFormatter.formatTiming(this.actual, this.decimal, this.#hassProvider.numberFormat, this.hasFlexTimerUnit, this.unitSpacing);
     }
-    return NumberFormatter.formatValueAndUnit(this.processedValue, this.decimal, this.unit, this.#hassProvider.numberFormat);
+    return NumberFormatter.formatValueAndUnit(this.processedValue, this.decimal, this.unit, this.#hassProvider.numberFormat, this.unitSpacing);
   }
 }
 
@@ -3287,22 +3246,22 @@ class HassProviderSingleton {
     const [year, month] = (this.version ?? '0.0').split('.').map(Number);
     return year > 2025 || (year === 2025 && month >= 3);
   }
-  getEntityState(entityId) {
+  getEntityStateObj(entityId) {
     return this.#hass?.states?.[entityId] ?? null;
   }
   getEntityStateValue(entityId) {
-    return this.getEntityState(entityId)?.state ?? null;
+    return this.getEntityStateObj(entityId)?.state ?? null;
   }
   getEntityAttribute(entityId, attribute) {
     if (!attribute) return undefined;
-    const attributes = this.getEntityState(entityId)?.attributes;
+    const attributes = this.getEntityStateObj(entityId)?.attributes;
     return attributes && attribute in attributes ? attributes[attribute] : undefined;
   }
   hasEntity(entityId) {
     return entityId in (this.#hass?.states || {});
   }
   isEntityAvailable(entityId) {
-    const state = this.getEntityState(entityId)?.state;
+    const state = this.getEntityStateObj(entityId)?.state;
     return state !== 'unavailable' && state !== 'unknown';
   }
   static getEntityDomain(entityId) {
@@ -3318,15 +3277,15 @@ class HassProviderSingleton {
     return this.getEntityAttribute(entityId, 'icon') ?? null;
   }
   getFormatedEntityState(entityId) {
-    const stateObj = this.getEntityState(entityId);
+    const stateObj = this.getEntityStateObj(entityId);
     return stateObj ? this.#hass?.formatEntityState?.(stateObj) : LANGUAGES[this.language].card.msg.entityNotFound;
   }
   getFormatedEntityAttributeName(entityId, attribute) {
-    const stateObj = this.getEntityState(entityId);
+    const stateObj = this.getEntityStateObj(entityId);
     return this.#hass?.formatEntityAttributeName?.(stateObj, attribute) ?? '';
   }
   getFormatedAttributeValue(entityId, attribute) {
-    const stateObj = this.getEntityState(entityId);
+    const stateObj = this.getEntityStateObj(entityId);
     return this.#hass?.formatEntityAttributeValue?.(stateObj, attribute) ?? '';
   }
   getTimerFinishAt(entityId) {
@@ -3345,7 +3304,7 @@ class HassProviderSingleton {
     return this.#hass?.entities?.[entityId]?.display_precision ?? null;
   }
   getNumericAttributes(entityId) {
-    const attributes = this.getEntityState(entityId)?.attributes ?? {};
+    const attributes = this.getEntityStateObj(entityId)?.attributes ?? {};
     return Object.fromEntries(Object.entries(attributes).filter(([_, val]) => typeof val === 'number')); // eslint-disable-line no-unused-vars
   }
 }
@@ -3489,27 +3448,7 @@ class EntityHelper {
     this.#value = unit === undefined ? 0 : NumberFormatter.durationToSeconds(value, unit);
     this.#isValid = unit !== undefined;
   }
-  #getIconByDomainOrDeviceClass() {
-    const deviceClass = this.#hassProvider.getDeviceClass(this.#entityId);
-    const domainIcon = CARD.style.icon.byDeviceDomain.get(this.#domain) || null;
-    const deviceClassIcon = CARD.style.icon.byDeviceClass.get(deviceClass) || null;
 
-    const dynIconMap = CARD.style.icon.byDynamicDeviceClass.get(deviceClass) || null;
-    let dynIcon = null;
-    if (dynIconMap) {
-      const state = this.#hassProvider.getEntityStateValue(this.#entityId);
-      dynIcon = state === 'open' || state === 'opening' ? dynIconMap.open : dynIconMap.closed;
-    }
-
-    return dynIcon || deviceClassIcon || domainIcon || null;
-  }
-
-  /**
-   * Returns the icon of the entity, if valid.
-   */
-  get icon() {
-    return this.#isValid ? this.#hassProvider.getEntityIcon(this.#entityId) || this.#getIconByDomainOrDeviceClass() : null;
-  }
   /******************************************************************************************
    *
    */
@@ -3533,8 +3472,8 @@ class EntityHelper {
   get name() {
     return this.#isValid ? this.#hassProvider.getEntityName(this.#entityId) : null;
   }
-  get states() {
-    return this.#isValid ? this.#hassProvider.getEntityState(this.#entityId) : null;
+  get stateObj() {
+    return this.#isValid ? this.#hassProvider.getEntityStateObj(this.#entityId) : null;
   }
   get formatedEntityState() {
     return this.#hassProvider.getFormatedEntityState(this.#entityId);
@@ -3554,7 +3493,7 @@ class EntityHelper {
     return this.#domain === CARD.config.entity.type.timer;
   }
   get isDuration() {
-    return !this.isTimer && this.#hassProvider.getDeviceClass(this.#entityId) === 'duration' && this.#attribute === null;
+    return !this.isTimer && this.#hassProvider.getDeviceClass(this.#entityId) === 'duration' && this.#attribute == null;
   }
   get isCounter() {
     return this.#domain === CARD.config.entity.type.counter;
@@ -3689,9 +3628,6 @@ class EntityOrValue {
   get stateContentToString() {
     return this.#activeHelper && this.#isEntity ? this.#activeHelper.stateContentToString : null;
   }
-  get icon() {
-    return this.#activeHelper && this.#isEntity ? this.#activeHelper.icon : null;
-  }
   get isTimer() {
     return this.#activeHelper && this.#isEntity ? this.#activeHelper.isTimer : false;
   }
@@ -3722,6 +3658,9 @@ class EntityOrValue {
   get unit() {
     return this.#activeHelper && this.#isEntity ? this.#activeHelper.unit : null;
   }
+  get stateObj() {
+    return this.#activeHelper && this.#isEntity ? this.#activeHelper.stateObj : null;
+  }
   refresh() {
     if (this.#activeHelper && this.#isEntity) this.#activeHelper.refresh();
   }
@@ -3734,7 +3673,6 @@ class EntityOrValue {
  */
 class ConfigHelper {
   #config = {};
-  #bar = { size: null, color: null, orientation: null, changed: null };
   #isValid = false;
   #msg = null;
   #isChanged = false;
@@ -3753,28 +3691,49 @@ class ConfigHelper {
 
   set config(config) {
     this.#isChanged = true;
-    this.#config = config;
-    this.#bar.size =
-      this.#config.bar_size && Object.hasOwn(CARD.style.bar.sizeOptions, this.#config.bar_size)
-        ? this.#config.bar_size
-        : CARD.style.bar.sizeOptions.small.label;
-    this.#bar.color = this.#config.bar_color;
-    this.#bar.orientation = Object.hasOwn(CARD.style.dynamic.progressBar.orientation, this.#config.bar_orientation)
-      ? CARD.style.dynamic.progressBar.orientation[this.#config.bar_orientation]
-      : null;
-    this.#bar.changed =
-      typeof this.#config.bar_orientation === 'string' &&
-      Object.keys(CARD.style.dynamic.progressBar.orientation).includes(this.#config.bar_orientation);
+    this.#config = this.#applyDefaults(config);
   }
 
-  get decimal() {
-    if (this.#config.decimal === undefined) {
-      return this.unit === CARD.config.unit.default ? CARD.config.decimal.percentage : CARD.config.decimal.other;
+  #applyDefaults(config) {
+    const domain = HassProviderSingleton.getEntityDomain(config.entity);
+    const toggleableDomains = ['light', 'switch', 'fan', 'input_boolean', 'media_player'];
+    const isToggleable = toggleableDomains.includes(domain);
+    const { watermark, ...baseDefaults } = CARD.config.defaults;
+
+    const merged = {
+      ...baseDefaults,
+      ...(isToggleable && { icon_tap_action: { action: 'toggle' } }),
+      ...config,
+    };
+
+    // -- VALIDATION ENUMS --
+
+    // bar orientation
+    if (config.bar_orientation && !Object.hasOwn(CARD.style.dynamic.progressBar.orientation, config.bar_orientation))
+      merged.bar_orientation = null;
+
+    // bar size
+    if (config.bar_size && !Object.hasOwn(CARD.style.bar.sizeOptions, config.bar_size))
+      merged.bar_size = CARD.style.bar.sizeOptions.small.label;
+
+    // unit spacing
+    const validUnitSpacing = Object.values(CARD.config.unit.unitSpacing);
+    if (config.unit_spacing && !validUnitSpacing.includes(config.unit_spacing))
+      merged.unit_spacing = CARD.config.unit.unitSpacing.auto;
+
+    // Layout
+    if (config.layout && !Object.hasOwn(CARD.layout.orientations, config.layout))
+      merged.layout = CARD.layout.orientations.horizontal.label;
+
+    // Watermark uniquement si défini
+    if (config.watermark !== undefined) {
+      merged.watermark = {
+        ...watermark,
+        ...config.watermark,
+      };
     }
-    if (Number.isInteger(this.#config.decimal) && this.#config.decimal >= 0) {
-      return this.#config.decimal;
-    }
-    return null;
+
+    return merged;
   }
 
   get isValid() {
@@ -3783,44 +3742,15 @@ class ConfigHelper {
   get msg() {
     return this.#msg;
   }
-  get color() {
-    return this.#config.color;
-  }
-  get layout() {
-    return Object.hasOwn(CARD.layout.orientations, this.#config.layout)
-      ? CARD.layout.orientations[this.#config.layout].label
-      : CARD.layout.orientations.horizontal.label;
-  }
-  get bar() {
-    return this.#bar;
-  }
-  get icon() {
-    return this.#config.icon;
-  }
-  get entity() {
-    return this.#config.entity;
-  }
-  get name() {
-    return this.#config.name;
-  }
-  get force_circular_background() {
-    return this.#config.force_circular_background === undefined || this.#config.force_circular_background === false ? false : true;
-  }
-  get min_value() {
-    return this.#config.min_value ? this.#config.min_value : CARD.config.value.min;
-  }
   get max_value() {
     if (!this.#config.max_value) return CARD.config.value.max;
     if (Number.isFinite(this.#config.max_value)) return this.#config.max_value;
     if (typeof this.#config.max_value === 'string') {
-      const state = this.#hassProvider.hass.states[this.#config.max_value]?.state;
+      const state = this.#hassProvider.getEntityStateValue(this.#config.max_value);
       const parsedState = parseFloat(state);
       if (!isNaN(parsedState)) return parsedState;
     }
     return null;
-  }
-  get unit() {
-    return this.#config.unit ? this.#config.unit : null;
   }
   get hasDisabledUnit() {
     return this.#config.disable_unit;
@@ -3843,30 +3773,9 @@ class ConfigHelper {
   get iconHoldAction() {
     return this.#getCardAction('icon_hold_action');
   }
-  get theme() {
-    return this.#config.theme;
-  }
-  get custom_theme() {
-    return this.#config.custom_theme;
-  }
-  get watermark() {
-    return {
-      low: this.#config?.watermark?.low ?? 20,
-      low_color: this.#config?.watermark?.low_color ?? 'red',
-      high: this.#config?.watermark?.high ?? 80,
-      high_color: this.#config?.watermark?.high_color ?? 'red',
-      opacity: this.#config?.watermark?.opacity ?? 0.8,
-      type: this.#config?.watermark?.type ?? 'block', // 'line' | 'block'
-      disable_low: this.#config?.watermark?.disable_low ?? false,
-      disable_high: this.#config?.watermark?.disable_high ?? false,
-    };
-  }
   get stateContent() {
     const content = typeof this.#config?.state_content === 'string' ? [this.#config?.state_content] : this.#config?.state_content ?? [];
-    return content.filter(item => typeof item === 'string' && item !== null && item !== undefined);
-  }
-  get reverse() {
-    return this.#config.reverse;
+    return content.filter((item) => typeof item === 'string' && item !== null && item !== undefined);
   }
 
   /******************************************************************************************
@@ -3885,31 +3794,48 @@ class ConfigHelper {
     }
     this.#isChanged = false;
     this.#isValid = false;
-    const entityState = this.#hassProvider.hass.states[this.#config.entity];
+    const entityState = this.#hassProvider.getEntityStateObj(this.#config.entity);
     const maxValueState =
-      typeof this.#config.max_value === 'string' && this.#config.max_value.trim() ? this.#hassProvider.hass.states[this.#config.max_value] : null;
+      typeof this.#config.max_value === 'string' && this.#config.max_value.trim()
+        ? this.#hassProvider.getEntityStateObj(this.#config.max_value)
+        : null;
     const validationRules = [
       {
-        valid: this.#config.entity !== undefined,
-        msg: { content: LANGUAGES[this.#hassProvider.language].card.msg.entityError, sev: 'info' },
+        valid: this.#config.entity !== null,
+        msg: {
+          content: LANGUAGES[this.#hassProvider.language].card.msg.entityError,
+          sev: 'info',
+        },
       },
       {
         valid: !this.#config.attribute || (entityState && Object.hasOwn(entityState.attributes, this.#config.attribute)),
-        msg: { content: LANGUAGES[this.#hassProvider.language].card.msg.attributeNotFound, sev: 'error' },
+        msg: {
+          content: LANGUAGES[this.#hassProvider.language].card.msg.attributeNotFound,
+          sev: 'error',
+        },
       },
       {
-        valid: Number.isFinite(this.min_value),
-        msg: { content: LANGUAGES[this.#hassProvider.language].card.msg.minValueError, sev: 'error' },
+        valid: Number.isFinite(this.#config.min_value),
+        msg: {
+          content: LANGUAGES[this.#hassProvider.language].card.msg.minValueError,
+          sev: 'error',
+        },
       },
       {
         valid:
           Number.isFinite(this.max_value) ||
           (maxValueState && (this.#config.max_value_attribute ? Object.hasOwn(maxValueState.attributes, this.#config.max_value_attribute) : true)),
-        msg: { content: LANGUAGES[this.#hassProvider.language].card.msg.maxValueError, sev: 'warning' },
+        msg: {
+          content: LANGUAGES[this.#hassProvider.language].card.msg.maxValueError,
+          sev: 'warning',
+        },
       },
       {
-        valid: Number.isFinite(this.decimal),
-        msg: { content: LANGUAGES[this.#hassProvider.language].card.msg.decimalError, sev: 'error' },
+        valid: !this.#config.decimal || (Number.isFinite(this.#config.decimal) && this.#config.decimal > 0),
+        msg: {
+          content: LANGUAGES[this.#hassProvider.language].card.msg.decimalError,
+          sev: 'error',
+        },
       },
     ];
 
@@ -3955,10 +3881,11 @@ class CardView {
   }
   set config(config) {
     this.#configHelper.config = config;
+    this.#percentHelper.unitSpacing = this.#configHelper.config.unitSpacing;
     this.#percentHelper.hasDisabledUnit = this.#configHelper.hasDisabledUnit;
-    this.#theme.theme = this.#configHelper.theme;
-    this.#theme.customTheme = this.#configHelper.custom_theme;
-    this.#currentValue.value = this.#configHelper.entity;
+    this.#theme.theme = this.#configHelper.config.theme;
+    this.#theme.customTheme = this.#configHelper.config.custom_theme;
+    this.#currentValue.value = this.#configHelper.config.entity;
     this.#currentValue.stateContent = this.#configHelper.stateContent;
     if (this.#currentValue.isTimer) {
       this.#max_value.value = CARD.config.value.max;
@@ -3992,30 +3919,40 @@ class CardView {
     return this.#currentLanguage;
   }
   get entity() {
-    return this.#configHelper.entity;
+    return this.#configHelper.config.entity;
   }
   get icon() {
-    if (this.isNotFound) return CARD.style.icon.notFound.icon;
-    if (this.#theme.theme === CARD.theme.battery.label && this.#currentValue.icon && this.#currentValue.icon.includes(CARD.theme.battery.icon)) {
-      return this.#currentValue.icon;
-    }
-    return this.#theme.icon || this.#configHelper.icon || this.#currentValue.icon || CARD.style.icon.default.icon;
+    const notFound = this.isNotFound ? CARD.style.icon.notFound.icon : null;
+    return notFound || this.#theme.icon || this.#configHelper.config.icon;
   }
   get color() {
     if (this.isUnavailable) return CARD.style.color.unavailable;
     if (this.isNotFound) return CARD.style.color.notFound;
-    return ThemeManager.adaptColor(this.#theme.color || this.#configHelper.color) || this.#currentValue.defaultColor || CARD.style.color.default;
+    return (
+      ThemeManager.adaptColor(this.#theme.color || this.#configHelper.config.color) || this.#currentValue.defaultColor || CARD.style.color.default
+    );
   }
   get bar_color() {
     if (this.isAvailable) {
       return (
-        ThemeManager.adaptColor(this.#theme.color || this.#configHelper.bar.color) || this.#currentValue.defaultColor || CARD.style.color.default
+        ThemeManager.adaptColor(this.#theme.color || this.#configHelper.config.bar_color) ||
+        this.#currentValue.defaultColor ||
+        CARD.style.color.default
       );
     }
     if (this.isUnknown) {
       return CARD.style.color.default;
     }
     return CARD.style.color.disabled;
+  }
+  get bar_orientation() {
+    if (this.#currentValue.isTimer && this.#configHelper.config.bar_orientation === null)
+      return 'rtl';
+
+    return this.#configHelper.config.bar_orientation === 'rtl' ? this.#configHelper.config.bar_orientation : null;
+  }
+  get bar_size() {
+    return this.#configHelper.config.bar_size;
   }
   get percent() {
     if (this.isAvailable) {
@@ -4035,12 +3972,15 @@ class CardView {
     const additionalInfo = this.#currentValue.stateContentToString;
     if (this.componentIsHidden(CARD.style.dynamic.hiddenComponent.value.label)) return additionalInfo;
     const valueInfo =
-      this.#currentValue.isDuration && !this.#configHelper.unit ? this.#currentValue.formatedEntityState : this.#percentHelper.toString();
+      this.#currentValue.isDuration && !this.#configHelper.config.unit ? this.#currentValue.formatedEntityState : this.#percentHelper.toString();
 
     return additionalInfo === '' ? valueInfo : [additionalInfo, valueInfo].join(CARD.config.separator);
   }
+  get EntityStateObj() {
+    return this.#currentValue.stateObj;
+  }
   get name() {
-    return this.#configHelper.name || this.#currentValue.name || this.#configHelper.entity;
+    return this.#configHelper.config.name || this.#currentValue.name || this.#configHelper.config.entity;
   }
   get hasStandardEntityError() {
     return this.isUnavailable || this.isNotFound || this.isUnknown;
@@ -4049,7 +3989,7 @@ class CardView {
     return (
       this.isUnavailable ||
       this.isNotFound ||
-      this.#configHelper.config.badge_icon !== undefined ||
+      this.#configHelper.config.badge_icon !== null ||
       (this.#currentValue.isTimer && [CARD.config.entity.state.paused, CARD.config.entity.state.active].includes(this.#currentValue.value.state))
     );
   }
@@ -4069,7 +4009,7 @@ class CardView {
     return null;
   }
   get layout() {
-    return this.#configHelper.layout;
+    return this.#configHelper.config.layout;
   }
   get isActiveTimer() {
     return this.#currentValue.isTimer && this.#currentValue.state === CARD.config.entity.state.active;
@@ -4112,7 +4052,7 @@ class CardView {
   }
   get hasVisibleShape() {
     return this.#hassProvider.hasNewShapeStrategy
-      ? this.#configHelper.force_circular_background ||
+      ? this.#configHelper.config.force_circular_background ||
           (this.#currentValue.hasShapeByDefault && this.#configHelper.iconTapAction !== CARD.interactions.action.none.action) ||
           [
             CARD.interactions.action.navigate.action,
@@ -4125,13 +4065,15 @@ class CardView {
       : true;
   }
   get timerIsReversed() {
-    return this.#configHelper.reverse !== false && this.#currentValue.value.state !== CARD.config.entity.state.idle;
+    return this.#configHelper.config.reverse !== false && this.#currentValue.value.state !== CARD.config.entity.state.idle;
   }
   get hasWatermark() {
     return this.#configHelper.config.watermark !== undefined;
   }
   get watermark() {
-    const result = this.#configHelper.watermark;
+    if (!this.#configHelper.config.watermark) return null;
+
+    const result = this.#configHelper.config.watermark;
     return {
       low: this.#percentHelper.calcWatermark(result.low),
       low_color: ThemeManager.adaptColor(result.low_color),
@@ -4185,19 +4127,23 @@ class CardView {
     this.#theme.value = this.#percentHelper.valueForThemes(this.#theme.isBasedOnPercentage);
   }
   #getCurrentUnit() {
-    if (this.#configHelper.unit) return this.#configHelper.unit;
+    if (this.#configHelper.config.unit) return this.#configHelper.config.unit;
     if (this.#max_value.isEntity) return CARD.config.unit.default;
 
     const unit = this.#currentValue.unit;
     return unit === null ? CARD.config.unit.default : unit;
   }
   #getCurrentDecimal(currentUnit) {
-    if (this.#configHelper.config.decimal !== undefined) return this.#configHelper.config.decimal;
+    if (this.#configHelper.config.decimal !== null) return this.#configHelper.config.decimal;
     if (this.#currentValue.precision) return this.#currentValue.precision;
     if (this.#currentValue.isTimer) return CARD.config.decimal.timer;
     if (this.#currentValue.isCounter) return CARD.config.decimal.counter;
     if (this.#currentValue.isDuration) return CARD.config.decimal.duration;
-    if (['j', 'd', 'h', 'min', 's', 'ms'].includes(this.#currentValue.unit)) return CARD.config.decimal.duration;
+    if (['j', 'd', 'h', 'min', 's', 'ms', 'μs'].includes(this.#currentValue.unit)) return CARD.config.decimal.duration;
+
+    if (this.#configHelper.config.unit)
+      return this.#configHelper.config.unit === CARD.config.unit.default ? CARD.config.decimal.percentage : CARD.config.decimal.other;
+
     if (currentUnit === CARD.config.unit.default) return CARD.config.decimal.percentage;
 
     return CARD.config.decimal.other;
@@ -4309,6 +4255,7 @@ class ResourceManager {
  */
 class EntityProgressCard extends HTMLElement {
   #resourceManager = null;
+  #icon = null;
   #cardView = new CardView();
   #elements = {};
   #lastMessage = null;
@@ -4348,10 +4295,16 @@ class EntityProgressCard extends HTMLElement {
     this.#clickableTarget = this.#cardView.hasClickableCard
       ? this
       : this.#cardView.hasClickableIcon
-        ? this.#elements[CARD.htmlStructure.elements.icon.class]
+        ? [this.#elements[CARD.htmlStructure.elements.shape.class], this.#elements[CARD.htmlStructure.elements.icon.class]]
         : null;
 
-    if (this.#clickableTarget) {
+    if (!this.#clickableTarget) return;
+
+    if (Array.isArray(this.#clickableTarget)) {
+      for (const target of this.#clickableTarget) {
+        if (target) this.#attachListener(target);
+      }
+    } else {
       this.#attachListener(this.#clickableTarget);
     }
   }
@@ -4450,8 +4403,8 @@ class EntityProgressCard extends HTMLElement {
     debugLog('    clickSource: ', this.#clickSource);
 
     const prefixAction = this.#clickSource === CARD.interactions.event.from.icon ? `${CARD.interactions.event.from.icon}_` : '';
-    currentAction = `${prefixAction}${currentAction}`;
-    debugLog('  📎 action: ', currentAction);
+    let fullAction = `${prefixAction}${currentAction}`;
+    debugLog('  📎 fullAction: ', fullAction);
 
     let currentConfig = null;
 
@@ -4461,10 +4414,16 @@ class EntityProgressCard extends HTMLElement {
         CARD.interactions.event.tap.iconHoldAction,
         CARD.interactions.event.tap.iconDoubleTapAction,
         CARD.interactions.event.tap.doubleTapAction,
-      ].includes(currentAction)
+      ].includes(fullAction)
     ) {
-      currentConfig = { entity: this.#cardView.config.entity, tap_action: this.#cardView.config[`${currentAction}_action`] };
-      currentAction = 'tap';
+      if (fullAction !== CARD.interactions.event.tap.doubleTapAction && this.#cardView.config[`${fullAction}_action`].action === 'none')
+        fullAction = currentAction; // if icon and 'none' -> failback to card action
+
+      currentConfig = {
+        entity: this.#cardView.config.entity,
+        tap_action: this.#cardView.config[`${fullAction}_action`],
+      };
+      fullAction = 'tap';
     } else {
       currentConfig = this.#cardView.config;
     }
@@ -4534,7 +4493,7 @@ class EntityProgressCard extends HTMLElement {
   }
 
   #manageErrorMessage() {
-    if (this.#cardView.entity === undefined || (this.#cardView.isAvailable && !this.#cardView.hasValidatedConfig)) {
+    if (this.#cardView.entity === null || (this.#cardView.isAvailable && !this.#cardView.hasValidatedConfig)) {
       this.#renderMessage(this.#cardView.msg);
       return true;
     }
@@ -4543,7 +4502,7 @@ class EntityProgressCard extends HTMLElement {
   }
 
   #startAutoRefresh() {
-    if(!this.#resourceManager) return;
+    if (!this.#resourceManager) return;
     this.#resourceManager.setInterval(
       () => {
         this.refresh(this.hass);
@@ -4578,15 +4537,16 @@ class EntityProgressCard extends HTMLElement {
     card.classList.add(CARD.meta.typeName);
     card.classList.toggle(CARD.style.dynamic.clickable.card, this.#cardView.hasClickableCard);
     card.classList.toggle(CARD.style.dynamic.clickable.icon, this.#cardView.hasClickableIcon);
-    card.classList.toggle(this.#cardView.bar.orientation, this.#cardView.bar.changed);
+    if (this.#cardView.bar_orientation)
+      card.classList.add(CARD.style.dynamic.progressBar.orientation[this.#cardView.bar_orientation]);
     card.classList.add(this.#cardView.layout);
-    card.classList.add(this.#cardView.bar.size);
+    card.classList.add(this.#cardView.bar_size);
     card.classList.toggle(CARD.style.dynamic.secondaryInfoError.class, this.#cardView.hasStandardEntityError);
     this.#toggleHiddenComponent(card, CARD.style.dynamic.hiddenComponent.icon);
     this.#toggleHiddenComponent(card, CARD.style.dynamic.hiddenComponent.name);
     this.#toggleHiddenComponent(card, CARD.style.dynamic.hiddenComponent.secondary_info);
     this.#toggleHiddenComponent(card, CARD.style.dynamic.hiddenComponent.progress_bar);
-    const type = this.#cardView.watermark.type === 'line' ? 'line-' : '';
+    const type = this.#cardView.hasWatermark && this.#cardView.watermark.type === 'line' ? 'line-' : '';
     card.classList.toggle(
       `${CARD.style.dynamic.show}-HWM-${type}${CARD.htmlStructure.elements.progressBar.watermark.class}`,
       this.#cardView.hasWatermark && !this.#cardView.watermark.disable_high
@@ -4634,6 +4594,7 @@ class EntityProgressCard extends HTMLElement {
       el.style.setProperty(CARD.style.dynamic.progressBar.color.var, this.#cardView.bar_color);
       el.style.setProperty(CARD.style.dynamic.progressBar.size.var, `${this.#cardView.percent}%`);
       el.style.setProperty(CARD.style.dynamic.iconAndShape.color.var, this.#cardView.color);
+      if (!this.#cardView.hasWatermark) return;
       el.style.setProperty(CARD.style.dynamic.watermark.high.value.var, `${this.#cardView.watermark.high}%`);
       el.style.setProperty(CARD.style.dynamic.watermark.high.color.var, this.#cardView.watermark.high_color);
       el.style.setProperty(CARD.style.dynamic.watermark.low.value.var, `${this.#cardView.watermark.low}%`);
@@ -4693,11 +4654,57 @@ class EntityProgressCard extends HTMLElement {
    */
   #updateDynamicElements() {
     debugLog('👉 EntityProgressCard.#updateDynamicElements()');
+    this.#showIcon();
     this.#showBadge();
     this.#manageShape();
     this.#updateCSS();
     this.#processJinjaFields();
     this.#processStandardFields();
+  }
+
+  #showIcon() {
+    const stateObj = this.#cardView.EntityStateObj;
+    const curIcon = this.#cardView.icon;
+    const hasIconOverride = curIcon !== null;
+    const hasPicture = stateObj?.attributes?.entity_picture;
+
+    let stateObjIcon = null;
+
+    if (stateObj) {
+      const clonedAttributes = { ...stateObj.attributes };
+
+      if (hasPicture) {
+        delete clonedAttributes.icon; // Supprimer l'icône
+      } else if (hasIconOverride) {
+        clonedAttributes.icon = curIcon;
+      }
+
+      stateObjIcon = {
+        ...stateObj,
+        attributes: clonedAttributes,
+      };
+    } else {
+      stateObjIcon = {
+        entity_id: 'notfound.entity',
+        state: 'notfound',
+        attributes: {
+          icon: curIcon,
+        },
+      };
+    }
+
+    const firstTime = this.#icon === null;
+    if (firstTime) {
+      this.#icon = document.createElement('ha-state-icon');
+    }
+
+    this.#icon.hass = this.#hass;
+    this.#icon.stateObj = stateObjIcon;
+
+    if (firstTime) {
+      this.#elements[CARD.htmlStructure.elements.icon.class].innerHTML = ''; // Clear l'ancienne icône
+      this.#elements[CARD.htmlStructure.elements.icon.class].appendChild(this.#icon);
+    }
   }
 
   #manageShape() {
@@ -4773,12 +4780,6 @@ class EntityProgressCard extends HTMLElement {
   }
 
   #processStandardFields() {
-    this.#updateElement(CARD.htmlStructure.elements.icon.class, (el) => {
-      if (el.getAttribute(CARD.htmlStructure.elements.icon.class) !== this.#cardView.icon) {
-        el.setAttribute(CARD.htmlStructure.elements.icon.class, this.#cardView.icon);
-      }
-    });
-
     this.#updateElement(CARD.htmlStructure.elements.name.class, (el) => {
       const newContent = this.#cardView.name;
       if (el.textContent !== newContent) {
@@ -4866,8 +4867,8 @@ window.customCards.push({
  */
 
 class ConfigUpdateEventHandler {
-  constructor(config) {
-    this.config = { ...config };
+  constructor(newConfig) {
+    this.config = { ...newConfig };
 
     this.updateFunctions = new Map([
       [EDITOR_INPUT_FIELDS.basicConfiguration.attribute.name, this.updateField],
@@ -4932,7 +4933,7 @@ class ConfigUpdateEventHandler {
       if (!curEntity.hasAttribute) {
         delete this.config[curAttribute];
       }
-      if (changedEvent.target.id === EDITOR_INPUT_FIELDS.basicConfiguration.entity.name && curEntity.unit && this.config.unit === undefined) {
+      if (changedEvent.target.id === EDITOR_INPUT_FIELDS.basicConfiguration.entity.name && curEntity.unit && this.config.unit === null) {
         this.config.unit = curEntity.unit;
       }
     }
@@ -4941,7 +4942,7 @@ class ConfigUpdateEventHandler {
   }
 
   updateField(targetId, changedEvent) {
-    if (changedEvent.target.value === undefined || changedEvent.target.value === null || changedEvent.target.value.trim() === '') {
+    if (changedEvent.target.value == null || changedEvent.target.value.trim() === '') {
       delete this.config[targetId];
     } else {
       this.config[targetId] = changedEvent.target.value;
@@ -4972,11 +4973,7 @@ class ConfigUpdateEventHandler {
   }
 
   updateEntityOrValueField(targetId, changedEvent) {
-    if (
-      changedEvent?.detail?.value &&
-      typeof changedEvent.detail.value[targetId] === 'string' &&
-      changedEvent.detail.value[targetId].trim() !== ''
-    ) {
+    if (changedEvent?.detail?.value && typeof changedEvent.detail.value[targetId] === 'string' && changedEvent.detail.value[targetId].trim() !== '') {
       this.config[targetId] = changedEvent.detail.value[targetId];
     } else {
       delete this.config[targetId];
@@ -5017,10 +5014,9 @@ class ConfigUpdateEventHandler {
       delete this.config.disable_unit;
     }
   }
-
 }
 
-/* 
+/*
  * Custom editor component for configuring the `EntityProgressCard`.
  * HA Components:
  *  - https://github.com/home-assistant/frontend/blob/28304bb1dcebfddf3ab991e2f9e38f44427fe0f8/src/data/selector.ts
@@ -5302,7 +5298,7 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   #onChanged(changedEvent) {
-    debugLog('👉 editor.#sendMessageForUpdate()');
+    debugLog('👉 editor.#onChanged()');
     debugLog('  📎 ', changedEvent);
     debugLog(`  📎 ${changedEvent.target.id} -> ${changedEvent.target.value !== undefined ? changedEvent.target.value : changedEvent.detail}`);
 
@@ -5487,6 +5483,13 @@ class EntityProgressCardEditor extends HTMLElement {
   toggleAccordion(index) {
     const accordionContent = this.#accordionList[index];
     accordionContent.classList.toggle('expanded');
+    const panel = accordionContent.querySelector('.accordion-content');
+    if (!panel) return;
+    if (panel.style.maxHeight) {
+      panel.style.maxHeight = null;
+    } else {
+      panel.style.maxHeight = `${panel.scrollHeight}px`;
+    }
   }
 
   #renderFields(parent, inputFields) {
