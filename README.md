@@ -2,7 +2,7 @@
 
 [![Release](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/release.yaml/badge.svg)](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/release.yaml)
 [![Validate](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/validate.yaml/badge.svg)](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/validate.yaml)
-# Lovelace Entity Progress Card [![ReadMe](https://img.shields.io/badge/ReadMe-018EF5?logo=readme&logoColor=fff)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
+
 
 # Lovelace Entity Progress Card [![ReadMe](https://img.shields.io/badge/ReadMe-018EF5?logo=readme&logoColor=fff)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 
@@ -1377,6 +1377,7 @@ By implementing this model through the helper, we can accurately calculate and d
 ### Don't Let It Expire!
 
 This example is similar to the previous one that used a Home Assistant helper but relies more on system-level tools—offering potentially greater efficiency at the cost of increased system dependency.
+We provide this example for illustration purposes only. Make sure to verify that no integration already exists before attempting this type of deployment. In the epilogue, I’ll suggest a more universal way to achieve the same result.
 
 #### Why?
 
@@ -1406,7 +1407,7 @@ We will:
     - platform: command_line
       name: "SSL Certificate Expiry"
       command: >
-        echo $(( ($(date -u -d "$(curl -vI --insecure https://happyguardian.du.ko4la.fr:8123 2>&1 | grep -i 'expire date' | awk -F': ' '{print $2}' | sed -E 's/Jan/01/; s/Feb/02/; s/Mar/03/; s/Apr/04/; s/May/05/; s/Jun/06/; s/Jul/07/; s/Aug/08/; s/Sep/09/; s/Oct/10/; s/Nov/11/; s/Dec/12/' | awk '{print $4"-"$1"-"$2" "$3}')" +%s) - $(date +%s) ) / 86400 ))
+        echo $(( ($(date -u -d "$(curl -vI --insecure https://<hostname>:<port> 2>&1 | grep -i 'expire date' | awk -F': ' '{print $2}' | sed -E 's/Jan/01/; s/Feb/02/; s/Mar/03/; s/Apr/04/; s/May/05/; s/Jun/06/; s/Jul/07/; s/Aug/08/; s/Sep/09/; s/Oct/10/; s/Nov/11/; s/Dec/12/' | awk '{print $4"-"$1"-"$2" "$3}')" +%s) - $(date +%s) ) / 86400 ))
       unit_of_measurement: "days"
       scan_interval: 3600
   ```
@@ -1445,15 +1446,19 @@ With this setup, Home Assistant becomes a proactive security monitor for your SS
 
 This method is reusable for any use case that can be monitored at the system level.
 
+#### Epilogue
+
 It was fun to develop and can certainly be used as-is, but in practice, it relies on Linux system commands, which makes it less portable than the previous examples.
 
 Ultimately, to meet the original goal, we can simply enable the `cert_expiry` integration, which provides the certificate's expiration timestamp in a more standardized and platform-independent way. Home Assistant helpers are powerful tools, and whenever possible, they should be preferred to simplify implementation.
 
-With `cert_expiry` we can define a template helper with :
+With `cert_expiry` entity we can define a template helper (number) to generate a countdown with :
 
-```yaml
-...
-state: >
+- create the template helper
+- define a name (number.cert_expiry_entity_id)
+- define state template
+
+  ```text
   {% set target = states('sensor.<cert_expiry_entity_id>') %}
   {% if target not in ['unknown', 'unavailable'] %}
     {% set target_ts = as_timestamp(target) %}
@@ -1463,6 +1468,35 @@ state: >
   {% else %}
     unknown
   {% endif %}
+  ```
+
+- define min/max value: 0 and 90
+- step: 1
+- unit_of_measurement: days
+
+```yaml
+Create the card:
+type: custom:entity-progress-card
+entity: number.cert_expiry_entity_id
+name: SSL Certificate Expiry
+icon: mdi:certificate
+decimal: 0
+bar_orientation: rtl
+custom_theme:
+  - min: 0
+    max: 10
+    color: var(--red-color)
+  - min: 10
+    max: 20
+    color: var(--yellow-color)
+  - min: 20
+    max: 90
+    color: var(--success-color)
+unit: "%"
+state_content: state
+grid_options:
+  columns: 12
+  rows: 1
 ```
 
 ## 🎨 Theme
@@ -1576,7 +1610,7 @@ Numbers are displayed based on your regional preferences, using:
 
 - Your selected language settings (auto)
 - Your specific format (manual selection)
-- Or the system-defined format from your Home Assistant user profile (system/navigator)
+- Or the system-defined format from your Home Assistant user profile
 
 By default, the card uses standard Arabic numerals (0-9) for maximum compatibility.
 
@@ -1614,5 +1648,3 @@ Want to improve this card? Contributions are welcome! 🚀
 ## 📄 License
 
 This project is licensed under the GPL-3.0 license.
-
-
