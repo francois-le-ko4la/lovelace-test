@@ -491,6 +491,7 @@ _Map definition:_
 - icon [string] (optional): The icon to display.
 
 _Order of Priority for the Icon:_
+
   see [`icon`](#icon) parameter.
 
 _Example_:
