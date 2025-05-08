@@ -81,7 +81,7 @@ You can customize the card using the following parameters:
 
 #### `entity`
 
-> **`entity`** [string] _(required)_
+> **`entity`** string _(required)_
 
 Entity ID.
 
@@ -103,7 +103,7 @@ entity: sensor.hp_envy_6400_series_tri_color_cartridge
 
 #### `attribute`
 
-> **`attribute`** [string] _(optional)_
+> **`attribute`** string _(optional)_
 
 The Home Assistant entity's attribute to display.
 
@@ -130,7 +130,7 @@ _default attribute:_
 
 #### `name`
 
-> **`name`** [string] _(optional)_
+> **`name`** string _(optional)_
 
 The name displayed on the progress bar. If omitted, the entity's friendly name will be used.
 
@@ -148,7 +148,7 @@ name: ABC
 
 #### `unit`
 
-> **`unit`** [string] _(optional)_
+> **`unit`** string _(optional)_
 
 Allows representing standard unit.
 
@@ -199,7 +199,7 @@ unit: ABC
 
 #### `unit_spacing` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#unit_spacing-)
 
-> **`unit_spacing`** [string {`auto`|`space`|`no-sspace`}] _(optional, default: `auto`)_
+> **`unit_spacing`** string {`auto`|`space`|`no-sspace`} _(optional, default: `auto`)_
 
 Defines whether a space should appear between numeric values and units, either following locale rules or overriding them explicitly.
 
@@ -209,7 +209,7 @@ Defines whether a space should appear between numeric values and units, either f
 
 #### `decimal`
 
-> **`decimal`** [integer >=0] _(optional)_
+> **`decimal`** integer _(optional)_
 
 Defines the number of decimal places to display for numerical values.
 
@@ -251,7 +251,7 @@ decimal: 1
 
 #### `min_value`
 
-> **`min_value`** [numeric] _(optional, default: `0`)_
+> **`min_value`** float _(optional, default: `0`)_
 
 Defines the minimum value to be used when calculating the percentage.
 
@@ -276,7 +276,7 @@ Suppose you are measuring the weight of a connected litter box, where:
 
 #### `max_value`
 
-> **`max_value`** [numeric|string] _(optional, default: `100`)_
+> **`max_value`** float|string _(optional, default: `100`)_
 
 Allows representing standard values and calculating the percentage relative to the maximum value.
 This value can be numeric (float/int) or an entity and real value must be > 0.
@@ -298,14 +298,14 @@ max_value: 255
 
 #### `max_value_attribute`
 
-> **`max_value_attribute`** [string] _(optional)_
+> **`max_value_attribute`** string _(optional)_
 
 The Home Assistant `max_value`'s attribute to display.  
 `max_value` must be an entity.
 
 #### `xyz_action` (`tap_action`, `double_tap_action`, `hold_action`, `icon_tap_action`, `icon_double_tap_action`, `icon_hold_action`)
 
-> **`xyz_action`** [map {action: {`more-info` | `toggle` | `perform-action` | `navigate` | `url` | `assist` | `none`}...}] _(optional)_
+> **`xyz_action`** map {action: {`more-info` | `toggle` | `perform-action` | `navigate` | `url` | `assist` | `none`}...} _(optional)_
 
 _`xyz_action`_:
 
@@ -358,7 +358,7 @@ tap_action:
 
 #### `theme`
 
-> **`theme`** [string {`optimal_when_low`|`optimal_when_high`|`light`|`temperature`|`humidity`|`pm25`|`voc`}] _(optional)_
+> **`theme`string {`optimal_when_low`|`optimal_when_high`|`light`|`temperature`|`humidity`|`pm25`|`voc`} _(optional)_
 
 Allows customization of the progress bar's appearance using a predefined theme.
 This theme dynamically adjusts the `icon`, `color` and `bar-color` parameters based on the battery level, eliminating the need for manual adjustments or complex Jinja2 templates.
@@ -378,7 +378,7 @@ theme: light
 
 #### `bar_size`
 
-> **`bar_size`** [string {`small`|`medium`|`large`}] _(optional, default: `small`)_
+> **`bar_size`** string {`small`|`medium`|`large`} _(optional, default: `small`)_
 
 Customizes the appearance of the progress bar by selecting a predefined size.
 Choose from small, medium, or large to adjust the visual scale of the bar.
@@ -393,7 +393,7 @@ bar_size: medium
 
 #### `bar_color`
 
-> **`bar_color`** [string] _(optional, default: `var(--state-icon-color)`)_
+> **`bar_color`** string _(optional, default: `var(--state-icon-color)`)_
 
 The color of the progress bar. Accepts [Token color](#token-color), color names, RGB values, or HEX codes.
 
@@ -407,7 +407,7 @@ bar_color: rgb(110, 65, 171)
 
 #### `icon`
 
-> **`icon`** [string] _(optional)_
+> **`icon`** string _(optional)_
 
 Overwrites the entity icon.
 
@@ -427,7 +427,7 @@ _Order of Priority for the Icon:_
 
 #### `force_circular_background`
 
-> **`force_circular_background`** [boolean] _(optional)_
+> **`force_circular_background`** boolean _(optional)_
 
 This option forces a **circular background** to be displayed behind the icon shown on the card.
 
@@ -447,7 +447,7 @@ force_circular_background: true
 
 #### `color`
 
-> **`color`** [string] _(optional)_
+> **`color`** string _(optional)_
 
 The color of the icon. Accepts [Token color](#token-color), color names, RGB values, or HEX codes.
 
@@ -461,7 +461,7 @@ color: rgb(110, 65, 171)
 
 #### `layout`
 
-> **`layout`** [string {`horizontal`| `vertical`}] _(optional, default: `horizontal`)_:
+> **`layout`** string {`horizontal`| `vertical`} _(optional, default: `horizontal`)_:
 
 Determines the layout of the elements inside the card. You can choose between different layouts based on your visual preferences:
 
@@ -478,7 +478,7 @@ layout: vertical
 
 #### `custom_theme` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#custom_theme-)
 
-> **`custom_theme`** [map list] _(optional)_
+> **`custom_theme`** map list _(optional)_
 
 Defines a list of custom theme rules based on value ranges. Setting this variable disables the theme variable.  
 This variable can only be defined in YAML.
@@ -574,7 +574,7 @@ custom_theme:
 
 #### `reverse` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#reverse-)
 
-> **`reverse`** [boolean] _(optional, default: `false`)_
+> **`reverse`** boolean _(optional, default: `false`)_
 
 If set to true, it enables a countdown behavior (typically in seconds or percentage), which is the standard use case for timers.
 
@@ -596,7 +596,7 @@ reverse: true
 
 #### `bar_orientation` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#)
 
-> **`bar_orientation`** [string {`rtl`|`ltr`}] _(optional, default: `ltr`)_
+> **`bar_orientation`** string {`rtl`|`ltr`} _(optional, default: `ltr`)_
 
 Adjusts the progress bar direction to display from right to left.
 
@@ -624,11 +624,11 @@ reverse: true
 
 #### `hide`
 
-> **`hide`** [list] _(optional)_:
+> **`hide`** list _(optional)_:
 
 Defines which elements should be hidden in the card.
 
-The array can contain any of the following values:
+The list can contain any of the following elments:
 
 - `icon`: Hides the entity's icon.
 - `name`: Hides the entity's name.
@@ -649,7 +649,7 @@ hide:
 
 #### `disable_unit`
 
-> **`disable_unit`** [boolean] _(optional, default: `false`)_
+> **`disable_unit`** boolean _(optional, default: `false`)_
 
 Disables the display of the unit when set to `true`. If not defined or set to `false`, the unit will be shown.
 
@@ -663,7 +663,7 @@ disable_unit: true
 
 #### `badge_icon` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#badge-)
 
-> **`badge_icon`** [JINJA] _(optional)_:
+> **`badge_icon`** JINJA _(optional)_:
 
 The `badge_icon` option lets you display a dynamic badge, offering a quick status hint or symbolic representation based on logic or sensor values.
 
@@ -688,7 +688,7 @@ badge_icon: >-
 
 #### `badge_color` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#badge-)
 
-> **`badge_color`** [JINJA] _(optional)_:
+> **`badge_color`** JINJA _(optional)_:
 
 The `badge_color` option lets you setup a dynamic badge's background color, offering a quick status hint or symbolic representation based on logic or sensor values.
 
@@ -709,7 +709,7 @@ badge_color: >-
 
 #### `name_info` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#name_info-)
 
-> **`name_info`** [JINJA] _(optional)_:
+> **`name_info`** JINJA _(optional)_:
 
 The `name_info` option allows you to display additional, customizable text or HTML next to the entity’s name. It supports full [Home Assistant Jinja2 templates](https://www.home-assistant.io/docs/configuration/templating/) and inline HTML, enabling you to style or conditionally format the information based on sensor states or logic.
 
@@ -739,7 +739,7 @@ name_info: >-
 
 #### `custom_info` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#custom_info-)
 
-> **`custom_info`** [JINJA] _(optional)_:
+> **`custom_info`** JINJA _(optional)_:
 
 The `custom_info` option allows you to display additional, customizable text or HTML next to the entity’s value. It supports full [Home Assistant Jinja2 templates](https://www.home-assistant.io/docs/configuration/templating/) and inline HTML, enabling you to style or conditionally format the information based on sensor states or logic.
 
@@ -775,7 +775,7 @@ custom_info: >-
 
 #### `state_content` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#custom_info-)
 
-> **`state_content`** [string | list] _(optional)_:
+> **`state_content`** string|list _(optional)_:
 
 Content to display for the state. Can be state, last_changed, last_updated, or any attribute of the entity. Can be either a string with a single item, or a list of string items. Default depends on the entity domain.
 
@@ -817,7 +817,7 @@ state_content:
 
 #### `watermark` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#watermark-)
 
-> **`watermark`** [map] _(optional)_:
+> **`watermark`** map _(optional)_:
 
 The `watermark` option allows you to visually highlight specific value thresholds (low and high) within the progress bar, helping you better interpret the current state at a glance.
 
@@ -1511,4 +1511,3 @@ Want to improve this card? Contributions are welcome! 🚀
 ## 📄 License
 
 This project is licensed under the GPL-3.0 license.
-
