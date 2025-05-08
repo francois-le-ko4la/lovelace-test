@@ -492,7 +492,7 @@ _Map definition:_
 
 _Order of Priority for the Icon:_
 
-  see [`icon`](#icon) parameter.
+- see [`icon`](#icon) parameter.
 
 _Example_:
 
