@@ -4,6 +4,8 @@
 [![Validate](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/validate.yaml/badge.svg)](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/validate.yaml)
 # Lovelace Entity Progress Card [![ReadMe](https://img.shields.io/badge/ReadMe-018EF5?logo=readme&logoColor=fff)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 
+# Lovelace Entity Progress Card [![ReadMe](https://img.shields.io/badge/ReadMe-018EF5?logo=readme&logoColor=fff)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
+
 [![Static Badge](https://img.shields.io/badge/Home%20Assistant-blue?style=for-the-badge&logo=homeassistant&logoColor=white&color=blue)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 [![Static Badge](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=Javascript&logoColor=black&color=%23F7DF1E)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 [![Static Badge](https://img.shields.io/badge/Discord-%235865F2?style=for-the-badge&logo=Discord&logoColor=white&color=%235865F2)](https://discord.gg/tyMQ2SfyNG)
@@ -338,6 +340,18 @@ _Options:_
 - `url_path` _url_: URL to open when action is 'url' (e.g., <https://example.com>).
 ...
 
+_Default:_
+
+- tap_action: `more-info`
+- hold_action: `none`
+- double_tap_action: `none`
+- icon_tap_action:
+  - `toggle` if the entity is a `light`, `switch`, `fan`, `input_boolean`, or `media_player`
+  - `none` otherwise
+- icon_hold_action: `none`
+- icon_double_tap_action: `none`
+
+
 > [!NOTE]
 > We have merged the functionalities of `navigate_to` and `show_more_info` into `tap_action`.
 > Consequently, these two options have been **deprecated**, **disabled**, and will no longer
@@ -447,7 +461,7 @@ force_circular_background: true
 
 > **`color`** string _(optional)_
 
-The color of the icon. Accepts [Token color](#token-color), color names, RGB values, or HEX codes.
+The color of the icon. Accepts [Token color](#token-color), color names, RGB values, or HEX codes. By default, the color is based on state, domain, and device_class of your entity for `timer`, `cover`, `light`, `fan`, `climate` and `battery`.
 
 _Examples:_ `"green"`, `"rgb(68, 115, 158)"`, `"#FF5733"`, `var(--state-icon-color)`...
 
@@ -1360,6 +1374,97 @@ We'll use a Helper (Number) to handle this calculation. It’s simple to define 
 
 By implementing this model through the helper, we can accurately calculate and display the percentage of remaining time for any task. This approach provides a dynamic and intuitive way to monitor progress, ensuring that the displayed percentage accurately reflects the time remaining regardless of the task’s total duration. This solution effectively extend our card usage vision, and enhances the user experience.
 
+### Don't Let It Expire!
+
+This example is similar to the previous one that used a Home Assistant helper but relies more on system-level tools—offering potentially greater efficiency at the cost of increased system dependency.
+
+#### Why?
+
+SSL certificates are critical for securing HTTPS connections. If one expires, it can make your services inaccessible — including your Home Assistant interface when accessed remotely.
+
+The challenge?
+Certificates (especially Let's Encrypt) usually last only 90 days, and it's easy to forget when they expire.
+
+👉 The goal here is to automatically track how many days are left (countdown) before your SSL certificate expires and visually display this countdown as a color-coded progress bar in the Lovelace dashboard.
+
+#### How?
+
+Here, we're using a Home Assistant instance running in Docker with access to Linux commands.
+
+We will:
+
+- Create a custom command_line sensor that calculates the number of days until the certificate expires.
+- Setup the card with the new sensor.
+- Add dynamic color coding to indicate urgency (red when close to expiry, green when safe).
+
+#### Implementation
+
+- Create the command_line sensor, add this to your configuration.yaml (or sensors.yaml if split):
+
+  ```yaml
+  sensor:
+    - platform: command_line
+      name: "SSL Certificate Expiry"
+      command: >
+        echo $(( ($(date -u -d "$(curl -vI --insecure https://happyguardian.du.ko4la.fr:8123 2>&1 | grep -i 'expire date' | awk -F': ' '{print $2}' | sed -E 's/Jan/01/; s/Feb/02/; s/Mar/03/; s/Apr/04/; s/May/05/; s/Jun/06/; s/Jul/07/; s/Aug/08/; s/Sep/09/; s/Oct/10/; s/Nov/11/; s/Dec/12/' | awk '{print $4"-"$1"-"$2" "$3}')" +%s) - $(date +%s) ) / 86400 ))
+      unit_of_measurement: "days"
+      scan_interval: 3600
+  ```
+
+  You'll need to adjust this part to match your specific environment.
+
+- Add this card to your Lovelace dashboard:
+
+  ```yaml
+  type: custom:entity-progress-card
+  entity: sensor.ssl_certificate_expiry
+  name: SSL Certificate Expiry
+  icon: mdi:certificate
+  decimal: 0
+  min_value: 0
+  max_value: 90
+  bar_orientation: rtl
+  custom_theme:
+    - min: 0
+      max: 10
+      color: var(--red-color)
+    - min: 10
+      max: 20
+      color: var(--yellow-color)
+    - min: 20
+      max: 90
+      color: var(--success-color)
+  grid_options:
+    columns: 12
+    rows: 1
+  ```
+
+#### Conclusion
+
+With this setup, Home Assistant becomes a proactive security monitor for your SSL certificates. You get a clear visual on how much time is left — and can renew in time to avoid downtime.
+
+This method is reusable for any use case that can be monitored at the system level.
+
+It was fun to develop and can certainly be used as-is, but in practice, it relies on Linux system commands, which makes it less portable than the previous examples.
+
+Ultimately, to meet the original goal, we can simply enable the `cert_expiry` integration, which provides the certificate's expiration timestamp in a more standardized and platform-independent way. Home Assistant helpers are powerful tools, and whenever possible, they should be preferred to simplify implementation.
+
+With `cert_expiry` we can define a template helper with :
+
+```yaml
+...
+state: >
+  {% set target = states('sensor.<cert_expiry_entity_id>') %}
+  {% if target not in ['unknown', 'unavailable'] %}
+    {% set target_ts = as_timestamp(target) %}
+    {% set now_ts = as_timestamp(now()) %}
+    {% set diff = (target_ts - now_ts) / 86400 %}
+    {{ diff | round(1) if diff > 0 else 0 }}
+  {% else %}
+    unknown
+  {% endif %}
+```
+
 ## 🎨 Theme
 
 ### Token color
@@ -1509,4 +1614,5 @@ Want to improve this card? Contributions are welcome! 🚀
 ## 📄 License
 
 This project is licensed under the GPL-3.0 license.
+
 
