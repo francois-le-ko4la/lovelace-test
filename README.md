@@ -2,8 +2,6 @@
 
 [![Release](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/release.yaml/badge.svg)](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/release.yaml)
 [![Validate](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/validate.yaml/badge.svg)](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/validate.yaml)
-
-
 # Lovelace Entity Progress Card [![ReadMe](https://img.shields.io/badge/ReadMe-018EF5?logo=readme&logoColor=fff)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 
 [![Static Badge](https://img.shields.io/badge/Home%20Assistant-blue?style=for-the-badge&logo=homeassistant&logoColor=white&color=blue)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
@@ -199,7 +197,7 @@ unit: ABC
 
 #### `unit_spacing` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#unit_spacing-)
 
-> **`unit_spacing`** string {`auto`|`space`|`no-sspace`} _(optional, default: `auto`)_
+> **`unit_spacing`** string ➡️ {`auto`|`space`|`no-sspace`} _(optional, default: `auto`)_
 
 Defines whether a space should appear between numeric values and units, either following locale rules or overriding them explicitly.
 
@@ -305,7 +303,7 @@ The Home Assistant `max_value`'s attribute to display.
 
 #### `xyz_action` (`tap_action`, `double_tap_action`, `hold_action`, `icon_tap_action`, `icon_double_tap_action`, `icon_hold_action`)
 
-> **`xyz_action`** map {action: {`more-info` | `toggle` | `perform-action` | `navigate` | `url` | `assist` | `none`}...} _(optional)_
+> **`xyz_action`** map ➡️ {action: {`more-info` | `toggle` | `perform-action` | `navigate` | `url` | `assist` | `none`}...} _(optional)_
 
 _`xyz_action`_:
 
@@ -358,7 +356,7 @@ tap_action:
 
 #### `theme`
 
-> **`theme`string {`optimal_when_low`|`optimal_when_high`|`light`|`temperature`|`humidity`|`pm25`|`voc`} _(optional)_
+> **`theme`** string ➡️ {`optimal_when_low`|`optimal_when_high`|`light`|`temperature`|`humidity`|`pm25`|`voc`} _(optional)_
 
 Allows customization of the progress bar's appearance using a predefined theme.
 This theme dynamically adjusts the `icon`, `color` and `bar-color` parameters based on the battery level, eliminating the need for manual adjustments or complex Jinja2 templates.
@@ -378,7 +376,7 @@ theme: light
 
 #### `bar_size`
 
-> **`bar_size`** string {`small`|`medium`|`large`} _(optional, default: `small`)_
+> **`bar_size`** string ➡️ {`small`|`medium`|`large`} _(optional, default: `small`)_
 
 Customizes the appearance of the progress bar by selecting a predefined size.
 Choose from small, medium, or large to adjust the visual scale of the bar.
@@ -461,7 +459,7 @@ color: rgb(110, 65, 171)
 
 #### `layout`
 
-> **`layout`** string {`horizontal`| `vertical`} _(optional, default: `horizontal`)_:
+> **`layout`** string ➡️ {`horizontal`| `vertical`} _(optional, default: `horizontal`)_:
 
 Determines the layout of the elements inside the card. You can choose between different layouts based on your visual preferences:
 
@@ -1511,3 +1509,4 @@ Want to improve this card? Contributions are welcome! 🚀
 ## 📄 License
 
 This project is licensed under the GPL-3.0 license.
+
