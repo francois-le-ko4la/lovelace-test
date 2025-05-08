@@ -423,7 +423,7 @@ _Order of Priority for the Icon:_
 
 - Theme/Custom Theme: The icon derived from the theme or style applied to the item.
 - Icon Parameter: A custom icon specifically defined for the item.
-- Default icon provided by HA.
+- Entity icon.
 
 #### `force_circular_background`
 
@@ -573,14 +573,14 @@ custom_theme:
 
 #### `reverse` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#reverse-)
 
-> **`reverse`** [boolean] _(optional)_
+> **`reverse`** [boolean] _(optional, default: `false`)_
 
 If set to true, it enables a countdown behavior (typically in seconds or percentage), which is the standard use case for timers.
 
 _default value_:
 
-- If the entity is a `timer` the `reverse` will be 'true'
-- Otherwise, the `reverse` will be 'false'
+- If the entity is a `timer` the `reverse` will be `true`
+- Otherwise, the `reverse` will be `false`
 
 _Example_:
 
@@ -629,11 +629,11 @@ Defines which elements should be hidden in the card.
 
 The array can contain any of the following values:
 
-- icon: Hides the entity's icon.
-- name: Hides the entity's name.
-- value: Hides the current value.
-- secondary_info: Hides secondary information related to the entity.
-- progress_bar: Hides the progress bar display.
+- `icon`: Hides the entity's icon.
+- `name`: Hides the entity's name.
+- `value`: Hides the current value.
+- `secondary_info`: Hides secondary information.
+- `progress_bar`: Hides the visual progress bar.
 
 _Example_:
 
@@ -1510,3 +1510,4 @@ Want to improve this card? Contributions are welcome! 🚀
 ## 📄 License
 
 This project is licensed under the GPL-3.0 license.
+
