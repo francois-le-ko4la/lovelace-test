@@ -31,7 +31,6 @@ This custom version of the **Bar Card** for Home Assistant allows you to display
 - **Performance Optimized**: Code enhancements ensure better performance and maintainability, offering a more stable and responsive experience.
 - **Multi-Language Support**: Provides localized error messages and descriptions, supporting multiple languages 🇬🇧 🇪🇸 🇩🇪 🇮🇹 🇫🇷 🇵🇱 🇳🇱 🇭🇷 🇲🇰 🇵🇹 🇩🇰 🇸🇪 🇳🇴 (bokmål) 🇫🇮 🇷🇴 🇬🇷 🇯🇵 🇰🇷 🇨🇳 🇹🇷 🇸🇦.
 
-
 ## ⚙️ Prerequisites
 
 - HA version: 2024+
@@ -351,7 +350,6 @@ _Default:_
 - icon_hold_action: `none`
 - icon_double_tap_action: `none`
 
-
 > [!NOTE]
 > We have merged the functionalities of `navigate_to` and `show_more_info` into `tap_action`.
 > Consequently, these two options have been **deprecated**, **disabled**, and will no longer
@@ -606,7 +604,7 @@ name: Remaining Time reverse
 reverse: true
 ```
 
-#### `bar_orientation` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#)
+#### `bar_orientation` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#bar_orientation-)
 
 > **`bar_orientation`** string {`rtl`|`ltr`} _(optional, default: `ltr`)_
 
@@ -673,7 +671,7 @@ type: custom:entity-progress-card
 disable_unit: true
 ```
 
-#### `badge_icon` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#badge-)
+#### `badge_icon` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#badge_icon-)
 
 > **`badge_icon`** JINJA _(optional)_:
 
@@ -698,7 +696,7 @@ badge_icon: >-
 >
 > If the template returns nothing (i.e., empty string or None), the badge will not be displayed.
 
-#### `badge_color` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#badge-)
+#### `badge_color` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#badge_color-)
 
 > **`badge_color`** JINJA _(optional)_:
 
@@ -860,7 +858,6 @@ watermark:
 
 Thanks to automatic **unit detection**, the card intelligently interprets your thresholds depending on the entity’s native unit.
 
-
 ### 📎 YAML
 
 Here’s our example of how to use the Custom Bar Card with custom styles:
@@ -953,7 +950,7 @@ entity: sensor.petkit_puramax_2_litter_weight
 max_value: 12
 min_value: 6
 name: Litière
-bar_color: var(--disabled-color)
+bar_color: disabled
 grid_options:
   columns: 6
   rows: 1
@@ -1119,7 +1116,7 @@ The ranges and their corresponding colors are as follows:
 
 > [!IMPORTANT]
 >
-> The information provided in this HA card is based on thresholds from the following [source](https://support.getawair.com/hc/en-us/articles/19504367520023-Understanding-Awair-Score-and-Air-Quality-Factors-Measured-By-Awair-Element).
+> The information provided in this HA card is based on thresholds from the following [source](<https://support.getawair.com/hc/en-us/articles/19504367520023-Understanding-Awair-Score-and-Air-Quality-Factors-Measured-By-Awair-Element>).
 > This color code is for informational purposes only and should not be taken as professional advice or a standard to follow. It is crucial to consult the device's official documentation or current standards for the most accurate and up-to-date information. In case of any discrepancy between the information provided here and the device's documentation or current standards, the latter shall prevail.
 > The lower the value, the better it is generally considered to be.
 > With this card you can use `custom_theme` to define your own ranges.
@@ -1154,7 +1151,7 @@ The ranges and their corresponding colors are as follows:
 
 > [!IMPORTANT]
 >
-> The information provided in this HA card is based on thresholds from the following [source](https://support.getawair.com/hc/en-us/articles/19504367520023-Understanding-Awair-Score-and-Air-Quality-Factors-Measured-By-Awair-Element).
+> The information provided in this HA card is based on thresholds from the following [source](<https://support.getawair.com/hc/en-us/articles/19504367520023-Understanding-Awair-Score-and-Air-Quality-Factors-Measured-By-Awair-Element>).
 > This color code is for informational purposes only and should not be taken as professional advice or a standard to follow. It is crucial to consult the device's official documentation or current standards for the most accurate and up-to-date information. In case of any discrepancy between the information provided here and the device's documentation or current standards, the latter shall prevail.
 > The lower the value, the better it is generally considered to be.
 > With this card you can use `custom_theme` to define your own ranges.
@@ -1366,7 +1363,7 @@ We'll use a Helper (Number) to handle this calculation. It’s simple to define 
   max_value: number.totaldurationofthetask
   unit: min
   decimal: 0
-  bar_color: var(--success-color)
+  bar_color: green
   icon: mdi:clock-end
   ```
 
@@ -1374,7 +1371,7 @@ We'll use a Helper (Number) to handle this calculation. It’s simple to define 
 
 By implementing this model through the helper, we can accurately calculate and display the percentage of remaining time for any task. This approach provides a dynamic and intuitive way to monitor progress, ensuring that the displayed percentage accurately reflects the time remaining regardless of the task’s total duration. This solution effectively extend our card usage vision, and enhances the user experience.
 
-### Don't Let It Expire!
+### Don't Let It Expire !
 
 This example is similar to the previous one that used a Home Assistant helper but relies more on system-level tools—offering potentially greater efficiency at the cost of increased system dependency.
 We provide this example for illustration purposes only. Make sure to verify that no integration already exists before attempting this type of deployment. In the epilogue, I’ll suggest a more universal way to achieve the same result.
@@ -1428,13 +1425,13 @@ We will:
   custom_theme:
     - min: 0
       max: 10
-      color: var(--red-color)
+      color: red
     - min: 10
       max: 20
-      color: var(--yellow-color)
+      color: yellow-color
     - min: 20
       max: 90
-      color: var(--success-color)
+      color: green
   grid_options:
     columns: 12
     rows: 1
@@ -1474,8 +1471,9 @@ With `cert_expiry` entity we can define a template helper (number) to generate a
 - step: 1
 - unit_of_measurement: days
 
-```yaml
 Create the card:
+
+```yaml
 type: custom:entity-progress-card
 entity: number.cert_expiry_entity_id
 name: SSL Certificate Expiry
@@ -1485,13 +1483,13 @@ bar_orientation: rtl
 custom_theme:
   - min: 0
     max: 10
-    color: var(--red-color)
+    color: red
   - min: 10
     max: 20
-    color: var(--yellow-color)
+    color: yellow
   - min: 20
     max: 90
-    color: var(--success-color)
+    color: green
 unit: "%"
 state_content: state
 grid_options:
@@ -1499,16 +1497,23 @@ grid_options:
   rows: 1
 ```
 
+Now you have a working solution that avoids operating system dependencies and is more efficient within Home Assistant's ecosystem.
+Obviously, in the case of a Let's Encrypt certificate, it's recommended to :
+
+- have a renewal process in place
+- add a trigger to generate an alert before the certificate expires
+
+This topics are beyond the scope of this guide.
+
 ## 🎨 Theme
 
 ### Token color
 
 This card leverages Home Assistant’s default color system to seamlessly align with your active theme preferences.
 
-When defining a color by name, we utilize the standard CSS color palette, which has evolved over time to include extended color keywords, X11 colors, and SVG colors (updated in 2022: https://www.w3.org/TR/css-color-3/#svg-color).
+When defining a color by name, we utilize the standard CSS color palette, which has evolved over time to include extended color keywords, X11 colors, and SVG colors (updated in 2022: <https://www.w3.org/TR/css-color-3/#svg-color>).
 
 To maintain a consistent look & feel, we translate color names to Home Assistant's color definitions. We provide a list of these colors below. If a color is missing, please do not hesitate to let us know. If you choose a CSS-compatible color name that is not part of this list, the rendering will be as defined by the CSS standard.
-
 
 | Color name | Card will use |
 |---|---|
@@ -1648,3 +1653,4 @@ Want to improve this card? Contributions are welcome! 🚀
 ## 📄 License
 
 This project is licensed under the GPL-3.0 license.
+
