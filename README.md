@@ -3,7 +3,6 @@
 [![Release](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/release.yaml/badge.svg)](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/release.yaml)
 [![Validate](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/validate.yaml/badge.svg)](https://github.com/francois-le-ko4la/lovelace-test/actions/workflows/validate.yaml)
 
-
 # Lovelace Entity Progress Card [![ReadMe](https://img.shields.io/badge/ReadMe-018EF5?logo=readme&logoColor=fff)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 
 [![Static Badge](https://img.shields.io/badge/Home%20Assistant-blue?style=for-the-badge&logo=homeassistant&logoColor=white&color=blue)](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
@@ -27,7 +26,7 @@ This custom version of the **Bar Card** for Home Assistant allows you to display
 - **Dynamic Theme**: Automatically adjusts icons and colors based on the context (e.g., Battery Theme), reflecting the entity's state.
 - **Enhanced Customization**: Offers a balanced default setup while allowing users to further tailor the card's behavior and appearance through YAML or the card editor (full details below).
 - **Smooth Animations**: Provides HTML elements that facilitate smooth, visually appealing animations, leveraging well-known mechanisms for easy implementation.
-- **Interactive Features**: Includes a "More Info" option, enabling users to view additional entity details or navigate to another dashboard with a simple click, improving accessibility and usability.
+- **Interactive Features**: Includes all "xyz_action" option, enabling users to view additional entity details or navigate to another dashboard with a simple click, improving accessibility and usability.
 - **Performance Optimized**: Code enhancements ensure better performance and maintainability, offering a more stable and responsive experience.
 - **Multi-Language Support**: Provides localized error messages and descriptions, supporting multiple languages 🇬🇧 🇪🇸 🇩🇪 🇮🇹 🇫🇷 🇵🇱 🇳🇱 🇭🇷 🇲🇰 🇵🇹 🇩🇰 🇸🇪 🇳🇴 (bokmål) 🇫🇮 🇷🇴 🇬🇷 🇯🇵 🇰🇷 🇨🇳 🇹🇷 🇸🇦.
 
@@ -58,7 +57,7 @@ Use this button to add the repository to your HACS:
 
 ### Manual Installation
 
-1. Download the file `entity-progress-card.js` to the `/config/www/` directory in your Home Assistant setup.
+1. Download the file `entity-progress-card.js` (from the last version) to the `/config/www/` directory in your Home Assistant setup.
 2. Add `/local/entity-progress-card.js` to your Lovelace resources
 
 ```yaml
@@ -118,6 +117,13 @@ _Supported entities:_
 
 All entities that have an attribute containing a numeric value are supported.
 This allows the card to work with a wide range of sensors, statistics, or other entities exposing numeric data through their attributes.
+
+Defining the attribute with the following is not supported:
+
+- counter
+- number
+- duration
+- timer
 
 _default attribute:_
 
@@ -300,7 +306,7 @@ max_value: 255
 > **`max_value_attribute`** string _(optional)_
 
 The Home Assistant `max_value`'s attribute to display.  
-`max_value` must be an entity.
+`max_value` must be an entity. See `attribute`.
 
 #### `xyz_action` (`tap_action`, `double_tap_action`, `hold_action`, `icon_tap_action`, `icon_double_tap_action`, `icon_hold_action`)
 
@@ -820,9 +826,7 @@ state_content:
 > [!NOTE]
 >
 > - The selected attribute is shown before the main numerical display on the card.
->
 > - If an attribute listed does not exist, the card immediately displays unknown.
->
 > - This feature is useful for adding additional context (e.g., position, status...) to the main progress value.
 
 #### `watermark` [![Static Badge](https://img.shields.io/badge/YAML-Only-orange.svg?style=flat)](#watermark-)
@@ -894,6 +898,21 @@ grid_options:
 
 <img src="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/doc/RVB_vertical.png" alt="Image title" width="118px"/>
 
+## Percentage Calculation
+
+This card automatically calculates progress percentages based on the current entity, depending on the type of input it receives:
+
+- Timer:
+  If the value represents a timer, the range (min, max) and the current value are taken directly from the timer entity.
+  Attribute will not be used.
+
+- Counter or Number value:
+  If the value is a counter or a Number ({ value, min, max }), it uses the provided value directly from the entity. The max value can also come from another entity by using max_value.
+  Attribute will not be used.
+
+- Other entity:
+  If the entity value is a number, it’s treated as the current value. The min and max boundaries are taken from default value (0/100) or configuration or external entities depending on the setup. If max_value is an entity, its current value is used.
+
 ## 🧐 Sample Usage
 
 > [!TIP]
@@ -946,11 +965,11 @@ Do you want a percentage based on a minimum and maximum quantity? Here’s an ex
 
 ```yaml
 type: custom:entity-progress-card
-entity: sensor.petkit_puramax_2_litter_weight
-max_value: 12
+entity: sensor.petkit_puramax_2_poids_litiere
 min_value: 6
-name: Litière
-bar_color: disabled
+max_value: 12
+name: Litter
+theme: optimal_when_high
 grid_options:
   columns: 6
   rows: 1
@@ -1653,4 +1672,3 @@ Want to improve this card? Contributions are welcome! 🚀
 ## 📄 License
 
 This project is licensed under the GPL-3.0 license.
-
