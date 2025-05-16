@@ -5609,8 +5609,7 @@ class EntityProgressCardEditor extends HTMLElement {
       panel.style.paddingBottom = '30px';
       panel.style.opacity = '1';
 
-      // deepsource-disable-next-line JS-0093
-      panel.offsetHeight; // reflow (chrome)
+      void (panel.offsetHeight); // reflow (chrome)
 
       accordion.classList.add('expanded');
 
@@ -5628,8 +5627,7 @@ class EntityProgressCardEditor extends HTMLElement {
       panel.style.maxHeight = `${panel.scrollHeight}px`;
 
       // Reflow forcé avant de mettre max-height à 0
-      // deepsource-disable-next-line JS-0093
-      panel.offsetHeight; // reflow (chrome)
+      void (panel.offsetHeight); // reflow (chrome)
 
       panel.style.maxHeight = '0';
       panel.style.paddingTop = '0';
