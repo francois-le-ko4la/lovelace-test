@@ -15,7 +15,7 @@
  * More informations here: https://github.com/francois-le-ko4la/lovelace-entity-progress-card/
  *
  * @author ko4la
- * @version 1.3.7
+ * @version 1.3.9
  *
  */
 
@@ -23,7 +23,7 @@
  * PARAMETERS
  */
 
-const VERSION = '1.3.7';
+const VERSION = '1.3.9';
 const CARD = {
   meta: {
     typeName: 'entity-progress-card',
@@ -49,7 +49,7 @@ const CARD = {
     decimal: { percentage: 0, timer: 0, counter: 0, duration: 0, other: 2 },
     entity: {
       state: { unavailable: 'unavailable', unknown: 'unknown', notFound: 'notFound', idle: 'idle', active: 'active', paused: 'paused' },
-      type: { timer: 'timer', light: 'light', cover: 'cover', fan: 'fan', climate: 'climate', counter: 'counter' },
+      type: { timer: 'timer', light: 'light', cover: 'cover', fan: 'fan', climate: 'climate', counter: 'counter', number: 'number' },
       class: { shutter: 'shutter', battery: 'battery' },
     },
     msFactor: 1000,
@@ -120,8 +120,8 @@ const CARD = {
       'zh-Hant': 'zh-TW',
     },
     separator: ' · ',
-    debug: true,
-    dev: false,
+    debug: { card: false, editor: false, ressourceManager: false },
+    dev: true,
   },
   htmlStructure: {
     card: { element: 'ha-card' },
@@ -137,10 +137,13 @@ const CARD = {
       nameCombined: { element: 'span', class: 'name-combined' },
       name: { element: 'span', class: 'name' },
       nameCustomInfo: { element: 'span', class: 'name-custom-info' },
-      stateAndProgressInfo: { element: 'div', class: 'state-and-progress-info' },
       secondaryInfo: { element: 'div', class: 'secondary-info' },
+
       detailGroup: { element: 'div', class: 'secondary-info-detail-group' },
-      customInfo: { element: 'div', class: 'secondary-info-custom-info' },
+      detailCombined: { element: 'span', class: 'secondary-info-detail-combined' },
+      stateAndProgressInfo: { element: 'span', class: 'state-and-progress-info' },
+      customInfo: { element: 'span', class: 'secondary-info-custom-info' },
+
       progressBar: {
         container: { element: 'div', class: 'progress-bar-container' },
         bar: { element: 'div', class: 'progress-bar' },
@@ -302,7 +305,7 @@ const CARD = {
       listItem: { type: 'list item', element: 'mwc-list-item' },
       iconItem: { element: 'ha-icon', attribute: 'icon', class: 'editor-icon-list' },
       select: { element: 'ha-select' },
-      toggle: { type: 'toggle', element: 'ha-switch' },
+      toggle: { type: 'toggle', element: 'ha-switch', class: 'editor-toggle' },
       text: { element: 'span' },
       accordion: {
         item: { element: 'div', class: 'accordion' },
@@ -2255,8 +2258,10 @@ const CARD_HTML = `
             </${CARD.htmlStructure.elements.nameGroup.element}>
             <${CARD.htmlStructure.elements.secondaryInfo.element} class="${CARD.htmlStructure.elements.secondaryInfo.class}">
                 <${CARD.htmlStructure.elements.detailGroup.element} class="${CARD.htmlStructure.elements.detailGroup.class}">
-                  <${CARD.htmlStructure.elements.customInfo.element} class="${CARD.htmlStructure.elements.customInfo.class}"></${CARD.htmlStructure.elements.customInfo.element}>
-                  <${CARD.htmlStructure.elements.stateAndProgressInfo.element} class="${CARD.htmlStructure.elements.stateAndProgressInfo.class}"></${CARD.htmlStructure.elements.stateAndProgressInfo.element}>
+                  <${CARD.htmlStructure.elements.detailCombined.element} class="${CARD.htmlStructure.elements.detailCombined.class}">
+                    <${CARD.htmlStructure.elements.customInfo.element} class="${CARD.htmlStructure.elements.customInfo.class}"></${CARD.htmlStructure.elements.customInfo.element}>
+                    <${CARD.htmlStructure.elements.stateAndProgressInfo.element} class="${CARD.htmlStructure.elements.stateAndProgressInfo.class}"></${CARD.htmlStructure.elements.stateAndProgressInfo.element}>
+                  </${CARD.htmlStructure.elements.detailCombined.element}>
                 </${CARD.htmlStructure.elements.detailGroup.element}>
                 <${CARD.htmlStructure.elements.progressBar.container.element} class="${CARD.htmlStructure.elements.progressBar.container.class}">
                     <${CARD.htmlStructure.elements.progressBar.bar.element} class="${CARD.htmlStructure.elements.progressBar.bar.class}">
@@ -2271,459 +2276,489 @@ const CARD_HTML = `
 `;
 
 const CARD_CSS = `
-    ${CARD.htmlStructure.card.element} {
-        height: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 0;
-        box-sizing: border-box;
-        margin: 0 auto;
-        overflow: hidden;
-    }
+  ${CARD.htmlStructure.card.element} {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    box-sizing: border-box;
+    margin: 0 auto;
+    overflow: hidden;
+    font-family: var(--ha-font-family-body);
+  }
 
-    .${CARD.style.dynamic.clickable.card} {
-        cursor: pointer;
-    }
+  .${CARD.style.dynamic.clickable.card} {
+    cursor: pointer;
+  }
 
-    .${CARD.style.dynamic.clickable.card}:hover {
-        background-color: color-mix(in srgb, var(--card-background-color) 96%, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) 4%);
-    }
+  .${CARD.style.dynamic.clickable.card}:hover {
+    background-color: color-mix(in srgb, var(--card-background-color) 96%, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) 4%);
+  }
 
-    .${CARD.style.dynamic.clickable.card}:active {
-        background-color: color-mix(in srgb, var(--card-background-color) 85%, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) 15%);
-        transition: background-color 0.5s ease;
-    }
+  .${CARD.style.dynamic.clickable.card}:active {
+    background-color: color-mix(in srgb, var(--card-background-color) 85%, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) 15%);
+    transition: background-color 0.5s ease;
+  }
 
-    /* main container */
-    .${CARD.htmlStructure.sections.container.class} {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        margin: 0px 10px;
-        gap: 10px;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-    }
+  /* main container */
+  .${CARD.htmlStructure.sections.container.class} {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0px 10px;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
 
-    .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.container.class} {
-        min-height: ${CARD.layout.orientations.vertical.minHeight};
-        flex-direction: column;
-    }
-    .${CARD.layout.orientations.horizontal.label} .${CARD.htmlStructure.sections.container.class} {
-        min-height: ${CARD.layout.orientations.horizontal.minHeight};
-        flex-direction: row;
-    }
+  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.container.class} {
+    min-height: ${CARD.layout.orientations.vertical.minHeight};
+    flex-direction: column;
+  }
+  .${CARD.layout.orientations.horizontal.label} .${CARD.htmlStructure.sections.container.class} {
+    min-height: ${CARD.layout.orientations.horizontal.minHeight};
+    flex-direction: row;
+  }
 
-    /* .left: icon & shape */
-    .${CARD.htmlStructure.sections.left.class} {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        width: 36px;
-        height: 36px;
-        flex-shrink: 0;
-    }
+  /* .left: icon & shape */
+  .${CARD.htmlStructure.sections.left.class} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
 
-    .${CARD.layout.orientations.vertical.label}.${CARD.style.bar.sizeOptions.small.label} .${CARD.htmlStructure.sections.left.class} {
-        margin-top: 10px;
-    }
+  .${CARD.layout.orientations.vertical.label}.${CARD.style.bar.sizeOptions.small.label} .${CARD.htmlStructure.sections.left.class} {
+    margin-top: 10px;
+  }
 
-    .${CARD.layout.orientations.vertical.label}.${CARD.style.bar.sizeOptions.medium.label} .${CARD.htmlStructure.sections.left.class} {
-        margin-top: 12px;
-    }
+  .${CARD.layout.orientations.vertical.label}.${CARD.style.bar.sizeOptions.medium.label} .${CARD.htmlStructure.sections.left.class} {
+    margin-top: 12px;
+  }
 
-    .${CARD.layout.orientations.vertical.label}.${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.sections.left.class} {
-        margin-top: 14px;
-    }
+  .${CARD.layout.orientations.vertical.label}.${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.sections.left.class} {
+    margin-top: 14px;
+  }
 
-    .${CARD.htmlStructure.elements.shape.class} {
-        display: block;
-        position: absolute;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background-color: var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default});
-        isolation: isolate;
-        opacity: 0.2;
-    }
+  .${CARD.htmlStructure.elements.shape.class} {
+    display: block;
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default});
+    isolation: isolate;
+    opacity: 0.2;
+  }
+
+  .${CARD.htmlStructure.elements.icon.class} {
+    position: relative;
+    z-index: 1;
+    width: 24px;
+    height: 24px;
+    color: var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default});
+  }
+  .${CARD.style.dynamic.clickable.icon} .${CARD.htmlStructure.sections.left.class}:hover {
+    cursor: pointer;
+  }   
+      
+  .${CARD.style.dynamic.clickable.icon} .${CARD.htmlStructure.sections.left.class}:hover .${CARD.htmlStructure.elements.shape.class} {
+    opacity: 0.4;
+  }
+
+  /* .right: name & secondary info */
+  .${CARD.htmlStructure.sections.right.class} {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    overflow: hidden;
+    width:100%;
+  }
+
+  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.right.class} {
+    flex-grow: 0;
+  }
+
+  .${CARD.htmlStructure.elements.nameGroup.class} {
+    display: flex;
+    flex-direction: row;
+
+    width: 100%;
+    min-width: 0;
+    height: 20px;
+  }
+
+  .${CARD.htmlStructure.elements.nameCombined.class} {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    color: var(--primary-text-color);
+    font-size: var(--ha-font-size-m);
+    font-weight: var(--ha-font-weight-medium);
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    text-align: left;
+  }
+
+  .${CARD.htmlStructure.elements.detailGroup.class} {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 16px;
+    min-width: 45px;
+    max-width: 60%;
+    text-align: left;
+    line-height: 16px;
+    color: var(--primary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .${CARD.htmlStructure.elements.detailCombined.class} {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    color: var(--primary-text-color);
+    font-size: var(--ha-font-size-s);
+    font-weight: var(--ha-font-weight-body);
+    line-height: 16px;
+    letter-spacing: 0.4px;
+    text-align: left;
+  }
+
+
+  .${CARD.htmlStructure.elements.secondaryInfo.class} {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.secondaryInfo.class} {
+    display: block;
+  }
     
-    .${CARD.htmlStructure.elements.icon.class} {
-        position: relative;
-        z-index: 1;
-        width: 24px;
-        height: 24px;
-        color: var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default});
-    }
-    .${CARD.style.dynamic.clickable.icon} .${CARD.htmlStructure.sections.left.class}:hover {
-        cursor: pointer;
-    }   
-        
-    .${CARD.style.dynamic.clickable.icon} .${CARD.htmlStructure.sections.left.class}:hover .${CARD.htmlStructure.elements.shape.class} {
-        opacity: 0.4;
-    }
+  /* Progress bar */
+  .${CARD.htmlStructure.elements.progressBar.container.class} {
+    flex-grow: 1;
+    height: 16px; /* Même hauteur que le pourcentage */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .${CARD.htmlStructure.elements.progressBar.bar.class} {
+    width: 100%;
+    height: ${CARD.style.bar.sizeOptions.small.size};
+    max-height: ${CARD.style.bar.sizeOptions.large.size};
+    background-color: var(${CARD.style.dynamic.progressBar.background.var}, var(--divider-color));
+    border-radius: ${CARD.style.bar.radius};
+    overflow: hidden;
+    position: relative;
+  }
 
-    /* .right: name & secondary info */
-    .${CARD.htmlStructure.sections.right.class} {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        flex-grow: 1;
-        overflow: hidden;
-        width:100%;
-    }
+  .${CARD.style.dynamic.progressBar.orientation.rtl} .${CARD.htmlStructure.elements.progressBar.bar.class} {
+    transform: scaleX(-1);
+  }
 
-    .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.right.class} {
-        flex-grow: 0;
-    }
+  .${CARD.style.bar.sizeOptions.small.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
+    height: ${CARD.style.bar.sizeOptions.small.size};
+    max-height: ${CARD.style.bar.sizeOptions.small.size};
+  }
 
-    .${CARD.htmlStructure.elements.nameGroup.class} {
-        display: flex;
-        flex-direction: row;
+  .${CARD.style.bar.sizeOptions.medium.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
+    height: ${CARD.style.bar.sizeOptions.medium.size};
+    max-height: ${CARD.style.bar.sizeOptions.medium.size};
+  }
 
-        width: 100%;
-        min-width: 0;
-        height: 20px;
-    }
+  .${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
+    height: ${CARD.style.bar.sizeOptions.large.size};
+    max-height: ${CARD.style.bar.sizeOptions.large.size};
+  }
 
-    .${CARD.htmlStructure.elements.nameCombined.class} {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+  .${CARD.htmlStructure.elements.progressBar.inner.class} {
+    height: 100%;
+    width: var(${CARD.style.dynamic.progressBar.size.var}, ${CARD.style.dynamic.progressBar.size.default});
+    background-color: var(${CARD.style.dynamic.progressBar.color.var}, ${CARD.style.dynamic.progressBar.color.default});
+    transition: width 0.3s ease;
+    will-change: width;
+  }
 
-        color: var(--primary-text-color);
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 20px;
-        letter-spacing: 0.1px;
-        text-align: left;
-    }
+  .${CARD.htmlStructure.elements.progressBar.lowWatermark.class} {
+    display: none;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 0;
+    width: var(--epb-low-watermark-value, 20%);
+    background-color: var(--epb-low-watermark-color, var(--red-color));
+    mix-blend-mode: hard-light;
+    opacity: var(--epb-watermark-opacity-value, 0.8);  
+  }
+  .${CARD.htmlStructure.elements.progressBar.highWatermark.class} {
+    display: none;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 0;
+    width: calc(100% - var(--epb-high-watermark-value, 80%));
+    background-color: var(--epb-high-watermark-color, var(--red-color));
+    mix-blend-mode: hard-light;
+    opacity: var(--epb-watermark-opacity-value, 0.8);  
+  }
 
-    .${CARD.htmlStructure.elements.detailGroup.class} {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        height: 16px;
-        min-width: 45px;
-    }
-    .${CARD.htmlStructure.elements.secondaryInfo.class} {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
+  .${CARD.style.dynamic.show}-HWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class} {
+    right: calc(100% - var(--epb-high-watermark-value, 80%));
+    width: 1px;
+  }
+  .${CARD.style.dynamic.show}-LWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class}  {
+    left: var(--epb-low-watermark-value, 20%);
+    width: 1px;
+  }
 
-    .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.secondaryInfo.class} {
-        display: block;
-    }
 
-    .${CARD.htmlStructure.elements.customInfo.class},
-    .${CARD.htmlStructure.elements.stateAndProgressInfo.class} {
-        display: flex;
-        align-items: center;
-        height: 16px;
-        text-align: left;
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 16px;
-        letter-spacing: 0.4px;
-        color: var(--primary-text-color);
-    }
+  .${CARD.layout.orientations.vertical.label} .${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.elements.nameGroup.class} {
+    height: 18px;
+  }
 
-    .${CARD.style.dynamic.secondaryInfoError.class} .${CARD.htmlStructure.elements.stateAndProgressInfo.class} {
-        display: inline-block; /* Change de flex à inline-block */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        width: 100%;
-    }
+  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameGroup.class} {
+    align-items: center;
+    justify-content: center;
+  }
 
-    /* Progress bar */
-    .${CARD.htmlStructure.elements.progressBar.container.class} {
-        flex-grow: 1;
-        height: 16px; /* Même hauteur que le pourcentage */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .${CARD.htmlStructure.elements.progressBar.bar.class} {
-        width: 100%;
-        height: ${CARD.style.bar.sizeOptions.small.size};
-        max-height: ${CARD.style.bar.sizeOptions.large.size};
-        background-color: var(${CARD.style.dynamic.progressBar.background.var}, var(--divider-color));
-        border-radius: ${CARD.style.bar.radius};
-        overflow: hidden;
-        position: relative;
-    }
-    
-    .${CARD.style.dynamic.progressBar.orientation.rtl} .${CARD.htmlStructure.elements.progressBar.bar.class} {
-        transform: scaleX(-1);
-    }
+  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* ou 100% de son parent */
+    max-width: none; /* si tu veux supprimer la limite */
+  }
 
-    .${CARD.style.bar.sizeOptions.small.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
-        height: ${CARD.style.bar.sizeOptions.small.size};
-        max-height: ${CARD.style.bar.sizeOptions.small.size};
-    }
+  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} > span {
+    display: inline-block;
+    flex-shrink: 0;
+  }
 
-    .${CARD.style.bar.sizeOptions.medium.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
-        height: ${CARD.style.bar.sizeOptions.medium.size};
-        max-height: ${CARD.style.bar.sizeOptions.medium.size};
-   }
+  .${CARD.style.bar.sizeOptions.small.label} .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
+    margin-bottom: 1px;
+  }
 
-    .${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
-        height: ${CARD.style.bar.sizeOptions.large.size};
-        max-height: ${CARD.style.bar.sizeOptions.large.size};
-   }
+  .${CARD.style.bar.sizeOptions.medium.label} .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
+    height: 15px;
+    font-size: 0.8em;
+  }
 
-    .${CARD.htmlStructure.elements.progressBar.inner.class} {
-        height: 100%;
-        width: var(${CARD.style.dynamic.progressBar.size.var}, ${CARD.style.dynamic.progressBar.size.default});
-        background-color: var(${CARD.style.dynamic.progressBar.color.var}, ${CARD.style.dynamic.progressBar.color.default});
-        transition: width 0.3s ease;
-        will-change: width;
-    }
-    
-    .${CARD.htmlStructure.elements.progressBar.lowWatermark.class} {
-        display: none;
-        position: absolute;
-        height: 100%;
-        top: 0;
-        left: 0;
-        width: var(--epb-low-watermark-value, 20%);
-        background-color: var(--epb-low-watermark-color, var(--red-color));
-        mix-blend-mode: hard-light;
-        opacity: var(--epb-watermark-opacity-value, 0.8);  
-    }
-    .${CARD.htmlStructure.elements.progressBar.highWatermark.class} {
-        display: none;
-        position: absolute;
-        height: 100%;
-        top: 0;
-        right: 0;
-        width: calc(100% - var(--epb-high-watermark-value, 80%));
-        background-color: var(--epb-high-watermark-color, var(--red-color));
-        mix-blend-mode: hard-light;
-        opacity: var(--epb-watermark-opacity-value, 0.8);  
-    }
+  .${CARD.style.bar.sizeOptions.large.label} .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
+    height: 13px;
+    font-size: 0.8em;
+  }
 
-    .${CARD.style.dynamic.show}-HWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class} {
-        right: calc(100% - var(--epb-high-watermark-value, 80%));
-        width: 1px;
-    }
-    .${CARD.style.dynamic.show}-LWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class}  {
-        left: var(--epb-low-watermark-value, 20%);
-        width: 1px;
-    }
+  .${CARD.editor.fields.container.class} {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding-bottom: 70px;
+  }
 
-    
-    .${CARD.layout.orientations.vertical.label} .${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.elements.nameGroup.class} {
-        height: 18px;
-    }
+  .${CARD.editor.fields.iconItem.class} {
+    margin-right: 8px;
+    width: 20px;
+    height: 20px;
+  }
 
-    .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameGroup.class},
-    .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class},
-    .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.stateAndProgressInfo.class} {
-        align-items: center;
-        justify-content: center;
-    }
+  .${CARD.documentation.link.class} {
+    text-decoration: none;
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 600;
+  }
 
-    .${CARD.style.bar.sizeOptions.small.label} .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.stateAndProgressInfo.class} {
-        margin-bottom: 1px;
-    }
+  .${CARD.documentation.shape.class} {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .${CARD.documentation.shape.class}:hover {
+    background-color: color-mix(in srgb, var(--card-background-color) 90%, var(--secondary-text-color) 10%);
+  }
 
-    .${CARD.style.bar.sizeOptions.medium.label} .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.stateAndProgressInfo.class} {
-        height: 15px;
-        font-size: 0.8em;
-    }
+  .${CARD.documentation.questionMark.class} {
+    color: var(--primary-text-color);
+  }
 
-    .${CARD.style.bar.sizeOptions.large.label} .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.stateAndProgressInfo.class} {
-        height: 13px;
-        font-size: 0.8em;
-    }
+  .${CARD.htmlStructure.elements.badge.container.class} {
+    position: absolute;
+    z-index: 2;
+    top: -3px;
+    right: -3px;
+    inset-inline-end: -3px;
+    inset-inline-start: initial;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background-color: var(${CARD.style.dynamic.badge.backgroundColor.var}, ${CARD.style.dynamic.badge.backgroundColor.default});
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
 
-    .${CARD.editor.fields.container.class} {
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-        padding-bottom: 70px;
-    }
+  .${CARD.htmlStructure.elements.badge.container.class} .${CARD.htmlStructure.elements.badge.icon.class} {
+    height: 12px;
+    width: 12px;
+    display: flex; /* h/w ratio */
+    align-items: center;
+    justify-content: center;
+    color: var(${CARD.style.dynamic.badge.color.var}, ${CARD.style.dynamic.badge.color.default});
+  }
 
-    .${CARD.editor.fields.iconItem.class} {
-        margin-right: 8px;
-        width: 20px;
-        height: 20px;
-    }
+  .${CARD.style.dynamic.hiddenComponent.icon.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.left.class},
+  .${CARD.style.dynamic.hiddenComponent.name.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameGroup.class},
+  .${CARD.style.dynamic.hiddenComponent.shape.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.shape.class},
+  .${CARD.style.dynamic.hiddenComponent.progress_bar.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.progressBar.bar.class},
+  .${CARD.style.dynamic.hiddenComponent.secondary_info.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
+    display: flex;
+    visibility: hidden;
+  }
 
-    .${CARD.documentation.link.class} {
-        text-decoration: none;
-        display: flex;
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 600;
-    }
+  .${CARD.editor.fields.accordion.item.class} {
+    display: block;
+    width: 100%;
+    border: 1px solid color-mix(in srgb, var(--card-background-color) 80%, var(--secondary-text-color) 20%);
+    border-radius: 6px;
+    overflow: visible;
+  }
+  .${CARD.editor.fields.accordion.icon.class} {
+    color: var(--secondary-text-color);
+    margin-right: 8px;
+  }
+  .${CARD.editor.fields.accordion.title.class} {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    position: relative;
+    background-color: transparent;
+    color: var(--primary-text-color);
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    height: 48px;
+    border: none;
+    text-align: left;
+    font-size: 15px;
+    transition: 0.4s;
+  }
 
-    .${CARD.documentation.shape.class} {
-        width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        cursor: pointer;
-    }
-    .${CARD.documentation.shape.class}:hover {
-        background-color: color-mix(in srgb, var(--card-background-color) 90%, var(--secondary-text-color) 10%);
-    }
+  .${CARD.editor.fields.accordion.title.class}:focus {
+    background-color: var(--secondary-background-color);
+  }
 
-    .${CARD.documentation.questionMark.class} {
-        color: var(--primary-text-color);
-    }
+  .${CARD.editor.fields.accordion.arrow.class} {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-left: auto;
+    color: var(--primary-text-color);
+    transition: transform 0.2s ease-out;
+  }
+  .accordion.expanded .${CARD.editor.fields.accordion.arrow.class} {
+    transform: rotate(180deg);
+  }
+  .${CARD.editor.fields.accordion.content.class} {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    column-gap: 10px;
+    row-gap: 20px;
+    padding: 0px 18px;
+    background-color: transparent;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      max-height 0.2s cubic-bezier(0.33, 0, 0.2, 1),
+      padding 0.2s cubic-bezier(0.33, 0, 0.2, 1),
+      opacity 0.2s ease;
+  }
 
-    .${CARD.htmlStructure.elements.badge.container.class} {
-        position: absolute;
-        z-index: 2;
-        top: -3px;
-        right: -3px;
-        inset-inline-end: -3px;
-        inset-inline-start: initial;
-        height: 16px;
-        width: 16px;
-        border-radius: 50%;
-        background-color: var(${CARD.style.dynamic.badge.backgroundColor.var}, ${CARD.style.dynamic.badge.backgroundColor.default});
-        display: none;
-        align-items: center;
-        justify-content: center;
-    }
+  .accordion.expanded .${CARD.editor.fields.accordion.content.class} {
+    /* max-height: défini par script JS */
+    padding-top: 30px;
+    padding-bottom: 30px;
+    opacity: 1;
+    overflow: visible;
+  }
 
-    .${CARD.htmlStructure.elements.badge.container.class} .${CARD.htmlStructure.elements.badge.icon.class} {
-        height: 12px;
-        width: 12px;
-        display: flex; /* h/w ratio */
-        align-items: center;
-        justify-content: center;
-        color: var(${CARD.style.dynamic.badge.color.var}, ${CARD.style.dynamic.badge.color.default});
-    }
+  .${CARD.editor.fields.accordion.content.class} > * {
+    opacity: 0;
+    transition: opacity 0.2s ease 0.15s;
+  }
+  .accordion.expanded .${CARD.editor.fields.accordion.content.class} > * {
+    opacity: 1;
+  }
+  .accordion.collapsing .${CARD.editor.fields.accordion.content.class} > * {
+    opacity: 0 !important;
+    transition: opacity 0.1s; /* désactive transition pendant repli */
+  }
 
-    .${CARD.style.dynamic.hiddenComponent.icon.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.left.class},
-    .${CARD.style.dynamic.hiddenComponent.name.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameGroup.class},
-    .${CARD.style.dynamic.hiddenComponent.shape.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.shape.class},
-    .${CARD.style.dynamic.hiddenComponent.progress_bar.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.progressBar.bar.class},
-    .${CARD.style.dynamic.hiddenComponent.secondary_info.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
-        display: flex;
-        visibility: hidden;
-    }
+  ha-select {
+    --mdc-menu-max-height: 250px; /* Définit la hauteur maximale */
+  }
 
-    .${CARD.editor.fields.accordion.item.class} {
-        display: block;
-        width: 100%;
-        border: 1px solid color-mix(in srgb, var(--card-background-color) 80%, var(--secondary-text-color) 20%);
-        border-radius: 6px;
-        overflow: visible;
-    }
-    .${CARD.editor.fields.accordion.icon.class} {
-        color: var(--secondary-text-color);
-        margin-right: 8px;
-    }
-    .${CARD.editor.fields.accordion.title.class} {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 10px;
-        position: relative;
-        background-color: transparent;
-        color: var(--primary-text-color);
-        cursor: pointer;
-        padding: 18px;
-        width: 100%;
-        height: 48px;
-        border: none;
-        text-align: left;
-        font-size: 15px;
-        transition: 0.4s;
-    }
-    
-    .${CARD.editor.fields.accordion.title.class}:focus {
-        background-color: var(--secondary-background-color);
-    }
-    
-    .${CARD.editor.fields.accordion.arrow.class} {
-        display: inline-block;
-        width: 24px;
-        height: 24px;
-        margin-left: auto;
-        color: var(--primary-text-color);
-        transition: transform 0.2s ease-out;
-    }
-    .accordion.expanded .${CARD.editor.fields.accordion.arrow.class} {
-        transform: rotate(180deg);
-    }
-    .${CARD.editor.fields.accordion.content.class} {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-content: flex-start;
-        column-gap: 10px;
-        row-gap: 20px;
-        padding: 0px 18px;
-        background-color: transparent;
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        transition:
-          max-height 0.5s cubic-bezier(0.33, 0, 0.2, 1),
-          padding 0.5s cubic-bezier(0.33, 0, 0.2, 1),
-          opacity 0.5s ease;
-    }
+  /* show/hide */
+  .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.attribute} .${CARD.editor.keyMappings.attribute},
+  .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.max_value_attribute} .${CARD.editor.keyMappings.max_value_attribute},
+  .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.theme} .${CARD.editor.keyMappings.theme},
+  .${CARD.style.dynamic.hiddenComponent.icon.class} .${CARD.htmlStructure.sections.left.class},
+  .${CARD.style.dynamic.hiddenComponent.name.class} .${CARD.htmlStructure.elements.nameGroup.class},
+  .${CARD.style.dynamic.hiddenComponent.shape.class} .${CARD.htmlStructure.elements.shape.class},
+  .${CARD.style.dynamic.hiddenComponent.progress_bar.class} .${CARD.htmlStructure.elements.progressBar.bar.class},
+  .${CARD.style.dynamic.hiddenComponent.secondary_info.class} .${CARD.htmlStructure.elements.detailGroup.class} {
+    display: none;
+  }
 
-    .accordion.expanded .${CARD.editor.fields.accordion.content.class} {
-        /* max-height: défini par script JS */
-        padding-top: 30px;
-        padding-bottom: 30px;
-        opacity: 1;
-        overflow: visible;
-    }
+  .${CARD.style.dynamic.show}-${CARD.htmlStructure.elements.badge.container.class} .${CARD.htmlStructure.elements.badge.container.class},
+  .${CARD.style.dynamic.show}-HWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class},
+  .${CARD.style.dynamic.show}-LWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class},
+  .${CARD.style.dynamic.show}-HWM-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class},
+  .${CARD.style.dynamic.show}-LWM-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class} {
+    display: flex;
+  }
 
-    .${CARD.editor.fields.accordion.content.class} > * {
-        opacity: 0;
-        transition: opacity 0.4s ease 0.15s;
-    }
+  .${CARD.editor.fields.toggle.class} {
+    display: flex;
+    align-item: center;
+    gap: 8px;
+  }`;
 
-    .accordion.expanded .${CARD.editor.fields.accordion.content.class} > * {
-        opacity: 1;
-    }
-    ha-select {
-      --mdc-menu-max-height: 250px; /* Définit la hauteur maximale */
-    }
+/******************************************************************************************
+ * Dev mode
+ */
 
-    /* show/hide */
-    .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.attribute} .${CARD.editor.keyMappings.attribute},
-    .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.max_value_attribute} .${CARD.editor.keyMappings.max_value_attribute},
-    .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.theme} .${CARD.editor.keyMappings.theme},
-    .${CARD.style.dynamic.hiddenComponent.icon.class} .${CARD.htmlStructure.sections.left.class},
-    .${CARD.style.dynamic.hiddenComponent.name.class} .${CARD.htmlStructure.elements.nameGroup.class},
-    .${CARD.style.dynamic.hiddenComponent.shape.class} .${CARD.htmlStructure.elements.shape.class},
-    .${CARD.style.dynamic.hiddenComponent.progress_bar.class} .${CARD.htmlStructure.elements.progressBar.bar.class},
-    .${CARD.style.dynamic.hiddenComponent.secondary_info.class} .${CARD.htmlStructure.elements.detailGroup.class} {
-        display: none;
-    }
-
-    .${CARD.style.dynamic.show}-${CARD.htmlStructure.elements.badge.container.class} .${CARD.htmlStructure.elements.badge.container.class},
-    .${CARD.style.dynamic.show}-HWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class},
-    .${CARD.style.dynamic.show}-LWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class},
-    .${CARD.style.dynamic.show}-HWM-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class},
-    .${CARD.style.dynamic.show}-LWM-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class} {
-        display: flex;
-    }
-`;
-
+if (CARD.config.dev) {
+  CARD.meta.typeName = `${CARD.meta.typeName}-dev`;
+  CARD.meta.name = `${CARD.meta.typeName} (dev)`;
+  CARD.meta.editor = `${CARD.meta.editor}-dev`;
+}
 /******************************************************************************************
  * Debug
  *
@@ -2731,7 +2766,6 @@ const CARD_CSS = `
  * @param {any} val
  */
 const debugLog = (msg, val) => {
-  if (!CARD.config?.debug) return;
   if (val !== undefined && val !== null) {
     console.debug(msg, val);
   } else {
@@ -3305,7 +3339,15 @@ class HassProviderSingleton {
   }
   getNumericAttributes(entityId) {
     const attributes = this.getEntityStateObj(entityId)?.attributes ?? {};
-    return Object.fromEntries(Object.entries(attributes).filter(([_, val]) => typeof val === 'number')); // eslint-disable-line no-unused-vars
+
+    return Object.fromEntries(
+      Object.entries(attributes).filter(([_, val]) => { // eslint-disable-line no-unused-vars
+        return typeof val === 'number' || (typeof val === 'string' && !isNaN(val) && val.trim() !== '');
+      }).map(([key, val]) => {
+        const num = typeof val === 'number' ? val : parseFloat(val);
+        return [key, num];
+      })
+    );
   }
 }
 
@@ -3382,7 +3424,9 @@ class EntityHelper {
     } else if (this.isDuration) {
       this.#manageDurationEntity();
     } else if (this.isCounter) {
-      this.#manageCounterEntity();
+      this.#manageCounterAndNumberEntity('minimum', 'maximum');
+    } else if (this.isNumber) {
+      this.#manageCounterAndNumberEntity('min', 'max');
     } else {
       this.#manageStdEntity();
     }
@@ -3396,8 +3440,8 @@ class EntityHelper {
 
     const attrValue = this.#hassProvider.getEntityAttribute(this.#entityId, this.#attribute);
 
-    if (attrValue !== undefined) {
-      this.#value = attrValue;
+    if (attrValue !== undefined && !isNaN(parseFloat(attrValue))) {
+      this.#value = parseFloat(attrValue);
       if (this.#domain === ATTRIBUTE_MAPPING.light.label && this.#attribute === ATTRIBUTE_MAPPING.light.attribute) {
         this.#value = (100 * this.#value) / 255;
       }
@@ -3435,11 +3479,11 @@ class EntityHelper {
     }
     this.#value = { current: elapsed / CARD.config.msFactor, min: CARD.config.value.min, max: duration / CARD.config.msFactor, state: this.#state };
   }
-  #manageCounterEntity() {
+  #manageCounterAndNumberEntity(min, max) {
     this.#value = {
       current: parseFloat(this.state),
-      min: this.#hassProvider.getEntityAttribute(this.#entityId, 'minimum'),
-      max: this.#hassProvider.getEntityAttribute(this.#entityId, 'maximum'),
+      min: this.#hassProvider.getEntityAttribute(this.#entityId, min),
+      max: this.#hassProvider.getEntityAttribute(this.#entityId, max),
     };
   }
   #manageDurationEntity() {
@@ -3453,15 +3497,20 @@ class EntityHelper {
    *
    */
   get attributes() {
-    return this.#isValid ? this.#hassProvider.getNumericAttributes(this.#entityId) : {};
+    return this.#isValid && !this.isCounter && !this.isNumber && !this.isDuration && !this.isTimer
+      ? this.#hassProvider.getNumericAttributes(this.#entityId)
+      : {};
   }
   get attributesListForEditor() {
-    const attributes = this.#hassProvider.getNumericAttributes(this.#entityId);
+    const attributes = this.attributes;
 
-    return Object.keys(attributes).map((attr) => ({
-      value: attr,
-      label: this.#hassProvider.getFormatedEntityAttributeName(this.#entityId, attr),
-    }));
+    return [
+      { value: '', label: '' },
+      ...Object.keys(attributes).map((attr) => ({
+        value: attr,
+        label: this.#hassProvider.getFormatedEntityAttributeName(this.#entityId, attr),
+      }))
+    ];
   }
   get hasAttribute() {
     return this.#isValid && Object.keys(this.attributes ?? {}).length > 0;
@@ -3494,6 +3543,9 @@ class EntityHelper {
   }
   get isDuration() {
     return !this.isTimer && this.#hassProvider.getDeviceClass(this.#entityId) === 'duration' && this.#attribute == null;
+  }
+  get isNumber() {
+    return this.#domain === CARD.config.entity.type.number;
   }
   get isCounter() {
     return this.#domain === CARD.config.entity.type.counter;
@@ -3637,6 +3689,9 @@ class EntityOrValue {
   get isCounter() {
     return this.#activeHelper && this.#isEntity ? this.#activeHelper.isCounter : false;
   }
+  get isNumber() {
+    return this.#activeHelper && this.#isEntity ? this.#activeHelper.isNumber : false;
+  }
   get hasShapeByDefault() {
     return this.#activeHelper && this.#isEntity ? this.#activeHelper.hasShapeByDefault : false;
   }
@@ -3691,10 +3746,10 @@ class ConfigHelper {
 
   set config(config) {
     this.#isChanged = true;
-    this.#config = this.#applyDefaults(config);
+    this.#config = ConfigHelper.#applyDefaults(config);
   }
 
-  #applyDefaults(config) {
+  static #applyDefaults(config) {
     const domain = HassProviderSingleton.getEntityDomain(config.entity);
     const toggleableDomains = ['light', 'switch', 'fan', 'input_boolean', 'media_player'];
     const isToggleable = toggleableDomains.includes(domain);
@@ -3858,6 +3913,7 @@ class ConfigHelper {
  * @class CardView
  */
 class CardView {
+  #debug = CARD.config.debug.card;
   #hassProvider = null;
   #configHelper = new ConfigHelper();
   #percentHelper = new PercentHelper();
@@ -3881,18 +3937,30 @@ class CardView {
   }
   set config(config) {
     this.#configHelper.config = config;
-    this.#percentHelper.unitSpacing = this.#configHelper.config.unitSpacing;
-    this.#percentHelper.hasDisabledUnit = this.#configHelper.hasDisabledUnit;
-    this.#theme.theme = this.#configHelper.config.theme;
-    this.#theme.customTheme = this.#configHelper.config.custom_theme;
-    this.#currentValue.value = this.#configHelper.config.entity;
-    this.#currentValue.stateContent = this.#configHelper.stateContent;
+
+    Object.assign(this.#percentHelper, {
+      unitSpacing: config.unitSpacing,
+      hasDisabledUnit: this.#configHelper.hasDisabledUnit,
+    });
+
+    Object.assign(this.#theme, {
+      theme: config.theme,
+      customTheme: config.custom_theme,
+    });
+
+    Object.assign(this.#currentValue, {
+      value: config.entity,
+      stateContent: this.#configHelper.stateContent,
+    });
+
     if (this.#currentValue.isTimer) {
       this.#max_value.value = CARD.config.value.max;
     } else {
       this.#currentValue.attribute = config.attribute;
-      this.#max_value.value = config.max_value ?? CARD.config.value.max;
-      this.#max_value.attribute = config.max_value_attribute;
+      Object.assign(this.#max_value, {
+        value: config.max_value ?? CARD.config.value.max,
+        attribute: config.max_value_attribute,
+      });
     }
   }
   get config() {
@@ -3946,8 +4014,7 @@ class CardView {
     return CARD.style.color.disabled;
   }
   get bar_orientation() {
-    if (this.#currentValue.isTimer && this.#configHelper.config.bar_orientation === null)
-      return 'rtl';
+    if (this.#currentValue.isTimer && this.#configHelper.config.bar_orientation === null) return 'rtl';
 
     return this.#configHelper.config.bar_orientation === 'rtl' ? this.#configHelper.config.bar_orientation : null;
   }
@@ -4018,7 +4085,7 @@ class CardView {
     const rawSpeed = this.#currentValue.value.duration / CARD.config.refresh.ratio;
     const clampedSpeed = Math.min(CARD.config.refresh.max, Math.max(CARD.config.refresh.min, rawSpeed));
     const roundedSpeed = Math.max(100, Math.round(clampedSpeed / 100) * 100);
-    debugLog(roundedSpeed);
+    if (this.#debug) debugLog(roundedSpeed);
 
     return roundedSpeed;
   }
@@ -4110,18 +4177,24 @@ class CardView {
     this.#percentHelper.decimal = this.#getCurrentDecimal(currentUnit);
 
     if (this.#currentValue.isTimer) {
-      this.#percentHelper.isReversed = this.timerIsReversed;
-      this.#percentHelper.current = this.#currentValue.value.current;
-      this.#percentHelper.min = this.#currentValue.value.min;
-      this.#percentHelper.max = this.#currentValue.value.max;
-    } else if (this.#currentValue.isCounter) {
-      this.#percentHelper.current = this.#currentValue.value.current;
-      this.#percentHelper.min = this.#currentValue.value.min;
-      this.#percentHelper.max = this.#currentValue.value.max;
+      Object.assign(this.#percentHelper, {
+        isReversed: this.timerIsReversed,
+        current: this.#currentValue.value.current,
+        min: this.#currentValue.value.min,
+        max: this.#currentValue.value.max,
+      });
+    } else if (this.#currentValue.isCounter || this.#currentValue.isNumber) {
+      Object.assign(this.#percentHelper, {
+        current: this.#currentValue.value.current,
+        min: this.#currentValue.value.min,
+        max: this.#max_value.isEntity ? this.#max_value.value?.current ?? this.#max_value.value : this.#currentValue.value.max,
+      });
     } else {
-      this.#percentHelper.current = this.#currentValue.value;
-      this.#percentHelper.min = this.#configHelper.min_value;
-      this.#percentHelper.max = this.#max_value.value;
+      Object.assign(this.#percentHelper, {
+        current: this.#currentValue.value,
+        min: this.#configHelper.min_value,
+        max: this.#max_value.value?.current ?? this.#max_value.value,
+      });
     }
     this.#percentHelper.refresh();
     this.#theme.value = this.#percentHelper.valueForThemes(this.#theme.isBasedOnPercentage);
@@ -4151,6 +4224,7 @@ class CardView {
 }
 
 class ResourceManager {
+  #debug = CARD.config.debug.ressourceManager;
   #resources = new Map();
 
   #generateUniqueId() {
@@ -4170,18 +4244,18 @@ class ResourceManager {
       this.remove(finalId); // <-- on supprime proprement l'ancien !
     }
     this.#resources.set(finalId, cleanupFn);
-    debugLog(`[ResourceManager] Added: ${finalId}`);
+    if (this.#debug) debugLog(`[ResourceManager] Added: ${finalId}`);
 
     return finalId;
   }
 
   setInterval(handler, timeout, id) {
-    debugLog('Starting interval with id:', id);
+    if (this.#debug) debugLog('Starting interval with id:', id);
     const timerId = setInterval(handler, timeout);
-    debugLog('Timer started with timerId:', timerId);
+    if (this.#debug) debugLog('Timer started with timerId:', timerId);
 
     this.add(() => {
-      debugLog('Stopping interval with id:', id);
+      if (this.#debug) debugLog('Stopping interval with id:', id);
       clearInterval(timerId);
     }, id);
 
@@ -4193,9 +4267,9 @@ class ResourceManager {
   }
 
   setTimeout(handler, timeout, id) {
-    debugLog('Starting timeout with id:', id);
+    if (this.#debug) debugLog('Starting timeout with id:', id);
     const timerId = setTimeout(handler, timeout);
-    debugLog('Timeout started with timerId:', timerId);
+    if (this.#debug) debugLog('Timeout started with timerId:', timerId);
     return this.add(() => clearTimeout(timerId), id);
   }
 
@@ -4219,7 +4293,7 @@ class ResourceManager {
         console.error(`[ResourceManager] Error while removing '${id}'`, e);
       }
       this.#resources.delete(id);
-      debugLog(`[ResourceManager] Removed: ${id}`);
+      if (this.#debug) debugLog(`[ResourceManager] Removed: ${id}`);
     }
   }
 
@@ -4230,10 +4304,10 @@ class ResourceManager {
       } catch (e) {
         console.error(`[ResourceManager] Error while clearing '${id}'`, e);
       }
-      debugLog(`[ResourceManager] Cleared: ${id}`);
+      if (this.#debug) debugLog(`[ResourceManager] Cleared: ${id}`);
     }
     this.#resources.clear();
-    debugLog('[ResourceManager] All resources cleared.');
+    if (this.#debug) debugLog('[ResourceManager] All resources cleared.');
   }
 
   get list() {
@@ -4254,6 +4328,7 @@ class ResourceManager {
  * state.
  */
 class EntityProgressCard extends HTMLElement {
+  #debug = CARD.config.debug.card;
   #resourceManager = null;
   #icon = null;
   #cardView = new CardView();
@@ -4284,18 +4359,19 @@ class EntityProgressCard extends HTMLElement {
       console.groupCollapsed(CARD.console.message, CARD.console.css);
       console.log(CARD.console.link);
       console.groupEnd();
-      debugLog(Object.keys(LANGUAGES));
+      if (this.#debug) debugLog(Object.keys(LANGUAGES));
       EntityProgressCard._moduleLoaded = true;
     }
   }
 
   connectedCallback() {
-    debugLog('👉 connectedCallback()');
+    if (this.#debug) debugLog('👉 connectedCallback()');
+    const selector = CARD.htmlStructure.elements;
     this.#resourceManager = new ResourceManager();
     this.#clickableTarget = this.#cardView.hasClickableCard
       ? this
       : this.#cardView.hasClickableIcon
-        ? [this.#elements[CARD.htmlStructure.elements.shape.class], this.#elements[CARD.htmlStructure.elements.icon.class]]
+        ? [this.#elements[selector.shape.class], this.#elements[selector.icon.class]]
         : null;
 
     if (!this.#clickableTarget) return;
@@ -4309,7 +4385,7 @@ class EntityProgressCard extends HTMLElement {
     }
   }
   #attachListener(elem) {
-    debugLog('👉 #attachListener()');
+    if (this.#debug) debugLog('👉 #attachListener()');
     this.#resourceManager.addEventListener(elem, 'mousedown', this.#boundHandlers.mousedown);
     this.#resourceManager.addEventListener(elem, 'mouseup', this.#boundHandlers.mouseup);
     this.#resourceManager.addEventListener(elem, 'mousemove', this.#boundHandlers.mousemove);
@@ -4319,31 +4395,33 @@ class EntityProgressCard extends HTMLElement {
   }
 
   disconnectedCallback() {
-    debugLog('👉 disconnectedCallback()');
+    if (this.#debug) debugLog('👉 disconnectedCallback()');
     this.#resourceManager?.clear();
   }
 
   #handleMouseDown(ev) {
-    debugLog('👉 handleMouseDown()');
-    debugLog('    ', ev.composedPath());
+    if (this.#debug) debugLog('👉 handleMouseDown()');
+    if (this.#debug) debugLog('    ', ev.composedPath());
 
     const orginalTarget = ev.composedPath()[0].localName;
 
     this.#clickSource = CARD.interactions.event.originalTarget.icon.includes(orginalTarget)
       ? CARD.interactions.event.from.icon
       : CARD.interactions.event.from.card;
-    debugLog('    clickSource: ', this.#clickSource);
+    if (this.#debug) debugLog('    clickSource: ', this.#clickSource);
 
     this.#downTime = Date.now();
     this.#startX = ev.clientX;
     this.#startY = ev.clientY;
     this.#isHolding = false;
 
-    this.#resourceManager.setTimeout(() => {
-      this.#isHolding = true; // juste armer le hold
-    },
-    500,
-    'holdTimeout');
+    this.#resourceManager.setTimeout(
+      () => {
+        this.#isHolding = true; // juste armer le hold
+      },
+      500,
+      'holdTimeout'
+    );
   }
 
   #resetClickState() {
@@ -4375,10 +4453,14 @@ class EntityProgressCard extends HTMLElement {
     this.#clickCount++;
 
     if (this.#clickCount === 1) {
-      this.#resourceManager.setTimeout(() => {
-        this.#fireAction(ev, CARD.interactions.event.tap.tapAction);
-        this.#clickCount = 0;
-      }, 300, 'tapTimeout');
+      this.#resourceManager.setTimeout(
+        () => {
+          this.#fireAction(ev, CARD.interactions.event.tap.tapAction);
+          this.#clickCount = 0;
+        },
+        300,
+        'tapTimeout'
+      );
     } else if (this.#clickCount === 2) {
       this.#resourceManager.remove('tapTimeout');
       this.#fireAction(ev, CARD.interactions.event.tap.doubleTapAction);
@@ -4397,14 +4479,14 @@ class EntityProgressCard extends HTMLElement {
   }
 
   #fireAction(originalEvent, currentAction) {
-    debugLog('👉 EntityProgressCard.#fireAction()');
-    debugLog('  📎 originalEvent: ', originalEvent);
-    debugLog('  📎 original action: ', currentAction);
-    debugLog('    clickSource: ', this.#clickSource);
+    if (this.#debug) debugLog('👉 EntityProgressCard.#fireAction()');
+    if (this.#debug) debugLog('  📎 originalEvent: ', originalEvent);
+    if (this.#debug) debugLog('  📎 original action: ', currentAction);
+    if (this.#debug) debugLog('    clickSource: ', this.#clickSource);
 
     const prefixAction = this.#clickSource === CARD.interactions.event.from.icon ? `${CARD.interactions.event.from.icon}_` : '';
     let fullAction = `${prefixAction}${currentAction}`;
-    debugLog('  📎 fullAction: ', fullAction);
+    if (this.#debug) debugLog('  📎 fullAction: ', fullAction);
 
     let currentConfig = null;
 
@@ -4450,6 +4532,25 @@ class EntityProgressCard extends HTMLElement {
     return document.createElement(CARD.meta.editor);
   }
 
+  static getStubConfig(hass) {
+    const wantedDomains = ['fan', 'cover', 'light', 'sensor'];
+    const batteryRegex = /battery/i;
+
+    const entity = Object.keys(hass.states).find((eid) => {
+      const domain = HassProviderSingleton.getEntityDomain(eid);
+      if (wantedDomains.includes(domain)) {
+        if (domain === 'sensor') {
+          return batteryRegex.test(eid);
+        }
+        return true;
+      }
+      return false;
+    });
+    return {
+      type: `custom:${CARD.meta.typeName}`,
+      entity: entity || 'sensor.temperature',
+    };
+  }
   /**
    * Updates the component's configuration and triggers static changes.
    */
@@ -4485,7 +4586,7 @@ class EntityProgressCard extends HTMLElement {
   }
 
   refresh() {
-    debugLog('👉 EntityProgressCard.refresh()');
+    if (this.#debug) debugLog('👉 EntityProgressCard.refresh()');
 
     this.#cardView.refresh(this.hass);
     if (this.#manageErrorMessage()) return;
@@ -4506,7 +4607,7 @@ class EntityProgressCard extends HTMLElement {
     this.#resourceManager.setInterval(
       () => {
         this.refresh(this.hass);
-        debugLog('👉 EntityProgressCard.#startAutoRefresh()');
+        if (this.#debug) debugLog('👉 EntityProgressCard.#startAutoRefresh()');
         if (!this.#cardView.isActiveTimer) {
           this.#stopAutoRefresh();
         }
@@ -4531,14 +4632,27 @@ class EntityProgressCard extends HTMLElement {
    * them into the component's Shadow DOM.
    */
   #buildCard() {
-    debugLog('👉 EntityProgressCard.#buildCard()');
-
+    if (this.#debug) debugLog('👉 EntityProgressCard.#buildCard()');
+    
     const card = document.createElement(CARD.htmlStructure.card.element);
+    this.#buildStyle(card);
+    card.innerHTML = CARD_HTML;
+    const style = document.createElement(CARD.style.element);
+    style.textContent = CARD_CSS;
+
+    // Inject in the DOM
+    this.shadowRoot.innerHTML = '';
+    this.shadowRoot.appendChild(style);
+    this.shadowRoot.appendChild(card);
+    // store DOM ref to update
+    this.#storeDOM(card);
+  }
+
+  #buildStyle(card) {
     card.classList.add(CARD.meta.typeName);
     card.classList.toggle(CARD.style.dynamic.clickable.card, this.#cardView.hasClickableCard);
     card.classList.toggle(CARD.style.dynamic.clickable.icon, this.#cardView.hasClickableIcon);
-    if (this.#cardView.bar_orientation)
-      card.classList.add(CARD.style.dynamic.progressBar.orientation[this.#cardView.bar_orientation]);
+    if (this.#cardView.bar_orientation) card.classList.add(CARD.style.dynamic.progressBar.orientation[this.#cardView.bar_orientation]);
     card.classList.add(this.#cardView.layout);
     card.classList.add(this.#cardView.bar_size);
     card.classList.toggle(CARD.style.dynamic.secondaryInfoError.class, this.#cardView.hasStandardEntityError);
@@ -4555,30 +4669,29 @@ class EntityProgressCard extends HTMLElement {
       `${CARD.style.dynamic.show}-LWM-${type}${CARD.htmlStructure.elements.progressBar.watermark.class}`,
       this.#cardView.hasWatermark && !this.#cardView.watermark.disable_low
     );
-
-    card.innerHTML = CARD_HTML;
-    const style = document.createElement(CARD.style.element);
-    style.textContent = CARD_CSS;
-
-    // Inject in the DOM
-    this.shadowRoot.innerHTML = '';
-    this.shadowRoot.appendChild(style);
-    this.shadowRoot.appendChild(card);
-    // store DOM ref to update
-    this.#elements = {
-      [CARD.htmlStructure.card.element]: card,
-      [CARD.htmlStructure.elements.icon.class]: this.shadowRoot.querySelector(`.${CARD.htmlStructure.elements.icon.class}`),
-      [CARD.htmlStructure.elements.shape.class]: this.shadowRoot.querySelector(`.${CARD.htmlStructure.elements.shape.class}`),
-      [CARD.htmlStructure.elements.badge.icon.class]: this.shadowRoot.querySelector(`.${CARD.htmlStructure.elements.badge.icon.class}`),
-      [CARD.htmlStructure.elements.name.class]: this.shadowRoot.querySelector(`.${CARD.htmlStructure.elements.name.class}`),
-      [CARD.htmlStructure.elements.nameCustomInfo.class]: this.shadowRoot.querySelector(`.${CARD.htmlStructure.elements.nameCustomInfo.class}`),
-      [CARD.htmlStructure.elements.customInfo.class]: this.shadowRoot.querySelector(`.${CARD.htmlStructure.elements.customInfo.class}`),
-      [CARD.htmlStructure.elements.stateAndProgressInfo.class]: this.shadowRoot.querySelector(
-        `.${CARD.htmlStructure.elements.stateAndProgressInfo.class}`
-      ),
-    };
   }
 
+  #storeDOM(card) {
+    const selectors = CARD.htmlStructure.elements;
+
+    this.#elements = {
+      [CARD.htmlStructure.card.element]: card,
+    };
+
+    const keys = [
+      selectors.icon,
+      selectors.shape,
+      selectors.badge.icon,
+      selectors.name,
+      selectors.nameCustomInfo,
+      selectors.customInfo,
+      selectors.stateAndProgressInfo,
+    ];
+
+    for (const { class: className } of keys) {
+      this.#elements[className] = this.shadowRoot.querySelector(`.${className}`);
+    }
+  }
   /**
    * Updates the specified DOM element based on a provided callback function.
    */
@@ -4591,22 +4704,37 @@ class EntityProgressCard extends HTMLElement {
 
   #updateCSS() {
     this.#updateElement(CARD.htmlStructure.card.element, (el) => {
-      el.style.setProperty(CARD.style.dynamic.progressBar.color.var, this.#cardView.bar_color);
-      el.style.setProperty(CARD.style.dynamic.progressBar.size.var, `${this.#cardView.percent}%`);
-      el.style.setProperty(CARD.style.dynamic.iconAndShape.color.var, this.#cardView.color);
-      if (!this.#cardView.hasWatermark) return;
-      el.style.setProperty(CARD.style.dynamic.watermark.high.value.var, `${this.#cardView.watermark.high}%`);
-      el.style.setProperty(CARD.style.dynamic.watermark.high.color.var, this.#cardView.watermark.high_color);
-      el.style.setProperty(CARD.style.dynamic.watermark.low.value.var, `${this.#cardView.watermark.low}%`);
-      el.style.setProperty(CARD.style.dynamic.watermark.low.color.var, this.#cardView.watermark.low_color);
-      el.style.setProperty(CARD.style.dynamic.watermark.opacity.var, this.#cardView.watermark.opacity);
+      const style = el.style;
+      const bar = this.#cardView;
+
+      const properties = [
+        [CARD.style.dynamic.progressBar.color.var, bar.bar_color],
+        [CARD.style.dynamic.progressBar.size.var, `${bar.percent}%`],
+        [CARD.style.dynamic.iconAndShape.color.var, bar.color],
+      ];
+
+      if (bar.hasWatermark) {
+        const wm = bar.watermark;
+        properties.push(
+          [CARD.style.dynamic.watermark.high.value.var, `${wm.high}%`],
+          [CARD.style.dynamic.watermark.high.color.var, wm.high_color],
+          [CARD.style.dynamic.watermark.low.value.var, `${wm.low}%`],
+          [CARD.style.dynamic.watermark.low.color.var, wm.low_color],
+          [CARD.style.dynamic.watermark.opacity.var, wm.opacity]
+        );
+      }
+      properties.forEach(([variable, value]) => {
+        if (style.getPropertyValue(variable) !== value) {
+          style.setProperty(variable, value);
+        }
+      });
     });
   }
 
   #renderJinja(key, content) {
-    debugLog('👉 EntityProgressCard.#renderJinja()');
-    debugLog(key);
-    debugLog(content);
+    if (this.#debug) debugLog('👉 EntityProgressCard.#renderJinja()');
+    if (this.#debug) debugLog(key);
+    if (this.#debug) debugLog(content);
     switch (key) {
       case 'custom_info':
         content = `${content}&nbsp;`;
@@ -4653,7 +4781,7 @@ class EntityProgressCard extends HTMLElement {
    * Updates dynamic card elements based on the entity's state and configuration.
    */
   #updateDynamicElements() {
-    debugLog('👉 EntityProgressCard.#updateDynamicElements()');
+    if (this.#debug) debugLog('👉 EntityProgressCard.#updateDynamicElements()');
     this.#showIcon();
     this.#showBadge();
     this.#manageShape();
@@ -4663,8 +4791,7 @@ class EntityProgressCard extends HTMLElement {
   }
 
   #showIcon() {
-    const stateObj = this.#cardView.EntityStateObj;
-    const curIcon = this.#cardView.icon;
+    const { EntityStateObj: stateObj, icon: curIcon } = this.#cardView;
     const hasIconOverride = curIcon !== null;
     const hasPicture = stateObj?.attributes?.entity_picture;
 
@@ -4715,8 +4842,8 @@ class EntityProgressCard extends HTMLElement {
    * Displays a badge
    */
   #showBadge() {
-    const badgeInfo = this.#cardView.badgeInfo;
-    const isBadgeEnable = this.#cardView.isBadgeEnable;
+    const { badgeInfo, isBadgeEnable } = this.#cardView;
+
     if (isBadgeEnable && badgeInfo === null) return; // custom
 
     this.#elements[CARD.htmlStructure.card.element].classList.toggle(
@@ -4859,6 +4986,7 @@ window.customCards = window.customCards || []; // Create the list if it doesn't 
 window.customCards.push({
   type: CARD.meta.typeName,
   name: CARD.meta.name,
+  preview: true,
   description: CARD.meta.description,
 });
 
@@ -4867,6 +4995,8 @@ window.customCards.push({
  */
 
 class ConfigUpdateEventHandler {
+  #debug = CARD.config.debug.editor;
+
   constructor(newConfig) {
     this.config = { ...newConfig };
 
@@ -4908,9 +5038,8 @@ class ConfigUpdateEventHandler {
   }
 
   updateConfig(changedEvent) {
-    debugLog('👉 ConfigUpdateEventHandler.updateConfig()');
-    debugLog('  📎 ', changedEvent);
-    debugLog(`  📎 ${changedEvent.target.id} -> ${changedEvent.target.value !== undefined ? changedEvent.target.value : changedEvent.detail}`);
+    if (this.#debug) debugLog('👉 ConfigUpdateEventHandler.updateConfig()');
+    if (this.#debug) debugLog('  📎 ', changedEvent);
 
     const targetId = changedEvent.target.id;
 
@@ -5022,6 +5151,7 @@ class ConfigUpdateEventHandler {
  *  - https://github.com/home-assistant/frontend/blob/28304bb1dcebfddf3ab991e2f9e38f44427fe0f8/src/data/selector.ts
  */
 class EntityProgressCardEditor extends HTMLElement {
+  static #debug = CARD.config.debug.editor;
   #hassProvider = null;
   #resourceManager = null;
   #container = null;
@@ -5042,7 +5172,7 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   connectedCallback() {
-    debugLog('👉 Editor.connectedCallback()');
+    if (EntityProgressCardEditor.#debug) debugLog('👉 Editor.connectedCallback()');
     if (!this.#resourceManager) this.#resourceManager = new ResourceManager();
     if (this.#isRendered && !this.#isListenersAttached && this.#isYAML) {
       this.#addEventListener();
@@ -5052,7 +5182,7 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   disconnectedCallback() {
-    debugLog('👉 Editor.disconnectedCallback()');
+    if (EntityProgressCardEditor.#debug) debugLog('👉 Editor.disconnectedCallback()');
     this.#resourceManager?.clear();
     this.#isListenersAttached = false;
     this.#isYAML = true;
@@ -5073,8 +5203,8 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   setConfig(config) {
-    debugLog('👉 editor.setConfig()');
-    debugLog('  📎 ', config);
+    if (EntityProgressCardEditor.#debug) debugLog('👉 editor.setConfig()');
+    if (EntityProgressCardEditor.#debug) debugLog('  📎 config: ', config);
     this.#config = config;
     if (!this.#hassProvider.isValid) {
       return;
@@ -5084,7 +5214,13 @@ class EntityProgressCardEditor extends HTMLElement {
       this.#isRendered = true;
       this.#isListenersAttached = false;
     }
-    if (!this.#isListenersAttached) {
+
+    if (EntityProgressCardEditor.#debug) debugLog('  📎 container GUI: ', this.#container);
+    if (EntityProgressCardEditor.#debug) debugLog('  📎 connected ?: ', this.isConnected);
+
+    if (!this.isConnected) this.#isYAML = true; // YAML editor
+    if (!this.#isListenersAttached && this.isConnected) {
+      // GUI editor
       this.#addEventListener();
       this.#isListenersAttached = true;
     }
@@ -5092,50 +5228,20 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   #updateFields() {
-    debugLog('👉 editor.#updateFields()');
+    if (EntityProgressCardEditor.#debug) debugLog('👉 editor.#updateFields()');
 
-    const excludedKeys = new Set([
-      CARD.editor.fields.tap_action.type,
-      CARD.editor.fields.double_tap_action.type,
-      CARD.editor.fields.hold_action.type,
-      CARD.editor.fields.icon_tap_action.type,
-      CARD.editor.fields.icon_double_tap_action.type,
-      CARD.editor.fields.icon_hold_action.type,
-      CARD.editor.keyMappings.attribute,
-      CARD.editor.keyMappings.max_value_attribute,
-      EDITOR_INPUT_FIELDS.theme.field.icon.name,
-      EDITOR_INPUT_FIELDS.theme.field.color.name,
-      EDITOR_INPUT_FIELDS.theme.field.bar_color.name,
-      EDITOR_INPUT_FIELDS.basicConfiguration.entity.name,
-    ]);
+    const standardFieldType = new Set(['ha-select', 'ha-textfield']);
+    const excludeStandardType = new Set([CARD.editor.keyMappings.attribute, CARD.editor.keyMappings.max_value_attribute]);
 
     for (const [key, element] of Object.entries(this.#elements)) {
-      if (!excludedKeys.has(key) && Object.hasOwn(this.#config, key)) {
-        const newValue = this.#config[key];
+      if (standardFieldType.has(element.localName) && !excludeStandardType.has(key)) {
+        const newValue = Object.hasOwn(this.#config, key) ? this.#config[key] : '';
         if (element.value !== newValue) {
           element.value = newValue;
-          debugLog('✅ updateFields - update: ', [key, newValue]);
+          if (EntityProgressCardEditor.#debug) debugLog('✅ updateFields - update: ', [key, newValue]);
         }
-      }
-    }
-
-    const haFormTypes = [
-      CARD.editor.fields.entity.type,
-      CARD.editor.fields.tap_action.type,
-      CARD.editor.fields.double_tap_action.type,
-      CARD.editor.fields.hold_action.type,
-      CARD.editor.fields.icon_tap_action.type,
-      CARD.editor.fields.icon_double_tap_action.type,
-      CARD.editor.fields.icon_hold_action.type,
-      CARD.editor.fields.icon.type,
-      EDITOR_INPUT_FIELDS.theme.field.bar_color.name,
-      EDITOR_INPUT_FIELDS.theme.field.color.name,
-    ];
-
-    for (const type of haFormTypes) {
-      const element = this.#elements[type];
-      if (element) {
-        EntityProgressCardEditor.#updateHAForm(element, type, this.#config[type]);
+      } else if (element.localName === 'ha-form') {
+        EntityProgressCardEditor.#updateHAForm(element, key, this.#config[key]);
       }
     }
 
@@ -5153,31 +5259,31 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   static #updateHAForm(form, key, newValue) {
-    debugLog('👉 editor.#updateHAForm()');
-    debugLog('        ✅ Update HA Form (Before) ------> ', form.data);
-    debugLog('        ✅ NewValue: ', newValue);
+    if (EntityProgressCardEditor.#debug) debugLog('👉 editor.#updateHAForm()');
+    if (EntityProgressCardEditor.#debug) debugLog('        ✅ Update HA Form (Before) ------> ', form.data);
+    if (EntityProgressCardEditor.#debug) debugLog('        ✅ NewValue: ', newValue);
 
     if (form.data === undefined || (newValue !== undefined && form.data[key] !== newValue)) {
-      debugLog('        ✅ NewValue: update.');
+      if (EntityProgressCardEditor.#debug) debugLog('        ✅ NewValue: update.');
       form.data = {
         ...form.data,
         [key]: newValue,
       };
-      debugLog(form.data);
+      if (EntityProgressCardEditor.#debug) debugLog(form.data);
     } else if (newValue === undefined && form.data[key] !== undefined) {
-      debugLog('        ✅ key: set undef...');
+      if (EntityProgressCardEditor.#debug) debugLog('        ✅ key: set undef...');
       form.data = {
         ...form.data,
         [key]: undefined,
       };
     }
-    debugLog('        ✅ Update HA Form (after) ------> ', form.data);
+    if (EntityProgressCardEditor.#debug) debugLog('        ✅ Update HA Form (after) ------> ', form.data);
   }
 
   #updateAttributFromEntity(entity, attribute) {
-    debugLog('👉 editor.#updateAttributFromEntity()');
-    debugLog(`  📎 entity: ${entity}`);
-    debugLog(`  📎 attribute: ${attribute}`);
+    if (EntityProgressCardEditor.#debug) debugLog('👉 editor.#updateAttributFromEntity()');
+    if (EntityProgressCardEditor.#debug) debugLog(`  📎 entity: ${entity}`);
+    if (EntityProgressCardEditor.#debug) debugLog(`  📎 attribute: ${attribute}`);
 
     // Création d'une instance EntityOrValue pour l'entité courante
     const curEntity = new EntityOrValue();
@@ -5188,14 +5294,14 @@ class EntityProgressCardEditor extends HTMLElement {
     if (this.#previous[entity] !== this.#config[entity] && curEntity.hasAttribute) {
       this.#previous[entity] = this.#config[entity];
       this.#updateChoices(this.#elements[attribute], attribute, attributeList);
-      debugLog(`        ✅ updateFields - ${entity} attributes list: `, attributeList);
+      if (EntityProgressCardEditor.#debug) debugLog(`        ✅ updateFields - ${entity} attributes list: `, attributeList);
     }
 
     // Si l'attribut n'est pas défini dans la config ET
     // que l'entité possède des attributs ET
     // que la valeur du select ne correspond pas encore au defaultAttribute :
     if (this.#config[attribute] === undefined && curEntity.hasAttribute) {
-      debugLog(`        ✅ updateFields - Attribute ${attribute} (default): in progress...`);
+      if (EntityProgressCardEditor.#debug) debugLog(`        ✅ updateFields - Attribute ${attribute} (default): in progress...`);
       EntityProgressCardEditor.#applySelectValueOnUpdate(this.#elements[attribute], curEntity.defaultAttribute);
     }
 
@@ -5206,7 +5312,7 @@ class EntityProgressCardEditor extends HTMLElement {
       this.#elements[attribute].value !== this.#config[attribute]
     ) {
       this.#elements[attribute].value = this.#config[attribute];
-      debugLog(`        ✅ updateFields - Attribute ${attribute}: `, curEntity.attributes);
+      if (EntityProgressCardEditor.#debug) debugLog(`        ✅ updateFields - Attribute ${attribute}: `, curEntity.attributes);
     }
 
     return curEntity.hasAttribute;
@@ -5217,9 +5323,9 @@ class EntityProgressCardEditor extends HTMLElement {
     const values = Array.from(select.children).map((el) => el.getAttribute('value'));
     if (values.includes(value)) {
       select.value = value;
-      debugLog('        ✅ applySelectValueOnUpdate - Entity attribute (default): ', value);
+      if (this.#debug) debugLog('        ✅ applySelectValueOnUpdate - Entity attribute (default): ', value);
     } else {
-      debugLog('        ❌ applySelectValueOnUpdate - Default attribute not found in select options', values);
+      if (this.#debug) debugLog('        ❌ applySelectValueOnUpdate - Default attribute not found in select options', values);
     }
   }
   #updateToggleFields() {
@@ -5243,7 +5349,7 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   #addEventListener() {
-    debugLog('👉 editor.#addEventListener');
+    if (EntityProgressCardEditor.#debug) debugLog('👉 editor.#addEventListener');
     const fieldsToProcess = [
       EDITOR_INPUT_FIELDS.basicConfiguration,
       EDITOR_INPUT_FIELDS.content.field,
@@ -5270,7 +5376,7 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   #addEventListenerFor(name, type) {
-    debugLog(`👉 Editor.#addEventListenerFor(${name}, ${type})`);
+    if (EntityProgressCardEditor.#debug) debugLog(`👉 Editor.#addEventListenerFor(${name}, ${type})`);
     if (!this.#elements[name]) {
       console.error(`Element ${name} not found!`);
       return;
@@ -5279,7 +5385,7 @@ class EntityProgressCardEditor extends HTMLElement {
     const isToggle = CARD.editor.fields[type]?.element === CARD.editor.fields.toggle.element;
     const events = isHASelect ? CARD.interactions.event.HASelect : isToggle ? CARD.interactions.event.toggle : CARD.interactions.event.other;
 
-    debugLog(`Event: ${events}`);
+    if (EntityProgressCardEditor.#debug) debugLog(`Event: ${events}`);
 
     if (isHASelect) {
       this.#resourceManager.addEventListener(
@@ -5298,9 +5404,10 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   #onChanged(changedEvent) {
-    debugLog('👉 editor.#onChanged()');
-    debugLog('  📎 ', changedEvent);
-    debugLog(`  📎 ${changedEvent.target.id} -> ${changedEvent.target.value !== undefined ? changedEvent.target.value : changedEvent.detail}`);
+    if (EntityProgressCardEditor.#debug) debugLog('👉 editor.#onChanged()');
+    if (EntityProgressCardEditor.#debug) debugLog('  📎 ', changedEvent);
+    if (EntityProgressCardEditor.#debug)
+      debugLog(`  📎 ${changedEvent.target.id} -> ${changedEvent.target.value !== undefined ? changedEvent.target.value : changedEvent.detail}`);
 
     const configUpdateEventHandler = new ConfigUpdateEventHandler(Object.assign({}, this.#config));
     const newConfig = configUpdateEventHandler.updateConfig(changedEvent);
@@ -5309,12 +5416,12 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   #sendNewConfig(newConfig) {
-    debugLog('👉 editor.#sendNewConfig()');
+    if (EntityProgressCardEditor.#debug) debugLog('👉 editor.#sendNewConfig()');
     if (newConfig.grid_options) {
       const { grid_options, ...rest } = newConfig;
       newConfig = { ...rest, grid_options };
     }
-    debugLog('  📎 newConfig: ', newConfig);
+    if (EntityProgressCardEditor.#debug) debugLog('  📎 newConfig: ', newConfig);
     const messageEvent = new CustomEvent(CARD.interactions.event.configChanged, {
       detail: { config: newConfig },
       bubbles: true,
@@ -5331,10 +5438,10 @@ class EntityProgressCardEditor extends HTMLElement {
    * Update a list of choices to a given `<select>` element based on the specified list type.
    */
   #updateChoices(select, type, choices = null) {
-    debugLog('👉 editor.#updateChoices()');
-    debugLog(`  📎 select: ${select}`);
-    debugLog(`  📎 type: ${type}`);
-    debugLog(`  📎 choices: ${choices}`);
+    if (EntityProgressCardEditor.#debug) debugLog('👉 editor.#updateChoices()');
+    if (EntityProgressCardEditor.#debug) debugLog(`  📎 select: ${select}`);
+    if (EntityProgressCardEditor.#debug) debugLog(`  📎 type: ${type}`);
+    if (EntityProgressCardEditor.#debug) debugLog(`  📎 choices: ${choices}`);
 
     select.innerHTML = '';
 
@@ -5342,7 +5449,7 @@ class EntityProgressCardEditor extends HTMLElement {
     if (!list) {
       return;
     }
-    debugLog('  📌 list: ', list);
+    if (EntityProgressCardEditor.#debug) debugLog('  📌 list: ', list);
 
     list.forEach((optionData) => {
       const option = document.createElement(CARD.editor.fields.listItem.element);
@@ -5373,9 +5480,9 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   static #computeCustomLabel(s, label) {
-    debugLog('👉 computeCustomLabel()');
-    debugLog('  📎 name: ', s.name);
-    debugLog('  📎 label: ', label);
+    if (this.#debug) debugLog('👉 computeCustomLabel()');
+    if (this.#debug) debugLog('  📎 name: ', s.name);
+    if (this.#debug) debugLog('  📎 label: ', label);
     return label;
   }
 
@@ -5383,7 +5490,7 @@ class EntityProgressCardEditor extends HTMLElement {
    * Creates a form field based on the provided configuration and appends it to a container.
    */
   #createField({ name, label, type, required, isInGroup, width, schema = null }) {
-    debugLog('👉 editor.#createField()');
+    if (EntityProgressCardEditor.#debug) debugLog('👉 editor.#createField()');
     let inputElement = null;
     const value = this.#config[name] ?? '';
 
@@ -5402,11 +5509,13 @@ class EntityProgressCardEditor extends HTMLElement {
           inputElement.classList.add(isInGroup);
         }
         inputElement.style.width = width;
-        inputElement.id = name;
-        inputElement.hass = this.#hassProvider.hass;
-        inputElement.schema = schema;
-        inputElement.computeLabel = (s) => EntityProgressCardEditor.#computeCustomLabel(s, label);
-        inputElement.data = {};
+        Object.assign(inputElement, {
+          id: name,
+          hass: this.#hassProvider.hass,
+          schema,
+          computeLabel: (s) => EntityProgressCardEditor.#computeCustomLabel(s, label),
+          data: {},
+        });
         this.#elements[name] = inputElement;
         return inputElement; //break;
       }
@@ -5425,9 +5534,12 @@ class EntityProgressCardEditor extends HTMLElement {
         break;
       case CARD.editor.fields.toggle.type: {
         inputElement = document.createElement(CARD.editor.fields.container.element);
-        inputElement.style.display = 'flex';
-        inputElement.style.alignItems = 'center';
-        inputElement.style.gap = '8px';
+        inputElement.classList.add(CARD.editor.fields.toggle.class);
+        Object.assign(inputElement.style, {
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        });
 
         const toggleLabel = document.createElement(CARD.editor.fields.text.element);
         toggleLabel.textContent = label;
@@ -5451,10 +5563,12 @@ class EntityProgressCardEditor extends HTMLElement {
 
     this.#elements[name] = inputElement;
     inputElement.style.width = width;
-    inputElement.required = required;
-    inputElement.label = label;
-    inputElement.value = value;
-    inputElement.id = name;
+    Object.assign(inputElement, {
+      required,
+      label,
+      value,
+      id: name,
+    });
 
     if (isInGroup) {
       inputElement.classList.add(isInGroup);
@@ -5481,20 +5595,59 @@ class EntityProgressCardEditor extends HTMLElement {
   }
 
   toggleAccordion(index) {
-    const accordionContent = this.#accordionList[index];
-    accordionContent.classList.toggle('expanded');
-    const panel = accordionContent.querySelector('.accordion-content');
+    const accordion = this.#accordionList[index];
+    const panel = accordion.querySelector('.accordion-content');
     if (!panel) return;
-    if (panel.style.maxHeight) {
-      panel.style.maxHeight = null;
-    } else {
+
+    const isExpanding = !accordion.classList.contains('expanded');
+
+    if (isExpanding) {
+      // Préparation à l'expansion
+      panel.style.display = 'flex'; // pour éviter une disparition instantanée
       panel.style.maxHeight = `${panel.scrollHeight}px`;
+      panel.style.paddingTop = '30px';
+      panel.style.paddingBottom = '30px';
+      panel.style.opacity = '1';
+
+      // Forcer un reflow (important pour Chrome)
+      panel.offsetHeight; // Reflow forcé
+
+      accordion.classList.add('expanded');
+
+      // Supprime max-height après la transition
+      const onTransitionEnd = () => {
+        panel.removeEventListener('transitionend', onTransitionEnd);
+        panel.style.maxHeight = 'none';
+      };
+      panel.addEventListener('transitionend', onTransitionEnd);
+    } else {
+      // Ajoute une classe temporaire pour désactiver l'opacité des enfants
+      accordion.classList.add('collapsing');
+
+      // Commence par réinitialiser le max-height pour animer proprement
+      panel.style.maxHeight = `${panel.scrollHeight}px`;
+
+      // Reflow forcé avant de mettre max-height à 0
+      void panel.offsetHeight; // Reflow forcé
+
+      panel.style.maxHeight = '0';
+      panel.style.paddingTop = '0';
+      panel.style.paddingBottom = '0';
+      panel.style.opacity = '0';
+
+      const onTransitionEnd = () => {
+        panel.removeEventListener('transitionend', onTransitionEnd);
+        accordion.classList.remove('expanded');
+        accordion.classList.remove('collapsing');
+        panel.style.display = '';
+      };
+      panel.addEventListener('transitionend', onTransitionEnd);
     }
   }
 
   #renderFields(parent, inputFields) {
     Object.values(inputFields).forEach((field) => {
-      debugLog('#renderFields - field: ', field);
+      if (EntityProgressCardEditor.#debug) debugLog('#renderFields - field: ', field);
       parent.appendChild(
         this.#createField({
           name: field.name,
@@ -5553,9 +5706,10 @@ class EntityProgressCardEditor extends HTMLElement {
     this.#container.classList.add(CARD.editor.fields.container.class);
 
     this.#renderFields(this.#container, EDITOR_INPUT_FIELDS.basicConfiguration);
-    this.#renderAccordion(this.#container, EDITOR_INPUT_FIELDS.content);
-    this.#renderAccordion(this.#container, EDITOR_INPUT_FIELDS.interaction);
-    this.#renderAccordion(this.#container, EDITOR_INPUT_FIELDS.theme);
+    for (const section of Object.keys(EDITOR_INPUT_FIELDS)) {
+      if (section === 'basicConfiguration') continue;
+      this.#renderAccordion(this.#container, EDITOR_INPUT_FIELDS[section]);
+    }
 
     this.#container.appendChild(EntityProgressCardEditor.#makeHelpIcon());
     fragment.appendChild(this.#container);
