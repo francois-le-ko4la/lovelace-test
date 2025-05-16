@@ -5609,8 +5609,8 @@ class EntityProgressCardEditor extends HTMLElement {
       panel.style.paddingBottom = '30px';
       panel.style.opacity = '1';
 
-      // Forcer un reflow (important pour Chrome)
-      panel.offsetHeight; // Reflow forcé
+      // deepsource-disable-next-line JS-0093
+      panel.offsetHeight; // reflow (chrome)
 
       accordion.classList.add('expanded');
 
@@ -5628,7 +5628,8 @@ class EntityProgressCardEditor extends HTMLElement {
       panel.style.maxHeight = `${panel.scrollHeight}px`;
 
       // Reflow forcé avant de mettre max-height à 0
-      void panel.offsetHeight; // Reflow forcé
+      // deepsource-disable-next-line JS-0093
+      void panel.offsetHeight; // reflow (chrome)
 
       panel.style.maxHeight = '0';
       panel.style.paddingTop = '0';
