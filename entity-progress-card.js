@@ -5629,7 +5629,7 @@ class EntityProgressCardEditor extends HTMLElement {
 
       // Reflow forcé avant de mettre max-height à 0
       // deepsource-disable-next-line JS-0093
-      void panel.offsetHeight; // reflow (chrome)
+      panel.offsetHeight; // reflow (chrome)
 
       panel.style.maxHeight = '0';
       panel.style.paddingTop = '0';
