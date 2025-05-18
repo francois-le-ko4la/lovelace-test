@@ -15,7 +15,7 @@
  * More informations here: https://github.com/francois-le-ko4la/lovelace-entity-progress-card/
  *
  * @author ko4la
- * @version 1.3.9
+ * @version 1.3.11
  *
  */
 
@@ -23,7 +23,7 @@
  * PARAMETERS
  */
 
-const VERSION = '1.3.9';
+const VERSION = '1.3.11';
 const CARD = {
   meta: {
     typeName: 'entity-progress-card',
@@ -121,7 +121,7 @@ const CARD = {
     },
     separator: ' · ',
     debug: { card: false, editor: false, ressourceManager: false },
-    dev: true,
+    dev: false,
   },
   htmlStructure: {
     card: { element: 'ha-card' },
@@ -3519,10 +3519,10 @@ class EntityHelper {
     return ATTRIBUTE_MAPPING[this.#domain]?.attribute ?? null;
   }
   get name() {
-    return this.#isValid ? this.#hassProvider.getEntityName(this.#entityId) : null;
+    return this.#hassProvider.getEntityName(this.#entityId);
   }
   get stateObj() {
-    return this.#isValid ? this.#hassProvider.getEntityStateObj(this.#entityId) : null;
+    return this.#hassProvider.getEntityStateObj(this.#entityId);
   }
   get formatedEntityState() {
     return this.#hassProvider.getFormatedEntityState(this.#entityId);
@@ -4505,7 +4505,7 @@ class EntityProgressCard extends HTMLElement {
         entity: this.#cardView.config.entity,
         tap_action: this.#cardView.config[`${fullAction}_action`],
       };
-      fullAction = 'tap';
+      currentAction = 'tap';
     } else {
       currentConfig = this.#cardView.config;
     }
@@ -4633,7 +4633,7 @@ class EntityProgressCard extends HTMLElement {
    */
   #buildCard() {
     if (this.#debug) debugLog('👉 EntityProgressCard.#buildCard()');
-    
+
     const card = document.createElement(CARD.htmlStructure.card.element);
     this.#buildStyle(card);
     card.innerHTML = CARD_HTML;
@@ -5406,8 +5406,7 @@ class EntityProgressCardEditor extends HTMLElement {
   #onChanged(changedEvent) {
     if (EntityProgressCardEditor.#debug) debugLog('👉 editor.#onChanged()');
     if (EntityProgressCardEditor.#debug) debugLog('  📎 ', changedEvent);
-    if (EntityProgressCardEditor.#debug)
-      debugLog(`  📎 ${changedEvent.target.id} -> ${changedEvent.target.value !== undefined ? changedEvent.target.value : changedEvent.detail}`);
+    if (EntityProgressCardEditor.#debug) debugLog(`  📎 ${changedEvent.target.id} -> ${changedEvent.target.value !== undefined ? changedEvent.target.value : changedEvent.detail}`);
 
     const configUpdateEventHandler = new ConfigUpdateEventHandler(Object.assign({}, this.#config));
     const newConfig = configUpdateEventHandler.updateConfig(changedEvent);
