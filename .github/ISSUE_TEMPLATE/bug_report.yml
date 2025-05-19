@@ -9,7 +9,7 @@ body:
           options:
               - label: I checked the README.
                 required: true
-              - label: I tested the latest version.
+              - label: I have updated entity-progress-card to the latest available version.
                 required: true
               - label: I did a search to see if there is a similar issue.
                 required: true
