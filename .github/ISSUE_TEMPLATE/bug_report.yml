@@ -53,13 +53,13 @@ body:
           label: Environment
           description: |
               examples:
-                - **Brower**: Chrome
-                - **HA Version**: 2022.11.0
-                - **Mushroom**: 2.3.4
+                - **Brower**: Chrome vX.X
+                - **HA Version**: 2024.11.0
+                - **Entity Progress Card**: 1.x.x
           value: |
               - Browser:
               - HA Version:
-              - Mushroom:
+              - Entity Progress Card:
           render: markdown
       validations:
           required: false
