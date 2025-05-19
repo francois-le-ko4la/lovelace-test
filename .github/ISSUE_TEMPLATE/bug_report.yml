@@ -3,6 +3,13 @@ description: Create a report to help us improve
 title: "[Bug]: <title>"
 labels: ["bug"]
 body:
+    - type: markdown
+      attributes:
+          value: >
+              We are developing this card with passion and are fully committed to delivering high-quality code to ensure you have the best possible experience.
+              That said, if you do come across a bug despite our efforts, we'll do our best to fix it as quickly as possible.
+              To help speed things up, we kindly ask you to fill out the form below. If some fields don’t apply, feel free to just write "N/A".
+              Thank you so much for taking the time to share your feedback — it really helps us make things better!
     - type: checkboxes
       attributes:
           label: Requirements
@@ -53,9 +60,9 @@ body:
           label: Environment
           description: |
               examples:
-                - **Brower**: Chrome vX.X
-                - **HA Version**: 2024.11.0
-                - **Entity Progress Card**: 1.x.x
+                - **Brower**: Chrome 136.0.7103.93
+                - **HA Version**: 2024.12.0
+                - **Entity Progress Card**: 1.2.3
           value: |
               - Browser:
               - HA Version:
