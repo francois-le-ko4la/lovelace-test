@@ -19,6 +19,7 @@ jobs:
           cp *.js temp/
       - name: Clean debugLog calls and function
         run: |
+        
           # Determine sed option based on OS
           if [[ "$OSTYPE" == "darwin"* ]]; then
             SED_INPLACE="sed -i ''"
@@ -27,40 +28,34 @@ jobs:
           fi
           for file in temp/*.js; do
         
-            # Remove log initializations (# or _) - single line
-            $SED_INPLACE '/this\.[_#]log = initLogger/d' "$file"
-        
-            # Remove multi-line initLogger initializations
-            $SED_INPLACE '/this\.[_#]log = initLogger(/,/]);/d' "$file"
-        
-            # Remove initializations with Logger.create
-            $SED_INPLACE '/this\.[_#]log = Logger\.create/d' "$file"
-        
-            # Remove null log declarations
-            $SED_INPLACE '/[_#]log = null;/d' "$file"
-        
-            # Remove debug calls (# or _)
-            $SED_INPLACE '/this\.[_#]log\.debug/d' "$file"
-        
-            # Remove debug variable assignments
-            $SED_INPLACE '/[_#]debug = CARD\.config\.debug\./d' "$file"
-            $SED_INPLACE '/static [_#]debug = CARD\.config\.debug\./d' "$file"
-        
-            # Remove Logger class (multi-line)
-            $SED_INPLACE '/^const Logger = {$/,/^};$/d' "$file"
-        
-            # Remove initLogger function (multi-line)
-            $SED_INPLACE '/^function initLogger(/,/^}$/d' "$file"
-        
-            # Set all debug flags to false (only in debug: { ... } line)
+            # Patterns to delete specific logging/debugging lines or blocks
+            patterns=(
+              '/this\.[_#]log = initLogger/d'                             # Remove single-line initLogger assignments
+              '/this\.[_#]log = initLogger(/,/]);/d'                      # Remove multi-line initLogger assignments
+              '/this\.[_#]log = Logger\.create/d'                         # Remove Logger.create assignments
+              '/[_#]log = null;/d'                                        # Remove null log declarations
+              '/this\.[_#]log\.debug/d'                                   # Remove debug calls
+              '/[_#]debug = CARD\.config\.debug\./d'                      # Remove debug variable assignments
+              '/static [_#]debug = CARD\.config\.debug\./d'              # Remove static debug variable assignments
+              '/^const Logger = {$/,/^};$/d'                              # Remove Logger class block
+              '/^function initLogger(/,/^}$/d'                            # Remove initLogger function block
+            )
+            
+            # Apply all delete patterns to the file
+            for pattern in "${patterns[@]}"; do
+              $SED_INPLACE "$pattern" "$file"
+            done
+            
+            # Set all debug flags to false (in a single debug: { ... } line)
             $SED_INPLACE 's/debug: { card: [^,]*, editor: [^,]*, interactionHandler: [^,]*, ressourceManager: [^,]*, hass: [^}]* }/debug: { card: false, editor: false, interactionHandler: false, ressourceManager: false, hass: false }/g' "$file"
-        
+            
             # Set dev to false (only when alone on its line)
             $SED_INPLACE 's/^[[:space:]]*dev: true,$/    dev: false,/g' "$file"
-        
-            # Clean multiple empty lines
+            
+            # Remove consecutive empty lines
             $SED_INPLACE '/^$/N;/^\n$/d' "$file"
           done
+          
       - name: Process JS Files
         run: |
           npx esbuild temp/*.js --minify --target=es2022 --outdir=dist
