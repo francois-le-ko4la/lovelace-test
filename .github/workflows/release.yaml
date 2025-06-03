@@ -36,7 +36,7 @@ jobs:
               '/[_#]log = null;/d'                                        # Remove null log declarations
               '/this\.[_#]log\.debug/d'                                   # Remove debug calls
               '/[_#]debug = CARD\.config\.debug\./d'                      # Remove debug variable assignments
-              '/static [_#]debug = CARD\.config\.debug\./d'              # Remove static debug variable assignments
+              '/static [_#]debug = CARD\.config\.debug\./d'               # Remove static debug variable assignments
               '/^const Logger = {$/,/^};$/d'                              # Remove Logger class block
               '/^function initLogger(/,/^}$/d'                            # Remove initLogger function block
             )
