@@ -1,7 +1,9 @@
 name: Release Processing
+
 on:
   release:
     types: [published]
+
 jobs:
   build-and-upload:
     name: Minify JS & Upload Assets
@@ -10,25 +12,25 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Copy sources to temp
         run: |
           mkdir temp
           cp *.js temp/
+
       - name: Clean debugLog calls and function
         run: |
+          set -euo pipefail
+          SED_INPLACE="sed -i"
         
-          # Determine sed option based on OS
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            SED_INPLACE="sed -i ''"
-          else
-            SED_INPLACE="sed -i"
-          fi
           for file in temp/*.js; do
-        
-            # Patterns to delete specific logging/debugging lines or blocks
             patterns=(
               '/this\.[_#]log = initLogger(/,/]);/d'                      # Remove multi-line initLogger assignments
               '/this\.[_#]log = initLogger/d'                             # Remove single-line initLogger assignments
@@ -40,25 +42,19 @@ jobs:
               '/^const Logger = {$/,/^};$/d'                              # Remove Logger class block
               '/^function initLogger(/,/^}$/d'                            # Remove initLogger function block
             )
-            
-            # Apply all delete patterns to the file
+        
             for pattern in "${patterns[@]}"; do
               $SED_INPLACE "$pattern" "$file"
             done
-            
-            # Set all debug flags to false (in a single debug: { ... } line)
+        
             $SED_INPLACE 's/debug: { card: [^,]*, editor: [^,]*, interactionHandler: [^,]*, ressourceManager: [^,]*, hass: [^}]* }/debug: { card: false, editor: false, interactionHandler: false, ressourceManager: false, hass: false }/g' "$file"
-            
-            # Set dev to false (only when alone on its line)
             $SED_INPLACE 's/^[[:space:]]*dev: true,$/    dev: false,/g' "$file"
-            
-            # Remove consecutive empty lines
             $SED_INPLACE '/^$/N;/^\n$/d' "$file"
           done
-          
+
       - name: Process JS Files
-        run: |
-          npx esbuild temp/*.js --minify --target=es2022 --outdir=dist
+        run: npx esbuild temp/*.js --minify --target=es2022 --outdir=dist
+
       - name: Upload to Release
         uses: svenstaro/upload-release-action@v2
         with:
