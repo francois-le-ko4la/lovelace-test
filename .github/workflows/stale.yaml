@@ -15,20 +15,19 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-          # Temps d'inactivité avant d'ajouter le label 'inactive' et le message d'avertissement
           days-before-stale: 15
           stale-issue-label: 'inactive'
           remove-stale-when-updated: true
           stale-issue-message: |
             This issue has been inactive for 15 days. It will be closed in 15 days if no further activity occurs.
 
-          # Temps après le label 'inactive' avant fermeture définitive
           days-before-close: 15
-          close-issue-message: 'Closing this issue due to inactivity after warning period.'
-
-          # Exclure les issues avec le label 'pinned' (à ajouter manuellement pour les issues épinglées)
+          close-issue-message: >
+            Closing this issue due to inactivity after warning period.
+            No worries though — if you still need assistance or want to continue the discussion, 
+            just reply here and we’ll gladly reopen the issue and pick things back up with you!
+  
           exempt-issue-labels: 'pinned'
 
-          # Ne pas ajouter le label stale, on utilise 'inactive' à la place
-          stale-pr-message: ''  # pas de message pour les PRs ici
+          stale-pr-message: ''
           operations-per-run: 30
