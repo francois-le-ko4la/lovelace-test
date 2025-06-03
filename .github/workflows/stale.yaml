@@ -1,35 +1,31 @@
-name: Close stale issues rules
+name: Manage stale issues
 
 on:
   schedule:
-    - cron: '0 13 * * *'  # every day at midnight UTC
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
-  close_released_after_14d:
+  stale:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/stale@v6
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          stale-issue-message: >
-            This issue is automatically closed because it has been inactive for 2 weeks after the release that fixed it.
-          days-before-stale: 14
-          days-before-close: 0
-          stale-issue-label: 'stale'
-          close-issue-message: 'Automatically closing the issue due to inactivity.'
-          only-labels: 'released'
-          operations-per-run: 30
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-  close_all_after_31d:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/stale@v6
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          stale-issue-message: 'This issue has been inactive for over 31 days and will be closed.'
-          days-before-stale: 31
-          days-before-close: 0
-          stale-issue-label: 'stale'
-          close-issue-message: 'Automatically closing the issue due to long inactivity.'
+          # Temps d'inactivité avant d'ajouter le label 'inactive' et le message d'avertissement
+          days-before-stale: 15
+          stale-issue-label: 'inactive'
+          stale-issue-message: |
+            This issue has been inactive for 15 days. It will be closed in 15 days if no further activity occurs.
+
+          # Temps après le label 'inactive' avant fermeture définitive
+          days-before-close: 15
+          close-issue-message: 'Closing this issue due to inactivity after warning period.'
+
+          # Exclure les issues avec le label 'pinned' (à ajouter manuellement pour les issues épinglées)
+          exempt-issue-labels: 'pinned'
+
+          # Ne pas ajouter le label stale, on utilise 'inactive' à la place
+          stale-pr-message: ''  # pas de message pour les PRs ici
           operations-per-run: 30
