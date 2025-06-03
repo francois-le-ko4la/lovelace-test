@@ -29,8 +29,9 @@ jobs:
         
           for file in temp/*.js; do
             patterns=(
-              '/this\.[_#]log = initLogger(/,/]);/d'                      # Remove multi-line initLogger assignments
-              '/this\.[_#]log = initLogger/d'                             # Remove single-line initLogger assignments
+              's/;[[:space:]]*$/;/g'                                      # Remove space 
+              '/this\.[_#]log = initLogger(.*);$/d'                       # Remove single-line initLogger assignments
+              '/this\.[_#]log = initLogger(/,/);$/d'                      # Remove multi-line initLogger assignments
               '/this\.[_#]log = Logger\.create/d'                         # Remove Logger.create assignments
               '/[_#]log = null;/d'                                        # Remove null log declarations
               '/this\.[_#]log\.debug/d'                                   # Remove debug calls
