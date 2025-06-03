@@ -19,9 +19,47 @@ jobs:
           cp *.js temp/
       - name: Clean debugLog calls and function
         run: |
+          # Determine sed option based on OS
+          if [[ "$OSTYPE" == "darwin"* ]]; then
+            SED_INPLACE="sed -i ''"
+          else
+            SED_INPLACE="sed -i"
+          fi
           for file in temp/*.js; do
-            sed -i '/^\s*debugLog(.*);/d' "$file"
-            sed -i '/const debugLog = (msg, val) => {/,/^};/d' "$file"
+        
+            # Remove log initializations (# or _) - single line
+            $SED_INPLACE '/this\.[_#]log = initLogger/d' "$file"
+        
+            # Remove multi-line initLogger initializations
+            $SED_INPLACE '/this\.[_#]log = initLogger(/,/]);/d' "$file"
+        
+            # Remove initializations with Logger.create
+            $SED_INPLACE '/this\.[_#]log = Logger\.create/d' "$file"
+        
+            # Remove null log declarations
+            $SED_INPLACE '/[_#]log = null;/d' "$file"
+        
+            # Remove debug calls (# or _)
+            $SED_INPLACE '/this\.[_#]log\.debug/d' "$file"
+        
+            # Remove debug variable assignments
+            $SED_INPLACE '/[_#]debug = CARD\.config\.debug\./d' "$file"
+            $SED_INPLACE '/static [_#]debug = CARD\.config\.debug\./d' "$file"
+        
+            # Remove Logger class (multi-line)
+            $SED_INPLACE '/^const Logger = {$/,/^};$/d' "$file"
+        
+            # Remove initLogger function (multi-line)
+            $SED_INPLACE '/^function initLogger(/,/^}$/d' "$file"
+        
+            # Set all debug flags to false (only in debug: { ... } line)
+            $SED_INPLACE 's/debug: { card: [^,]*, editor: [^,]*, interactionHandler: [^,]*, ressourceManager: [^,]*, hass: [^}]* }/debug: { card: false, editor: false, interactionHandler: false, ressourceManager: false, hass: false }/g' "$file"
+        
+            # Set dev to false (only when alone on its line)
+            $SED_INPLACE 's/^[[:space:]]*dev: true,$/    dev: false,/g' "$file"
+        
+            # Clean multiple empty lines
+            $SED_INPLACE '/^$/N;/^\n$/d' "$file"
           done
       - name: Process JS Files
         run: |
