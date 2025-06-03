@@ -1,0 +1,35 @@
+name: Close stale issues rules
+
+on:
+  schedule:
+    - cron: '0 13 * * *'  # every day at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  close_released_after_14d:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v6
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          stale-issue-message: >
+            This issue is automatically closed because it has been inactive for 2 weeks after the release that fixed it.
+          days-before-stale: 14
+          days-before-close: 0
+          stale-issue-label: 'stale'
+          close-issue-message: 'Automatically closing the issue due to inactivity.'
+          only-labels: 'released'
+          operations-per-run: 30
+
+  close_all_after_31d:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v6
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          stale-issue-message: 'This issue has been inactive for over 31 days and will be closed.'
+          days-before-stale: 31
+          days-before-close: 0
+          stale-issue-label: 'stale'
+          close-issue-message: 'Automatically closing the issue due to long inactivity.'
+          operations-per-run: 30
