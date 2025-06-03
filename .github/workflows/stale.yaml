@@ -18,6 +18,7 @@ jobs:
           # Temps d'inactivité avant d'ajouter le label 'inactive' et le message d'avertissement
           days-before-stale: 15
           stale-issue-label: 'inactive'
+          remove-stale-when-updated: true
           stale-issue-message: |
             This issue has been inactive for 15 days. It will be closed in 15 days if no further activity occurs.
 
