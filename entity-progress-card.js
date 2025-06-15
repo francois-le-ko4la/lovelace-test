@@ -3191,7 +3191,7 @@ const Element = (obj) => {
   };
 };
 
-const S = {
+const StructureElements = {
   container: () => Element(CARD.htmlStructure.sections.container).html('{{content}}'),
   left: () => Element(CARD.htmlStructure.sections.left).html('{{content}}'),
 
@@ -3208,9 +3208,7 @@ const S = {
     ),
   nameGroupMinimal: () =>
     Element(CARD.htmlStructure.elements.nameGroup).html(
-      Element(CARD.htmlStructure.elements.nameCombined).html(
-        Element(CARD.htmlStructure.elements.name).html()
-      )
+      Element(CARD.htmlStructure.elements.nameCombined).html(Element(CARD.htmlStructure.elements.name).html())
     ),
 
   detailGroup: () =>
@@ -3222,9 +3220,7 @@ const S = {
 
   detailGroupMinimal: () =>
     Element(CARD.htmlStructure.elements.detailGroup).html(
-      Element(CARD.htmlStructure.elements.detailCombined).html(
-        Element(CARD.htmlStructure.elements.customInfo).html()
-      )
+      Element(CARD.htmlStructure.elements.detailCombined).html(Element(CARD.htmlStructure.elements.customInfo).html())
     ),
   progressBar: () =>
     Element(CARD.htmlStructure.elements.progressBar.container).html(
@@ -3235,18 +3231,20 @@ const S = {
       )
     ),
 
-  secondaryInfo: () => Element(CARD.htmlStructure.elements.secondaryInfo).html(S.detailGroup() + S.progressBar()),
-  secondaryInfoMinimal: () => Element(CARD.htmlStructure.elements.secondaryInfo).html(S.detailGroupMinimal() + S.progressBar()),
-  rightFull: () => Element(CARD.htmlStructure.sections.right).html(S.nameGroup() + S.secondaryInfo()),
-  rightMinimal: () => Element(CARD.htmlStructure.sections.right).html(S.nameGroupMinimal() + S.secondaryInfoMinimal()),
-  leftFull: () => Element(CARD.htmlStructure.sections.left).html(S.iconAndShape() + S.badge()),
-  leftNoBadge: () => Element(CARD.htmlStructure.sections.left).html(S.iconAndShape()),
+  secondaryInfo: () => Element(CARD.htmlStructure.elements.secondaryInfo).html(StructureElements.detailGroup() + StructureElements.progressBar()),
+  secondaryInfoMinimal: () =>
+    Element(CARD.htmlStructure.elements.secondaryInfo).html(StructureElements.detailGroupMinimal() + StructureElements.progressBar()),
+  rightFull: () => Element(CARD.htmlStructure.sections.right).html(StructureElements.nameGroup() + StructureElements.secondaryInfo()),
+  rightMinimal: () =>
+    Element(CARD.htmlStructure.sections.right).html(StructureElements.nameGroupMinimal() + StructureElements.secondaryInfoMinimal()),
+  leftFull: () => Element(CARD.htmlStructure.sections.left).html(StructureElements.iconAndShape() + StructureElements.badge()),
+  leftNoBadge: () => Element(CARD.htmlStructure.sections.left).html(StructureElements.iconAndShape()),
 };
 
 const StructureTemplates = {
-  card: () => S.container().replace('{{content}}', S.leftFull() + S.rightFull()),
-  badge: () => S.container().replace('{{content}}', S.leftNoBadge() + S.rightFull()),
-  template: () => S.container().replace('{{content}}', S.leftFull() + S.rightMinimal()),
+  card: () => StructureElements.container().replace('{{content}}', StructureElements.leftFull() + StructureElements.rightFull()),
+  badge: () => StructureElements.container().replace('{{content}}', StructureElements.leftNoBadge() + StructureElements.rightFull()),
+  template: () => StructureElements.container().replace('{{content}}', StructureElements.leftFull() + StructureElements.rightMinimal()),
 };
 
 const createHTMLStructure = {
@@ -4443,6 +4441,7 @@ class BaseConfigHelper {
 
   // === Validation and abstract method to be implemented in the subclass ===
   static applyDefaults(config) {
+    console.error('applyDefaults must be implemented in subclass', config);
     throw new Error('applyDefaults must be implemented in subclass');
   }
 
@@ -4465,6 +4464,7 @@ class BaseConfigHelper {
     this.#msg = null;
   }
 
+  // skipcq: JS-0105
   getValidationRules() {
     return [];
   }
@@ -4574,6 +4574,7 @@ class CardConfigHelper extends BaseConfigHelper {
     const domain = HassProviderSingleton.getEntityDomain(config.entity);
     const toggleableDomains = ['light', 'switch', 'fan', 'input_boolean', 'media_player'];
     const isToggleable = toggleableDomains.includes(domain);
+    // eslint-disable-next-line no-unused-vars
     const { watermark, ...baseDefaults } = CARD.config.defaults;
 
     // Filtrage de la configuration selon les clés autorisées
@@ -4780,6 +4781,7 @@ class MinimalCardView {
     return Array.isArray(this.config?.[key]) && this.config[key].includes(value);
   }
 
+  // skipcq: JS-0105
   _hasAction(action) {
     return action !== CARD.interactions.action.none.action;
   }
@@ -6524,6 +6526,7 @@ class TemplateConfigHelper extends BaseConfigHelper {
     const domain = HassProviderSingleton.getEntityDomain(config.entity);
     const toggleableDomains = ['light', 'switch', 'fan', 'input_boolean', 'media_player'];
     const isToggleable = toggleableDomains.includes(domain);
+    // eslint-disable-next-line no-unused-vars
     const { watermark, ...baseDefaults } = CARD.config.defaults;
 
     const defaultConfig = {
