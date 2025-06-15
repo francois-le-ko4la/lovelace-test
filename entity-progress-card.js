@@ -15,7 +15,7 @@
  * More informations here: https://github.com/francois-le-ko4la/lovelace-entity-progress-card/
  *
  * @author ko4la
- * @version 1.4.3
+ * @version 1.4.6
  *
  */
 
@@ -23,7 +23,7 @@
  * PARAMETERS
  */
 
-const VERSION = '1.4.3';
+const VERSION = '1.4.6';
 const CARD = {
   meta: {
     card: {
@@ -132,7 +132,7 @@ const CARD = {
     },
     separator: ' · ',
     debug: { card: false, editor: false, interactionHandler: false, ressourceManager: false, hass: false },
-    dev: true,
+    dev: false,
   },
   htmlStructure: {
     card: { element: 'ha-card' },
@@ -149,7 +149,6 @@ const CARD = {
       name: { element: 'span', class: 'name' },
       nameCustomInfo: { element: 'span', class: 'name-custom-info' },
       secondaryInfo: { element: 'div', class: 'secondary-info' },
-
       detailGroup: { element: 'div', class: 'secondary-info-detail-group' },
       detailCombined: { element: 'span', class: 'secondary-info-detail-combined' },
       stateAndProgressInfo: { element: 'span', class: 'state-and-progress-info' },
@@ -210,9 +209,9 @@ const CARD = {
     bar: {
       radius: '4px',
       sizeOptions: {
-        small: { label: 'small', mdi: 'mdi:size-s', size: '8px' },
-        medium: { label: 'medium', mdi: 'mdi:size-m', size: '12px' },
-        large: { label: 'large', mdi: 'mdi:size-l', size: '16px' },
+        small: { label: 'small', mdi: 'mdi:size-s' },
+        medium: { label: 'medium', mdi: 'mdi:size-m' },
+        large: { label: 'large', mdi: 'mdi:size-l' },
       },
     },
     dynamic: {
@@ -222,12 +221,14 @@ const CARD = {
       },
       iconAndShape: {
         color: { var: '--epb-icon-and-shape-color', default: 'var(--state-icon-color)' },
+        icon: { size: { var: '--epb-icon-size' } },
+        shape: { size: { var: '--epb-shape-size' } },
       },
       progressBar: {
         color: { var: '--epb-progress-bar-color', default: 'var(--state-icon-color)' },
         size: { var: '--epb-progress-bar-size', default: '0%' },
         background: { var: '--epb-progress-bar-background-color' },
-        orientation: { rtl: 'rtl_orientation', ltr: 'ltr_orientation' },
+        orientation: { rtl: 'rtl-orientation', ltr: 'ltr-orientation' },
       },
       watermark: {
         low: { value: { var: '--epb-low-watermark-value', default: 20 }, color: { var: '--epb-low-watermark-color', default: 'red' } },
@@ -237,14 +238,14 @@ const CARD = {
       secondaryInfoError: { class: 'secondary-info-error' },
       show: 'show',
       hide: 'hide',
-      clickable: { card: 'clickableCard', icon: 'clickableIcon' },
+      clickable: { card: 'clickable-card', icon: 'clickable-icon' },
       hiddenComponent: {
-        icon: { label: 'icon', class: 'hide_icon' },
-        shape: { label: 'shape', class: 'hide_shape' },
-        name: { label: 'name', class: 'hide_name' },
-        secondary_info: { label: 'secondary_info', class: 'hide_secondary_info' },
+        icon: { label: 'icon', class: 'hide-icon' },
+        shape: { label: 'shape', class: 'hide-shape' },
+        name: { label: 'name', class: 'hide-name' },
+        secondary_info: { label: 'secondary_info', class: 'hide-secondary-info' },
         value: { label: 'value' },
-        progress_bar: { label: 'progress_bar', class: 'hide_progress_bar' },
+        progress_bar: { label: 'progress_bar', class: 'hide-progress-bar' },
       },
       frameless: { class: 'frameless' },
     },
@@ -2253,529 +2254,677 @@ const ATTRIBUTE_MAPPING = {
 };
 
 const CARD_HTML = `
-    <!-- Main container -->
-    <${CARD.htmlStructure.sections.container.element} class="${CARD.htmlStructure.sections.container.class}">
-        <!-- icon/shape -->
-        <${CARD.htmlStructure.sections.left.element} class="${CARD.htmlStructure.sections.left.class}">
-            <${CARD.htmlStructure.elements.shape.element} class="${CARD.htmlStructure.elements.shape.class}">
-                <${CARD.htmlStructure.elements.icon.element} class="${CARD.htmlStructure.elements.icon.class}"></${CARD.htmlStructure.elements.icon.element}>
-            </${CARD.htmlStructure.elements.shape.element}>
-            <${CARD.htmlStructure.elements.badge.container.element} class="${CARD.htmlStructure.elements.badge.container.class}">
-                <${CARD.htmlStructure.elements.badge.icon.element} class="${CARD.htmlStructure.elements.badge.icon.class}"></${CARD.htmlStructure.elements.badge.icon.element}>
-            </${CARD.htmlStructure.elements.badge.container.element}>
-        </${CARD.htmlStructure.sections.left.element}>
-
-        <!-- infos/progress bar -->
-        <${CARD.htmlStructure.sections.right.element} class="${CARD.htmlStructure.sections.right.class}">
-            <${CARD.htmlStructure.elements.nameGroup.element} class="${CARD.htmlStructure.elements.nameGroup.class}">
-              <${CARD.htmlStructure.elements.nameCombined.element} class="${CARD.htmlStructure.elements.nameCombined.class}">
-                <${CARD.htmlStructure.elements.name.element} class="${CARD.htmlStructure.elements.name.class}"></${CARD.htmlStructure.elements.name.element}>
-                <${CARD.htmlStructure.elements.nameCustomInfo.element} class="${CARD.htmlStructure.elements.nameCustomInfo.class}"></${CARD.htmlStructure.elements.nameCustomInfo.element}>
-              </${CARD.htmlStructure.elements.nameCombined.element}>
-            </${CARD.htmlStructure.elements.nameGroup.element}>
-            <${CARD.htmlStructure.elements.secondaryInfo.element} class="${CARD.htmlStructure.elements.secondaryInfo.class}">
-                <${CARD.htmlStructure.elements.detailGroup.element} class="${CARD.htmlStructure.elements.detailGroup.class}">
-                  <${CARD.htmlStructure.elements.detailCombined.element} class="${CARD.htmlStructure.elements.detailCombined.class}">
-                    <${CARD.htmlStructure.elements.customInfo.element} class="${CARD.htmlStructure.elements.customInfo.class}"></${CARD.htmlStructure.elements.customInfo.element}>
-                    <${CARD.htmlStructure.elements.stateAndProgressInfo.element} class="${CARD.htmlStructure.elements.stateAndProgressInfo.class}"></${CARD.htmlStructure.elements.stateAndProgressInfo.element}>
-                  </${CARD.htmlStructure.elements.detailCombined.element}>
-                </${CARD.htmlStructure.elements.detailGroup.element}>
-                <${CARD.htmlStructure.elements.progressBar.container.element} class="${CARD.htmlStructure.elements.progressBar.container.class}">
-                    <${CARD.htmlStructure.elements.progressBar.bar.element} class="${CARD.htmlStructure.elements.progressBar.bar.class}">
-                        <${CARD.htmlStructure.elements.progressBar.inner.element} class="${CARD.htmlStructure.elements.progressBar.inner.class}"></${CARD.htmlStructure.elements.progressBar.inner.element}>
-                        <${CARD.htmlStructure.elements.progressBar.lowWatermark.element} class="${CARD.htmlStructure.elements.progressBar.lowWatermark.class}"></${CARD.htmlStructure.elements.progressBar.lowWatermark.element}>
-                        <${CARD.htmlStructure.elements.progressBar.highWatermark.element} class="${CARD.htmlStructure.elements.progressBar.highWatermark.class}"></${CARD.htmlStructure.elements.progressBar.highWatermark.element}>
-                    </${CARD.htmlStructure.elements.progressBar.bar.element}>
-                </${CARD.htmlStructure.elements.progressBar.container.element}>
-            </${CARD.htmlStructure.elements.secondaryInfo.element}>
-        </${CARD.htmlStructure.sections.right.element}>
-    </${CARD.htmlStructure.sections.container.element}>
-`;
+ <!-- Main container -->
+ <${CARD.htmlStructure.sections.container.element} class="${CARD.htmlStructure.sections.container.class}">
+   <!-- icon/shape -->
+   <${CARD.htmlStructure.sections.left.element} class="${CARD.htmlStructure.sections.left.class}">
+     <${CARD.htmlStructure.elements.shape.element} class="${CARD.htmlStructure.elements.shape.class}">
+       <${CARD.htmlStructure.elements.icon.element} class="${CARD.htmlStructure.elements.icon.class}"></${CARD.htmlStructure.elements.icon.element}>
+     </${CARD.htmlStructure.elements.shape.element}>
+     <${CARD.htmlStructure.elements.badge.container.element} class="${CARD.htmlStructure.elements.badge.container.class}">
+       <${CARD.htmlStructure.elements.badge.icon.element} class="${CARD.htmlStructure.elements.badge.icon.class}"></${CARD.htmlStructure.elements.badge.icon.element}>
+     </${CARD.htmlStructure.elements.badge.container.element}>
+   </${CARD.htmlStructure.sections.left.element}>
+ 
+   <!-- infos/progress bar -->
+   <${CARD.htmlStructure.sections.right.element} class="${CARD.htmlStructure.sections.right.class}">
+     <${CARD.htmlStructure.elements.nameGroup.element} class="${CARD.htmlStructure.elements.nameGroup.class}">
+       <${CARD.htmlStructure.elements.nameCombined.element} class="${CARD.htmlStructure.elements.nameCombined.class}">
+         <${CARD.htmlStructure.elements.name.element} class="${CARD.htmlStructure.elements.name.class}"></${CARD.htmlStructure.elements.name.element}>
+         <${CARD.htmlStructure.elements.nameCustomInfo.element} class="${CARD.htmlStructure.elements.nameCustomInfo.class}"></${CARD.htmlStructure.elements.nameCustomInfo.element}>
+       </${CARD.htmlStructure.elements.nameCombined.element}>
+     </${CARD.htmlStructure.elements.nameGroup.element}>
+     <${CARD.htmlStructure.elements.secondaryInfo.element} class="${CARD.htmlStructure.elements.secondaryInfo.class}">
+       <${CARD.htmlStructure.elements.detailGroup.element} class="${CARD.htmlStructure.elements.detailGroup.class}">
+         <${CARD.htmlStructure.elements.detailCombined.element} class="${CARD.htmlStructure.elements.detailCombined.class}">
+           <${CARD.htmlStructure.elements.customInfo.element} class="${CARD.htmlStructure.elements.customInfo.class}"></${CARD.htmlStructure.elements.customInfo.element}>
+           <${CARD.htmlStructure.elements.stateAndProgressInfo.element} class="${CARD.htmlStructure.elements.stateAndProgressInfo.class}"></${CARD.htmlStructure.elements.stateAndProgressInfo.element}>
+         </${CARD.htmlStructure.elements.detailCombined.element}>
+       </${CARD.htmlStructure.elements.detailGroup.element}>
+       <${CARD.htmlStructure.elements.progressBar.container.element} class="${CARD.htmlStructure.elements.progressBar.container.class}">
+           <${CARD.htmlStructure.elements.progressBar.bar.element} class="${CARD.htmlStructure.elements.progressBar.bar.class}">
+             <${CARD.htmlStructure.elements.progressBar.inner.element} class="${CARD.htmlStructure.elements.progressBar.inner.class}"></${CARD.htmlStructure.elements.progressBar.inner.element}>
+             <${CARD.htmlStructure.elements.progressBar.lowWatermark.element} class="${CARD.htmlStructure.elements.progressBar.lowWatermark.class}"></${CARD.htmlStructure.elements.progressBar.lowWatermark.element}>
+             <${CARD.htmlStructure.elements.progressBar.highWatermark.element} class="${CARD.htmlStructure.elements.progressBar.highWatermark.class}"></${CARD.htmlStructure.elements.progressBar.highWatermark.element}>
+           </${CARD.htmlStructure.elements.progressBar.bar.element}>
+       </${CARD.htmlStructure.elements.progressBar.container.element}>
+     </${CARD.htmlStructure.elements.secondaryInfo.element}>
+   </${CARD.htmlStructure.sections.right.element}>
+ </${CARD.htmlStructure.sections.container.element}>
+ `;
 
 const CARD_CSS = `
-  ${CARD.htmlStructure.card.element} {
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0;
-    box-sizing: border-box;
-    margin: 0 auto;
-    overflow: hidden;
-    font-family: var(--ha-font-family-body);
-  }
+:host {
+  /* === SPACING VARIABLES === */
+  --epb-gap-default: 10px;
+  --epb-gap-entities: 16px;
+  --epb-padding-default: 10px;
+  --epb-margin-vertical-top: 18px;
+  
+  /* === SIZE VARIABLES === */
+  --epb-shape-default-size: 36px;
+  --epb-icon-default-size: 24px;
+  --epb-entities-shape-size: 40px;
+  --epb-badge-size: 16px;
+  --epb-badge-icon-size: 12px;
+  --epb-badge-offset: -3px;
+  --epb-progress-small: 8px;
+  --epb-progress-medium: 12px;
+  --epb-progress-large: 16px;
+  
+  /* === HEIGHT VARIABLES === */
+  --epb-name-height: 20px;
+  --epb-detail-height: 16px;
+  --epb-entities-height: 22.4px;
+  --epb-entities-card-min-height: 44.8px;
+  --epb-vertical-name-large-height: 18px;
+  --epb-progress-container-height: 16px;
+  
+  /* === COLOR OPACITY VARIABLES === */
+  --epb-shape-opacity: 20%;
+  --epb-hover-opacity: 4%;
+  --epb-active-opacity: 15%;
+  --epb-icon-hover-opacity: 40%;
+  --epb-card-hover-mix: 96%;
+  --epb-card-active-mix: 85%;
+  
+  /* === TRANSITION VARIABLES === */
+  --epb-progress-transition-width: 0.3s ease;
+  --epb-click-transition-background: 0.5s ease;
+  
+  /* === TYPOGRAPHY VARIABLES === */
+  --epb-letter-spacing-name: 0.1px;
+  --epb-letter-spacing-detail: 0.4px;
+  
+  /* === LAYOUT VARIABLES === */
+  --epb-detail-max-width: 60%;
+  --epb-detail-min-width: 45px;
+  --epb-vertical-gap: 1px;
+}
 
-  .${CARD.style.dynamic.frameless.class} {
-    border: 0;
-    background-color: transparent;
-  }
+ /* === BASE CARD STYLES === */
+${CARD.htmlStructure.card.element} {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--epb-padding-default);
+  margin: 0 auto;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: var(--ha-font-family-body);
+  -moz-osx-font-smoothing: var(--ha-font-smoothing);
+  -webkit-font-smoothing: antialiased;
+}
 
-  .${CARD.style.dynamic.clickable.card} {
-    cursor: pointer;
-  }
+/* === FRAMELESS & ENTITIES STYLES === */
+.type-entities,
+.type-custom-vertical-stack-in-card,
+.${CARD.style.dynamic.frameless.class} {
+  background: transparent;
+  border: none !important;
+  box-shadow: none !important;
+}
 
-  .${CARD.style.dynamic.clickable.card}:hover {
-    background-color: color-mix(in srgb, var(--card-background-color) 96%, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) 4%);
-  }
+.type-entities {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transition: none !important;
+}
 
-  .${CARD.style.dynamic.clickable.card}:active {
-    background-color: color-mix(in srgb, var(--card-background-color) 85%, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) 15%);
-    transition: background-color 0.5s ease;
-  }
+/* === MAIN CONTAINER === */
+.${CARD.htmlStructure.sections.container.class} {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--epb-gap-default);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
-  /* main container */
-  .${CARD.htmlStructure.sections.container.class} {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    margin: 0px 10px;
-    gap: 10px;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
+.type-entities .${CARD.htmlStructure.sections.container.class} {
+  gap: var(--epb-gap-entities);
+  min-height: var(--epb-entities-card-min-height) !important;
+}
 
-  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.container.class} {
-    min-height: ${CARD.layout.orientations.vertical.minHeight};
-    flex-direction: column;
-  }
-  .${CARD.layout.orientations.horizontal.label} .${CARD.htmlStructure.sections.container.class} {
-    min-height: ${CARD.layout.orientations.horizontal.minHeight};
-    flex-direction: row;
-  }
+/* === LAYOUT ORIENTATIONS === */
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.container.class} {
+  min-height: ${CARD.layout.orientations.vertical.minHeight};
+  flex-direction: column;
+}
 
-  /* .left: icon & shape */
-  .${CARD.htmlStructure.sections.left.class} {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    width: var(--epb-icon-and-shape-size, 36px);
-    height: var(--epb-icon-and-shape-size, 36px);
-    flex-shrink: 0;
-  }
+.${CARD.layout.orientations.horizontal.label} .${CARD.htmlStructure.sections.container.class} {
+  min-height: ${CARD.layout.orientations.horizontal.minHeight};
+  flex-direction: row;
+}
 
-  .${CARD.layout.orientations.vertical.label}.${CARD.style.bar.sizeOptions.small.label} .${CARD.htmlStructure.sections.left.class} {
-    margin-top: 10px;
-  }
+/* === LEFT SECTION (ICON & SHAPE) === */
+.${CARD.htmlStructure.sections.left.class} {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: var(--epb-shape-size, var(--epb-shape-default-size));
+  height: var(--epb-shape-size, var(--epb-shape-default-size));
+  flex-shrink: 0;
+}
 
-  .${CARD.layout.orientations.vertical.label}.${CARD.style.bar.sizeOptions.medium.label} .${CARD.htmlStructure.sections.left.class} {
-    margin-top: 12px;
-  }
+.${CARD.style.dynamic.hiddenComponent.icon.class} .${CARD.htmlStructure.sections.left.class} {
+  display: none;
+}
 
-  .${CARD.layout.orientations.vertical.label}.${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.sections.left.class} {
-    margin-top: 14px;
-  }
+.type-entities .${CARD.htmlStructure.sections.left.class} {
+  width: var(--epb-shape-size, var(--epb-entities-shape-size)) !important;
+  height: var(--epb-shape-size, var(--epb-entities-shape-size)) !important;
+}
 
-  .${CARD.htmlStructure.elements.shape.class} {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--epb-icon-and-shape-size, 36px);
-    height: var(--epb-icon-and-shape-size, 36px);
-    border-radius: 50%;
-    background-color: color-mix(in srgb, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) 20%, transparent);
-  }
+/* Vertical layout margins for different sizes */
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.left.class} {
+  margin-top: var(--epb-margin-vertical-top);
+}
 
-  .${CARD.htmlStructure.elements.icon.class} {
-    width: var(--epb-icon-and-shape-size, 24px);
-    height: var(--epb-icon-and-shape-size, 24px);
-    color: var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default});
-  }
-  .${CARD.style.dynamic.clickable.icon} .${CARD.htmlStructure.sections.left.class}:hover {
-    cursor: pointer;
-  }   
-      
-  .${CARD.style.dynamic.clickable.icon} .${CARD.htmlStructure.sections.left.class}:hover .${CARD.htmlStructure.elements.shape.class} {
-    background-color: color-mix(in srgb, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) 40%, transparent);
-  }
+/* === SHAPE & ICON === */
+.${CARD.htmlStructure.elements.shape.class} {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--epb-shape-size, var(--epb-shape-default-size));
+  height: var(--epb-shape-size, var(--epb-shape-default-size));
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) var(--epb-shape-opacity), transparent);
+}
 
-  /* .right: name & secondary info */
-  .${CARD.htmlStructure.sections.right.class} {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex-grow: 1;
-    overflow: hidden;
-    width:100%;
-  }
+.${CARD.style.dynamic.hiddenComponent.icon.class} .${CARD.htmlStructure.elements.shape.class} {
+  display: none;
+}
 
-  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.right.class} {
+.${CARD.htmlStructure.elements.icon.class} {
+  width: var(--epb-icon-size, var(--epb-icon-default-size));
+  height: var(--epb-icon-size, var(--epb-icon-default-size));
+  color: var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default});
+}
+
+/* === RIGHT SECTION (TEXT CONTENT) === */
+.${CARD.htmlStructure.sections.right.class} {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* === TEXT ELEMENTS === */
+
+.${CARD.htmlStructure.elements.nameGroup.class},
+.${CARD.htmlStructure.elements.detailGroup.class} {
+  display: flex;
+  align-items: center;
+  min-width: 0; /* Crucial pour flexbox + ellipsis */
+  overflow: hidden;
+}
+
+.${CARD.htmlStructure.elements.nameGroup.class} {
+  width: 100%;
+  height: var(--epb-name-height);
+  justify-content: flex-start;
+}
+
+.${CARD.htmlStructure.elements.detailGroup.class} {
+  height: var(--epb-detail-height);
+  line-height: var(--epb-detail-height);
+  min-width: var(--epb-detail-min-width);
+  max-width: var(--epb-detail-max-width);
+  justify-content: flex-start;
+}
+
+/* === UNIFIED ELLIPSIS === */
+.${CARD.htmlStructure.elements.nameCombined.class},
+.${CARD.htmlStructure.elements.detailCombined.class} {
+  flex: 1; /* Prend tout l'espace disponible */
+  min-width: 0; /* Permet l'ellipsis dans flexbox */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.${CARD.htmlStructure.elements.nameCombined.class} {
+  color: var(--primary-text-color);
+  font-size: var(--ha-font-size-m);
+  font-weight: var(--ha-font-weight-medium);
+  height: var(--epb-name-height);
+  line-height: var(--epb-name-height);
+  letter-spacing: var(--epb-letter-spacing-name);
+}
+
+.${CARD.htmlStructure.elements.detailCombined.class} {
+  color: var(--primary-text-color);
+  font-size: var(--ha-font-size-s);
+  font-weight: var(--ha-font-weight-body);
+  height: var(--epb-detail-height);
+  line-height: var(--epb-detail-height);
+  vertical-align: middle;
+  letter-spacing: var(--epb-letter-spacing-detail);
+}
+
+.${CARD.style.dynamic.hiddenComponent.name.class} .${CARD.htmlStructure.elements.nameGroup.class},
+.${CARD.style.dynamic.hiddenComponent.secondary_info.class} .${CARD.htmlStructure.elements.detailGroup.class} {
+  display: none;
+}
+
+/* === ENTITIES TYPE SPECIFIC === */
+.type-entities .${CARD.htmlStructure.elements.nameGroup.class},
+.type-entities .${CARD.htmlStructure.elements.nameGroup.class} > span,
+.type-entities .${CARD.htmlStructure.elements.detailGroup.class},
+.type-entities .${CARD.htmlStructure.elements.detailGroup.class} > span {
+  height: var(--epb-entities-height) !important;
+}
+
+.type-entities .${CARD.htmlStructure.elements.nameCombined.class} {
+  font-weight: var(--ha-font-weight-normal) !important;
+  line-height: var(--ha-line-height-normal) !important;
+}
+
+.type-entities .${CARD.htmlStructure.elements.detailCombined.class} {
+  color: var(--secondary-text-color) !important;
+  font-size: var(--ha-font-size-m) !important;
+  font-weight: var(--ha-font-weight-normal) !important;
+  line-height: var(--ha-line-height-normal) !important;
+}
+
+/* === SECONDARY INFO === */
+.${CARD.htmlStructure.elements.secondaryInfo.class} {
+  display: flex;
+  flex-direction: var(--epb-secondary-info-row-reverse, row);
+  align-items: center;
+  justify-content: center;
+  gap: var(--epb-gap-default);
+}
+
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.secondaryInfo.class} {
+  flex-direction: column;  /* vertical layout */
+  align-items: stretch;    /* full width */
+  gap: var(--epb-vertical-gap);                /* vertical spacing between elements */
+  width: 100%;
+  min-width: 0;  
+}
+
+/* === PROGRESS BAR === */
+.${CARD.htmlStructure.elements.progressBar.container.class} {
+  flex-grow: 1;
+  height: var(--epb-progress-container-height);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.progressBar.container.class} {
+  justify-content: center;
+  align-items: center;
+}
+
+.${CARD.htmlStructure.elements.progressBar.bar.class} {
+  width: 100%;
+  height: var(--epb-progress-small);
+  max-height: var(--epb-progress-large);
+  background-color: var(${CARD.style.dynamic.progressBar.background.var}, var(--divider-color));
+  border-radius: ${CARD.style.bar.radius};
+  overflow: hidden;
+  position: relative;
+}
+
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.progressBar.bar.class}  {
     flex-grow: 0;
-  }
+}
 
-  .${CARD.htmlStructure.elements.nameGroup.class} {
-    display: flex;
-    flex-direction: row;
+.${CARD.style.dynamic.hiddenComponent.progress_bar.class} .${CARD.htmlStructure.elements.progressBar.bar.class} {
+  display: none;
+}
 
-    width: 100%;
-    min-width: 0;
-    height: 20px;
-  }
+/* Progress bar size variants */
+.${CARD.style.bar.sizeOptions.small.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
+  height: var(--epb-progress-small);
+  max-height: var(--epb-progress-small);
+}
 
-  .${CARD.htmlStructure.elements.nameCombined.class} {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.${CARD.style.bar.sizeOptions.medium.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
+  height: var(--epb-progress-medium);
+  max-height: var(--epb-progress-medium);
+}
 
-    color: var(--primary-text-color);
-    font-size: var(--ha-font-size-m);
-    font-weight: var(--ha-font-weight-medium);
-    line-height: 20px;
-    letter-spacing: 0.1px;
-    text-align: left;
-  }
+.${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
+  height: var(--epb-progress-large);
+  max-height: var(--epb-progress-large);
+}
 
-  .${CARD.htmlStructure.elements.detailGroup.class} {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 16px;
-    min-width: 45px;
-    max-width: 60%;
-    text-align: left;
-    line-height: 16px;
-    color: var(--primary-text-color);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+.${CARD.style.dynamic.progressBar.orientation.rtl} .${CARD.htmlStructure.elements.progressBar.bar.class} {
+  transform: scaleX(-1);
+}
 
-  .${CARD.htmlStructure.elements.detailCombined.class} {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.${CARD.htmlStructure.elements.progressBar.inner.class} {
+  height: 100%;
+  width: var(${CARD.style.dynamic.progressBar.size.var}, ${CARD.style.dynamic.progressBar.size.default});
+  background-color: var(${CARD.style.dynamic.progressBar.color.var}, ${CARD.style.dynamic.progressBar.color.default});
+  transition: width var(--epb-progress-transition-width);
+  will-change: width;
+}
 
-    color: var(--primary-text-color);
-    font-size: var(--ha-font-size-s);
-    font-weight: var(--ha-font-weight-body);
-    line-height: 16px;
-    letter-spacing: 0.4px;
-    text-align: left;
-  }
+/* === WATERMARKS === */
+.${CARD.htmlStructure.elements.progressBar.lowWatermark.class},
+.${CARD.htmlStructure.elements.progressBar.highWatermark.class} {
+  display: none;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  mix-blend-mode: hard-light;
+  opacity: var(--epb-watermark-opacity-value, 0.8);
+}
 
+.${CARD.htmlStructure.elements.progressBar.lowWatermark.class} {
+  left: 0;
+  width: var(--epb-low-watermark-value, 20%);
+  background-color: var(--epb-low-watermark-color, var(--red-color));
+}
 
-  .${CARD.htmlStructure.elements.secondaryInfo.class} {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-  }
+.${CARD.htmlStructure.elements.progressBar.highWatermark.class} {
+  right: 0;
+  width: calc(100% - var(--epb-high-watermark-value, 80%));
+  background-color: var(--epb-high-watermark-color, var(--red-color));
+}
 
-  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.secondaryInfo.class} {
-    display: block;
-  }
-    
-  /* Progress bar */
-  .${CARD.htmlStructure.elements.progressBar.container.class} {
-    flex-grow: 1;
-    height: 16px; /* Même hauteur que le pourcentage */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .${CARD.htmlStructure.elements.progressBar.bar.class} {
-    width: 100%;
-    height: ${CARD.style.bar.sizeOptions.small.size};
-    max-height: ${CARD.style.bar.sizeOptions.large.size};
-    background-color: var(${CARD.style.dynamic.progressBar.background.var}, var(--divider-color));
-    border-radius: ${CARD.style.bar.radius};
-    overflow: hidden;
-    position: relative;
-  }
+/* Watermark line styles */
+.${CARD.style.dynamic.show}-hwm-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class} {
+  right: calc(100% - var(--epb-high-watermark-value, 80%));
+  width: 1px;
+}
 
-  .${CARD.style.dynamic.progressBar.orientation.rtl} .${CARD.htmlStructure.elements.progressBar.bar.class} {
-    transform: scaleX(-1);
-  }
+.${CARD.style.dynamic.show}-lwm-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class} {
+  left: var(--epb-low-watermark-value, 20%);
+  width: 1px;
+}
 
-  .${CARD.style.bar.sizeOptions.small.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
-    height: ${CARD.style.bar.sizeOptions.small.size};
-    max-height: ${CARD.style.bar.sizeOptions.small.size};
-  }
+/* === VERTICAL LAYOUT ADJUSTMENTS === */
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.right.class} {
+  flex-grow: 0;
+}
 
-  .${CARD.style.bar.sizeOptions.medium.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
-    height: ${CARD.style.bar.sizeOptions.medium.size};
-    max-height: ${CARD.style.bar.sizeOptions.medium.size};
-  }
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameGroup.class},
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
+  flex-grow: 0;
+  width: 100%;
+  max-width: none;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  box-sizing: border-box;
+}
 
-  .${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.elements.progressBar.bar.class} {
-    height: ${CARD.style.bar.sizeOptions.large.size};
-    max-height: ${CARD.style.bar.sizeOptions.large.size};
-  }
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
+  max-width: 100%;
+  overflow: hidden;
+}
+  
+.${CARD.layout.orientations.vertical.label} .${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.elements.nameGroup.class} {
+  height: var(--epb-vertical-name-large-height);
+}
 
-  .${CARD.htmlStructure.elements.progressBar.inner.class} {
-    height: 100%;
-    width: var(${CARD.style.dynamic.progressBar.size.var}, ${CARD.style.dynamic.progressBar.size.default});
-    background-color: var(${CARD.style.dynamic.progressBar.color.var}, ${CARD.style.dynamic.progressBar.color.default});
-    transition: width 0.3s ease;
-    will-change: width;
-  }
+.${CARD.htmlStructure.elements.nameGroup.class} > span,
+.${CARD.htmlStructure.elements.detailGroup.class} > span,
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameGroup.class} > span,
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} > span {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  .${CARD.htmlStructure.elements.progressBar.lowWatermark.class} {
-    display: none;
-    position: absolute;
-    height: 100%;
-    top: 0;
-    left: 0;
-    width: var(--epb-low-watermark-value, 20%);
-    background-color: var(--epb-low-watermark-color, var(--red-color));
-    mix-blend-mode: hard-light;
-    opacity: var(--epb-watermark-opacity-value, 0.8);  
-  }
-  .${CARD.htmlStructure.elements.progressBar.highWatermark.class} {
-    display: none;
-    position: absolute;
-    height: 100%;
-    top: 0;
-    right: 0;
-    width: calc(100% - var(--epb-high-watermark-value, 80%));
-    background-color: var(--epb-high-watermark-color, var(--red-color));
-    mix-blend-mode: hard-light;
-    opacity: var(--epb-watermark-opacity-value, 0.8);  
-  }
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameCombined.class},
+.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailCombined.class} {
+  text-align: center;
+  width: 100%;
+  display: block; /* Simplifie le layout vertical */
+}
 
-  .${CARD.style.dynamic.show}-HWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class} {
-    right: calc(100% - var(--epb-high-watermark-value, 80%));
-    width: 1px;
-  }
-  .${CARD.style.dynamic.show}-LWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class}  {
-    left: var(--epb-low-watermark-value, 20%);
-    width: 1px;
-  }
+/* === BADGE === */
+.${CARD.htmlStructure.elements.badge.container.class} {
+  position: absolute;
+  z-index: 2;
+  top: var(--epb-badge-offset);
+  right: var(--epb-badge-offset);
+  inset-inline-end: var(--epb-badge-offset);
+  inset-inline-start: initial;
+  width: var(--epb-badge-size);
+  height: var(--epb-badge-size);
+  border-radius: 50%;
+  background-color: var(${CARD.style.dynamic.badge.backgroundColor.var}, ${CARD.style.dynamic.badge.backgroundColor.default});
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
 
-  .${CARD.layout.orientations.vertical.label} .${CARD.style.bar.sizeOptions.large.label} .${CARD.htmlStructure.elements.nameGroup.class} {
-    height: 18px;
-  }
+.${CARD.htmlStructure.elements.badge.container.class} .${CARD.htmlStructure.elements.badge.icon.class} {
+  width: var(--epb-badge-icon-size);
+  height: var(--epb-badge-icon-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(${CARD.style.dynamic.badge.color.var}, ${CARD.style.dynamic.badge.color.default});
+}
 
-  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameGroup.class} {
-    align-items: center;
-    justify-content: center;
-  }
+/* === VISIBILITY CONTROLS === */
 
-  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
-    align-items: center;
-    justify-content: center;
-    width: 100%; /* ou 100% de son parent */
-    max-width: none; /* si tu veux supprimer la limite */
-  }
+/* Vertical layout visibility overrides */
+.${CARD.style.dynamic.hiddenComponent.icon.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.left.class},
+.${CARD.style.dynamic.hiddenComponent.name.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameGroup.class},
+.${CARD.style.dynamic.hiddenComponent.progress_bar.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.progressBar.bar.class},
+.${CARD.style.dynamic.hiddenComponent.secondary_info.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
+  display: none;
+}
 
-  .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} > span {
-    display: inline-block;
-    flex-shrink: 0;
-  }
+/* Shape transparency when hidden */
+.${CARD.style.dynamic.hiddenComponent.shape.class} .${CARD.htmlStructure.elements.shape.class},
+.${CARD.style.dynamic.hiddenComponent.shape.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.shape.class} {
+  background-color: transparent;
+}
 
-  .${CARD.style.bar.sizeOptions.small.label} .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
-    margin-bottom: 1px;
-  }
+/* Show elements when needed */
+.${CARD.style.dynamic.show}-${CARD.htmlStructure.elements.badge.container.class} .${CARD.htmlStructure.elements.badge.container.class},
+.${CARD.style.dynamic.show}-hwm-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class},
+.${CARD.style.dynamic.show}-lwm-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class},
+.${CARD.style.dynamic.show}-hwm-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class},
+.${CARD.style.dynamic.show}-lwm-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class} {
+  display: flex;
+}
 
-  .${CARD.style.bar.sizeOptions.medium.label} .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
-    height: 15px;
-    font-size: 0.8em;
-  }
+/* === INTERACTIVE STATES === */
+.${CARD.style.dynamic.clickable.card}:hover,
+.${CARD.style.dynamic.clickable.icon} .${CARD.htmlStructure.sections.left.class}:hover {
+  cursor: pointer;
+  background-color: color-mix(in srgb, var(--card-background-color) var(--epb-card-hover-mix), var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) var(--epb-hover-opacity));
+}
 
-  .${CARD.style.bar.sizeOptions.large.label} .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class} {
-    height: 13px;
-    font-size: 0.8em;
-  }
+.${CARD.style.dynamic.clickable.card}:active {
+  background-color: color-mix(in srgb, var(--card-background-color) var(--epb-card-active-mix), var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) var(--epb-active-opacity));
+  transition: background-color var(--epb-click-transition-background);
+}
 
-  .${CARD.htmlStructure.elements.badge.container.class} {
-    position: absolute;
-    z-index: 2;
-    top: -3px;
-    right: -3px;
-    inset-inline-end: -3px;
-    inset-inline-start: initial;
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    background-color: var(${CARD.style.dynamic.badge.backgroundColor.var}, ${CARD.style.dynamic.badge.backgroundColor.default});
-    display: none;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .${CARD.htmlStructure.elements.badge.container.class} .${CARD.htmlStructure.elements.badge.icon.class} {
-    height: 12px;
-    width: 12px;
-    display: flex; /* h/w ratio */
-    align-items: center;
-    justify-content: center;
-    color: var(${CARD.style.dynamic.badge.color.var}, ${CARD.style.dynamic.badge.color.default});
-  }
-
-  .${CARD.style.dynamic.hiddenComponent.icon.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.left.class},
-  .${CARD.style.dynamic.hiddenComponent.name.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.nameGroup.class},
-  .${CARD.style.dynamic.hiddenComponent.progress_bar.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.progressBar.bar.class},
-  .${CARD.style.dynamic.hiddenComponent.secondary_info.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.detailGroup.class},
-  .${CARD.style.dynamic.hiddenComponent.icon.class} .${CARD.htmlStructure.sections.left.class},
-  .${CARD.style.dynamic.hiddenComponent.icon.class} .${CARD.htmlStructure.elements.shape.class},
-  .${CARD.style.dynamic.hiddenComponent.name.class} .${CARD.htmlStructure.elements.nameGroup.class},
-  .${CARD.style.dynamic.hiddenComponent.progress_bar.class} .${CARD.htmlStructure.elements.progressBar.bar.class},
-  .${CARD.style.dynamic.hiddenComponent.secondary_info.class} .${CARD.htmlStructure.elements.detailGroup.class} {
-    display: none;
-  }
-
-  .${CARD.style.dynamic.hiddenComponent.shape.class}.${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.elements.shape.class},
-  .${CARD.style.dynamic.hiddenComponent.shape.class} .${CARD.htmlStructure.elements.shape.class} {
-    background-color: transparent;
-  }
-
-
-  .${CARD.style.dynamic.show}-${CARD.htmlStructure.elements.badge.container.class} .${CARD.htmlStructure.elements.badge.container.class},
-  .${CARD.style.dynamic.show}-HWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class},
-  .${CARD.style.dynamic.show}-LWM-line-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class},
-  .${CARD.style.dynamic.show}-HWM-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.highWatermark.class},
-  .${CARD.style.dynamic.show}-LWM-${CARD.htmlStructure.elements.progressBar.watermark.class} .${CARD.htmlStructure.elements.progressBar.lowWatermark.class} {
-    display: flex;
-  }
+.${CARD.style.dynamic.clickable.icon} .${CARD.htmlStructure.sections.left.class}:hover .${CARD.htmlStructure.elements.shape.class} {
+  background-color: color-mix(in srgb, var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default}) var(--epb-icon-hover-opacity), transparent);
+}
 `;
 
 const CARD_EDITOR_CSS = `
-  .${CARD.editor.fields.container.class} {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    padding-bottom: 70px;
-  }
-
-  .${CARD.editor.fields.iconItem.class} {
-    margin-right: 8px;
-    width: 20px;
-    height: 20px;
-  }
-
-  .${CARD.documentation.link.class} {
-    text-decoration: none;
-    display: flex;
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 600;
-  }
-
-  .${CARD.documentation.shape.class} {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  .${CARD.documentation.shape.class}:hover {
-    background-color: color-mix(in srgb, var(--card-background-color) 90%, var(--secondary-text-color) 10%);
-  }
-
-  .${CARD.documentation.questionMark.class} {
-    color: var(--primary-text-color);
-  }
-
-  .${CARD.editor.fields.accordion.item.class} {
-    display: block;
-    width: 100%;
-    border: 1px solid color-mix(in srgb, var(--card-background-color) 80%, var(--secondary-text-color) 20%);
-    border-radius: 6px;
-    overflow: visible;
-  }
-  
-  .${CARD.editor.fields.accordion.icon.class} {
-    color: var(--secondary-text-color);
-    margin-right: 8px;
-  }
-  
-  .${CARD.editor.fields.accordion.title.class} {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    position: relative;
-    background-color: transparent;
-    color: var(--primary-text-color);
-    cursor: pointer;
-    padding: 18px;
-    width: 100%;
-    height: 48px;
-    border: none;
-    text-align: left;
-    font-size: 15px;
-    transition: 0.4s;
-  }
-
-  .${CARD.editor.fields.accordion.title.class}:focus {
-    background-color: var(--secondary-background-color);
-  }
-
-  .${CARD.editor.fields.accordion.arrow.class} {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    margin-left: auto;
-    color: var(--primary-text-color);
-    transition: transform 0.2s ease-out;
-  }
-  .accordion.expanded .${CARD.editor.fields.accordion.arrow.class} {
-    transform: rotate(180deg);
-  }
-  .${CARD.editor.fields.accordion.content.class} {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    column-gap: 10px;
-    row-gap: 20px;
-    padding: 0px 18px;
-    background-color: transparent;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition:
-      max-height 0.2s cubic-bezier(0.33, 0, 0.2, 1),
-      padding 0.2s cubic-bezier(0.33, 0, 0.2, 1),
-      opacity 0.2s ease;
-  }
-
-  .accordion.expanded .${CARD.editor.fields.accordion.content.class} {
-    /* max-height: défini par script JS */
-    padding-top: 30px;
-    padding-bottom: 30px;
-    opacity: 1;
-    overflow: visible;
-  }
-
-  .${CARD.editor.fields.accordion.content.class} > * {
-    opacity: 0;
-    transition: opacity 0.2s ease 0.15s;
-  }
-  .accordion.expanded .${CARD.editor.fields.accordion.content.class} > * {
-    opacity: 1;
-  }
-  .accordion.collapsing .${CARD.editor.fields.accordion.content.class} > * {
-    opacity: 0 !important;
-    transition: opacity 0.1s; /* désactive transition pendant repli */
-  }
-
-  ha-select {
-    --mdc-menu-max-height: 250px; /* Définit la hauteur maximale */
-  }
-
-  /* show/hide */
-  .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.attribute} .${CARD.editor.keyMappings.attribute},
-  .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.max_value_attribute} .${CARD.editor.keyMappings.max_value_attribute},
-  .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.theme} .${CARD.editor.keyMappings.theme} {
-    display: none;
-  }
-
-  .${CARD.editor.fields.toggle.class} {
-    display: flex;
-    align-item: center;
-    gap: 8px;
-  }
-`;
+ :host {
+   --accordion-padding: 18px;
+   --accordion-gap: 10px;
+   --border-radius: 6px;
+   --transition-duration: 0.2s;
+   --transition-easing: cubic-bezier(0.33, 0, 0.2, 1);
+   --icon-size: 20px;
+   --button-size: 48px;
+   --small-icon-size: 24px;
+ }
+ 
+ /* Container principal */
+ .${CARD.editor.fields.container.class} {
+   display: flex;
+   flex-direction: column;
+   gap: 25px;
+   padding-bottom: 70px;
+ }
+ 
+ /* Icônes communes */
+ .${CARD.editor.fields.iconItem.class},
+ .${CARD.editor.fields.accordion.icon.class} {
+   margin-right: 8px;
+   color: var(--secondary-text-color);
+ }
+ 
+ .${CARD.editor.fields.iconItem.class} {
+   width: var(--icon-size);
+   height: var(--icon-size);
+ }
+ 
+ /* Documentation */
+ .${CARD.documentation.link.class} {
+   position: absolute;
+   top: 0;
+   right: 0;
+   z-index: 600;
+   text-decoration: none;
+   display: flex;
+ }
+ 
+ .${CARD.documentation.shape.class} {
+   width: var(--button-size);
+   height: var(--button-size);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   border-radius: 50%;
+   cursor: pointer;
+   transition: background-color var(--transition-duration) ease;
+ }
+ 
+ .${CARD.documentation.shape.class}:hover {
+   background-color: color-mix(in srgb, var(--card-background-color) 90%, var(--secondary-text-color) 10%);
+ }
+ 
+ .${CARD.documentation.questionMark.class} {
+   color: var(--primary-text-color);
+ }
+ 
+ /* Accordéon */
+ .${CARD.editor.fields.accordion.item.class} {
+   display: block;
+   width: 100%;
+   border: 1px solid color-mix(in srgb, var(--card-background-color) 80%, var(--secondary-text-color) 20%);
+   border-radius: var(--border-radius);
+   overflow: visible;
+ }
+ 
+ .${CARD.editor.fields.accordion.title.class} {
+   display: flex;
+   align-items: center;
+   gap: var(--accordion-gap);
+   position: relative;
+   background-color: transparent;
+   color: var(--primary-text-color);
+   cursor: pointer;
+   padding: var(--accordion-padding);
+   width: 100%;
+   height: var(--button-size);
+   border: none;
+   text-align: left;
+   font-size: 15px;
+   transition: background-color 0.4s ease;
+ }
+ 
+ .${CARD.editor.fields.accordion.title.class}:focus {
+   background-color: var(--secondary-background-color);
+ }
+ 
+ .${CARD.editor.fields.accordion.arrow.class} {
+   display: inline-block;
+   width: var(--small-icon-size);
+   height: var(--small-icon-size);
+   margin-left: auto;
+   color: var(--primary-text-color);
+   transition: transform var(--transition-duration) ease-out;
+ }
+ 
+ .accordion.expanded .${CARD.editor.fields.accordion.arrow.class} {
+   transform: rotate(180deg);
+ }
+ 
+ .${CARD.editor.fields.accordion.content.class} {
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   align-content: flex-start;
+   column-gap: var(--accordion-gap);
+   row-gap: 20px;
+   padding: 0 var(--accordion-padding);
+   background-color: transparent;
+   max-height: 0;
+   opacity: 0;
+   overflow: hidden;
+   transition: 
+     max-height var(--transition-duration) var(--transition-easing),
+     padding var(--transition-duration) var(--transition-easing),
+     opacity var(--transition-duration) ease;
+ }
+ 
+ .accordion.expanded .${CARD.editor.fields.accordion.content.class} {
+   /* max-height: défini par script JS */
+   padding-top: 30px;
+   padding-bottom: 30px;
+   opacity: 1;
+   overflow: visible;
+ }
+ 
+ /* Animation des éléments enfants de l'accordéon */
+ .${CARD.editor.fields.accordion.content.class} > * {
+   opacity: 0;
+   transition: opacity var(--transition-duration) ease 0.15s;
+ }
+ 
+ .accordion.expanded .${CARD.editor.fields.accordion.content.class} > * {
+   opacity: 1;
+ }
+ 
+ .accordion.collapsing .${CARD.editor.fields.accordion.content.class} > * {
+   opacity: 0 !important;
+   transition: opacity 0.1s ease; /* Transition rapide pendant le repli */
+ }
+ 
+ /* Sélecteur ha-select */
+ ha-select {
+   --mdc-menu-max-height: 250px;
+ }
+ 
+ /* Classes show/hide optimisées */
+ .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.attribute} .${CARD.editor.keyMappings.attribute},
+ .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.max_value_attribute} .${CARD.editor.keyMappings.max_value_attribute},
+ .${CARD.style.dynamic.hide}-${CARD.editor.keyMappings.theme} .${CARD.editor.keyMappings.theme} {
+   display: none;
+ }
+ 
+ /* Toggle corrigé */
+ .${CARD.editor.fields.toggle.class} {
+   display: flex;
+   align-items: center; /* Correction du typo */
+   gap: 8px;
+ }
+ `;
 
 /******************************************************************************************
  * 🛠️ Dev mode
@@ -2789,7 +2938,6 @@ if (CARD.config.dev) {
   CARD.meta.template.name = `${CARD.meta.template.typeName} (dev)`;
   CARD.meta.badge.typeName = `${CARD.meta.badge.typeName}-dev`;
   CARD.meta.badge.editor = `${CARD.meta.badge.editor}-dev`;
-
 }
 
 /******************************************************************************************
@@ -2876,9 +3024,9 @@ function initLogger(ctx, debugFlag, methodNames = []) {
 /******************************************************************************************
  * 🛠️ RegistrationHelper
  * ========================================================================================
- * 
+ *
  * ✅ Helper to register component.
- * 
+ *
  * @class
  */
 class RegistrationHelper {
@@ -2913,12 +3061,12 @@ class RegistrationHelper {
 /******************************************************************************************
  * 🛠️ NumberFormatter
  * ========================================================================================
- * 
+ *
  * ✅ class for formatting value && unit.
- * 
+ *
  * This class uses `Value`, `Unit`, and `Decimal` objects to manage and validate its
  * internal data.
- * 
+ *
  * @class
  */
 class NumberFormatter {
@@ -2998,10 +3146,10 @@ class NumberFormatter {
 /******************************************************************************************
  * 🛠️ ValueHelper
  * ========================================================================================
- * 
+ *
  * ✅ Helper class for managing numeric values.
  * This class validates and stor a numeric value.
- * 
+ *
  * @class
  */
 
@@ -3037,9 +3185,9 @@ class ValueHelper {
 /******************************************************************************************
  * 🛠️ DecimalHelper
  * ========================================================================================
- * 
+ *
  * ✅ Represents a non-negative integer value that can be valid or invalid.
- * 
+ *
  * @class
  */
 class DecimalHelper {
@@ -3074,9 +3222,9 @@ class DecimalHelper {
 /******************************************************************************************
  * 🛠️ UnitHelper
  * ========================================================================================
- * 
+ *
  * ✅ Represents a unit of measurement, stored as a string.
- * 
+ *
  * @class
  */
 class UnitHelper {
@@ -3114,9 +3262,9 @@ class UnitHelper {
 /******************************************************************************************
  * 🛠️ PercentHelper
  * ========================================================================================
- * 
+ *
  * ✅ class for calculating and formatting percentages.
- * 
+ *
  * @class
  */
 class PercentHelper {
@@ -3248,9 +3396,9 @@ class PercentHelper {
 /******************************************************************************************
  * 🛠️ ThemeManager
  * ========================================================================================
- * 
+ *
  * ✅ Manages the theme and its associated icon and color based on a percentage value.
- * 
+ *
  * @class
  */
 class ThemeManager {
@@ -3352,6 +3500,7 @@ class ThemeManager {
       themeData = this.#currentStyle.find((level) => this.#value >= level.min && this.#value < level.max);
     }
     if (themeData) {
+      this.#icon = themeData.icon || null;
       this.#iconColor = themeData.icon_color || themeData.color || null;
       this.#barColor = themeData.bar_color || themeData.color || null;
     }
@@ -3386,10 +3535,10 @@ class ThemeManager {
 /******************************************************************************************
  * 🛠️ HassProviderSingleton
  * ========================================================================================
- * 
+ *
  * ✅ Provides access to the Home Assistant object.
  * This class implements a singleton pattern to ensure only one instance exists.
- * 
+ *
  * @class
  */
 class HassProviderSingleton {
@@ -3523,7 +3672,7 @@ class HassProviderSingleton {
 
     return Object.fromEntries(
       Object.entries(attributes)
-        .filter(([_, val]) => { // eslint-disable-line no-unused-vars
+        .filter(([, val]) => {
           return typeof val === 'number' || (typeof val === 'string' && !isNaN(val) && val.trim() !== '');
         })
         .map(([key, val]) => {
@@ -3609,10 +3758,10 @@ class ChangeTracker {
 /******************************************************************************************
  * 🛠️ EntityHelper
  * ========================================================================================
- * 
+ *
  * ✅ Helper class for managing entities.
  * This class validates and retrieves information from Home Assistant if it's an entity.
- * 
+ *
  * @class
  */
 class EntityHelper {
@@ -3633,7 +3782,7 @@ class EntityHelper {
     this.#entityId = newValue;
     this.#value = 0;
     this.#domain = HassProviderSingleton.getEntityDomain(newValue);
-    this.#isValid = (this.#hassProvider.hasEntity(this.#entityId));
+    this.#isValid = this.#hassProvider.hasEntity(this.#entityId);
   }
 
   get entityId() {
@@ -3857,7 +4006,7 @@ class EntityHelper {
 /******************************************************************************************
  * 🛠️ EntityOrValue
  * ========================================================================================
- * 
+ *
  * ✅ Represents either an entity ID or a direct value.
  * This class validates the provided value and retrieves information from Home Assistant if it's an entity.
  *
@@ -3978,7 +4127,7 @@ class EntityOrValue {
 /******************************************************************************************
  * 🛠️ ConfigHelper
  * ========================================================================================
- * 
+ *
  * ✅ class for managing and validating card configuration.
  *
  * @class
@@ -4161,7 +4310,7 @@ class ConfigHelper {
 /******************************************************************************************
  * 🛠️ CardView
  * ========================================================================================
- * 
+ *
  * ✅ A card view that manage all informations to create the card.
  *
  * @class
@@ -4365,6 +4514,9 @@ class CardView {
       this.#configHelper.cardDoubleTapAction !== CARD.interactions.action.none.action
     );
   }
+  get hasReversedSecondaryInfoRow() {
+    return this.#configHelper.config.reverse_secondary_info_row === true;
+  }
   get hasVisibleShape() {
     return this.#hassProvider.hasNewShapeStrategy
       ? this.#configHelper.config.force_circular_background ||
@@ -4475,7 +4627,7 @@ class CardView {
 /******************************************************************************************
  * 🛠️ ResourceManager
  * ========================================================================================
- * 
+ *
  * ✅ Manage ressources: interval, timeout, listener, subscription.
  *
  * @class
@@ -4484,6 +4636,7 @@ class ResourceManager {
   #debug = CARD.config.debug.ressourceManager;
   #log = null;
   #resources = new Map();
+  #throttles = new Map();
 
   constructor() {
     this.#log = initLogger(this, this.#debug, ['add', 'remove', 'cleanup']);
@@ -4551,6 +4704,26 @@ class ResourceManager {
     }, id);
   }
 
+  throttle(fn, delay, id) {
+    if (!this.#throttles.has(id)) {
+      this.#throttles.set(id, { lastCall: 0 });
+      this.add(() => this.resetThrottle(id), id);
+    }
+
+    const context = this.#throttles.get(id);
+    const now = Date.now();
+
+    if (now - context.lastCall >= delay) {
+      context.lastCall = now;
+      fn();
+      this.#log.debug('Throttle function - ', id);
+    }
+  }
+
+  resetThrottle(id) {
+    this.#throttles.delete(id);
+  }
+
   remove(id) {
     const cleanupFn = this.#resources.get(id);
     if (cleanupFn) {
@@ -4574,6 +4747,7 @@ class ResourceManager {
       this.#log.debug(`Cleared: ${id}`);
     }
     this.#resources.clear();
+    this.#throttles.clear();
     this.#log.debug('All resources cleared.');
   }
 
@@ -4591,9 +4765,9 @@ class ResourceManager {
 /******************************************************************************************
  * 🛠️ ActionHelper — Utility Class
  * ========================================================================================
- * 
+ *
  * ✅ Centralized handler for `xyz_action` logic.
- * 
+ *
  * 📌 Purpose:
  *   - Encapsulates and manages the execution, validation, and dispatch of `xyz_action`.
  *   - Promotes reusable, maintainable logic for action-related features.
@@ -4610,7 +4784,7 @@ class ActionHelper {
   #clickSource = null;
   #startX = 0;
   #startY = 0;
-  #iconClickSources = new Set(['shape', 'ha-svg-icon']);
+  #iconClickSources = new Set(['shape', 'ha-svg-icon', 'img']);
   #disableIconTap = false;
 
   #boundHandlers = {
@@ -4789,20 +4963,20 @@ class ActionHelper {
 /******************************************************************************************
  * 🛠️ EntityProgressCardBase
  * ========================================================================================
- * 
+ *
  * ✅ Represents the base class for all custom "entity-progress" cards.
- * 
+ *
  * 📌 Purpose:
  *   - Provides shared structure, lifecycle hooks, and utility logic for custom Lovelace cards.
  *   - Serves as the foundation for building consistent and reusable UI components.
- * 
+ *
  * 🛠️ Example:
  *   class MyCustomCard extends EntityProgressCardBase { ... }
- * 
+ *
  * 📚 Context:
  *   - Designed for use in Home Assistant dashboards.
  *   - Enables unified behavior across multiple card implementations.
- * 
+ *
  * @class
  * @extends HTMLElement
  */
@@ -4823,7 +4997,7 @@ class EntityProgressCardBase extends HTMLElement {
   _firstHass = true;
   _clickableTarget = null;
   _actionHelper = null;
-  _changeTracker = new ChangeTracker;
+  _changeTracker = new ChangeTracker();
   #lastMessage = null;
   #isRendered = false;
 
@@ -4844,7 +5018,7 @@ class EntityProgressCardBase extends HTMLElement {
       '_storeDOM',
       '_renderJinja',
     ]);
-    
+
     this.attachShadow({ mode: CARD.config.shadowMode });
     this._actionHelper = new ActionHelper(this);
     EntityProgressCardBase._initializeModule();
@@ -4914,10 +5088,7 @@ class EntityProgressCardBase extends HTMLElement {
     const timeoutId = 'hass-update-throttle';
     if (!this._resourceManager) this._resourceManager = new ResourceManager();
 
-    // Au lieu de bloquer complètement, on reporte juste le timeout
-    this._resourceManager.remove(timeoutId); // Annule le précédent
-
-    this._resourceManager.setTimeout(
+    this._resourceManager.throttle(
       () => {
         this._doHandleHassUpdate();
       },
@@ -4961,7 +5132,7 @@ class EntityProgressCardBase extends HTMLElement {
    */
   getLayoutOptions() {
     const layout = structuredClone(this.constructor._cardLayout[this._cardView.layout]);
-    if (this._cardView.componentIsHidden(CARD.style.dynamic.hiddenComponent.icon.label)) layout.grid.grid_min_rows = 1;    
+    if (this._cardView.componentIsHidden(CARD.style.dynamic.hiddenComponent.icon.label)) layout.grid.grid_min_rows = 1;
     this._log.debug('getLayoutOptions -> ', layout.grid);
 
     return layout.grid;
@@ -5082,6 +5253,7 @@ class EntityProgressCardBase extends HTMLElement {
 
   _buildStyle(card) {
     this._addBaseClasses(card);
+    this._addBaseParameter(card);
     this._applyConditionalClasses(card);
     this._handleHiddenComponents(card);
     this._handleWatermarkClasses(card);
@@ -5096,6 +5268,10 @@ class EntityProgressCardBase extends HTMLElement {
 
     classesToAdd.push(this._cardView.layout, this._cardView.bar_size);
     card.classList.add(...classesToAdd);
+  }
+
+  _addBaseParameter(card) {
+    if (this._cardView.hasReversedSecondaryInfoRow) this._setStylePropertyIfChanged(card.style, '--epb-secondary-info-row-reverse', 'row-reverse');
   }
 
   get conditionalStyle() {
@@ -5132,8 +5308,8 @@ class EntityProgressCardBase extends HTMLElement {
     const baseWMClass = CARD.htmlStructure.elements.progressBar.watermark.class;
     const showClass = CARD.style.dynamic.show;
 
-    card.classList.toggle(`${showClass}-HWM-${type}${baseWMClass}`, !this._cardView.watermark.disable_high);
-    card.classList.toggle(`${showClass}-LWM-${type}${baseWMClass}`, !this._cardView.watermark.disable_low);
+    card.classList.toggle(`${showClass}-hwm-${type}${baseWMClass}`, !this._cardView.watermark.disable_high);
+    card.classList.toggle(`${showClass}-lwm-${type}${baseWMClass}`, !this._cardView.watermark.disable_low);
   }
 
   _toggleHiddenComponent(card, component) {
@@ -5225,6 +5401,12 @@ class EntityProgressCardBase extends HTMLElement {
 
   // === CSS MANAGEMENT ===
 
+  _updateCSSValue(key, value) {
+    this._updateElement(CARD.htmlStructure.card.element, (el) => {
+      this._setStylePropertyIfChanged(el.style, key, value);
+    });
+  }
+
   _updateCSS() {
     this._updateElement(CARD.htmlStructure.card.element, (el) => {
       const style = el.style;
@@ -5261,43 +5443,72 @@ class EntityProgressCardBase extends HTMLElement {
     const hasIconOverride = curIcon !== null;
     const hasPicture = stateObj?.attributes?.entity_picture;
 
-    let stateObjIcon = null;
+    // Nettoyer l'ancien élément
+    const iconContainer = this._domElements.get(CARD.htmlStructure.elements.icon.class);
+    if (!iconContainer) return;
 
-    if (stateObj) {
-      const clonedAttributes = { ...stateObj.attributes };
-
-      if (hasPicture) {
-        delete clonedAttributes.icon; // Supprimer l'icône
-      } else if (hasIconOverride) {
-        clonedAttributes.icon = curIcon;
+    // Si on a une image, créer un élément img
+    if (hasPicture && !hasIconOverride) {
+      if (this._icon && this._icon.tagName !== 'IMG') {
+        this._icon.remove();
+        this._icon = null;
       }
 
-      stateObjIcon = {
-        ...stateObj,
-        attributes: clonedAttributes,
-      };
-    } else if (this.isConnected) {
-      stateObjIcon = {
-        entity_id: 'sensor.dummy',
-        state: 'unknown',
-        attributes: {
-          icon: curIcon || 'mdi:help-circle-outline',
-          friendly_name: 'Unknown Entity',
-        },
-      };
-    } else {
-      return;
-    }
+      if (!this._icon) {
+        this._updateCSSValue(CARD.style.dynamic.iconAndShape.icon.size.var, '36px');
+        this._icon = document.createElement('img');
+        this._icon.style.width = '36px';
+        this._icon.style.height = '36px';
+        this._icon.style.borderRadius = '50%';
+        this._icon.style.objectFit = 'cover';
+        iconContainer.replaceChildren(this._icon);
+      }
 
-    const firstTime = this._icon === null;
-    if (firstTime) {
-      this._icon = document.createElement('ha-state-icon');
-      this._icon.hass = this._hass;
-      this._icon.stateObj = stateObjIcon;
-      this._domElements.get(CARD.htmlStructure.elements.icon.class)?.replaceChildren(this._icon);
+      this._icon.src = hasPicture;
+      this._icon.alt = stateObj.attributes?.friendly_name || 'Entity picture';
     } else {
-      this._icon.hass = this._hass;
-      this._icon.stateObj = stateObjIcon;
+      // Sinon, utiliser ha-state-icon comme avant
+      if (this._icon && this._icon.tagName === 'IMG') {
+        this._icon.remove();
+        this._icon = null;
+      }
+
+      let stateObjIcon = null;
+
+      if (stateObj) {
+        const clonedAttributes = { ...stateObj.attributes };
+
+        if (hasIconOverride) {
+          clonedAttributes.icon = curIcon;
+        }
+
+        stateObjIcon = {
+          ...stateObj,
+          attributes: clonedAttributes,
+        };
+      } else if (this.isConnected) {
+        stateObjIcon = {
+          entity_id: 'sensor.dummy',
+          state: 'unknown',
+          attributes: {
+            icon: curIcon || 'mdi:help-circle-outline',
+            friendly_name: 'Unknown Entity',
+          },
+        };
+      } else {
+        return;
+      }
+
+      const firstTime = this._icon === null;
+      if (firstTime) {
+        this._icon = document.createElement('ha-state-icon');
+        this._icon.hass = this._hass;
+        this._icon.stateObj = stateObjIcon;
+        iconContainer.replaceChildren(this._icon);
+      } else {
+        this._icon.hass = this._hass;
+        this._icon.stateObj = stateObjIcon;
+      }
     }
   }
 
@@ -5357,7 +5568,7 @@ class EntityProgressCardBase extends HTMLElement {
   // === JINJA TEMPLATE RENDERING ===
 
   _renderJinja(key, content) {
-    this._log.debug('_renderJinja():', {key, content});
+    this._log.debug('_renderJinja():', { key, content });
 
     const renderHandlers = this._getRenderHandlers(content);
     const handler = renderHandlers[key];
@@ -5457,7 +5668,12 @@ class EntityProgressCardBase extends HTMLElement {
   }
 
   async _processJinjaFields() {
-    if (!this._validateProcessJinjaFields()) return;
+    if (!this._validateProcessJinjaFields()) {
+      this._log.debug('❌ Jinja processing skipped - validation failed');
+      return;
+    }
+
+    this._log.debug('✅ Processing Jinja fields');
 
     const templates = this._getTemplateFields();
 
@@ -5547,9 +5763,9 @@ class EntityProgressCardBase extends HTMLElement {
 /******************************************************************************************
  * 🛠️ EntityProgressCard
  * ========================================================================================
- * 
+ *
  * ✅ HA CARD "entity-progress-card"
- * 
+ *
  * @class
  * @extends EntityProgressCardBase
  */
@@ -5577,9 +5793,9 @@ class EntityProgressCard extends EntityProgressCardBase {
 /******************************************************************************************
  * 🛠️ EntityProgressBadge
  * ========================================================================================
- * 
+ *
  * ✅ HA CARD "entity-progress-badge"
- * 
+ *
  * @class
  * @extends EntityProgressCardBase
  */
@@ -5590,7 +5806,8 @@ class EntityProgressBadge extends EntityProgressCardBase {
   static _cardLayout = CARD.layout.orientations.horizontal.grid;
   static _cardStyle = `
     :host {
-      --epb-icon-and-shape-size: 18px;
+      --epb-icon-size: 18px;
+      --epb-shape-size: 18px;
     }
 
     ${CARD_CSS}
@@ -5606,19 +5823,18 @@ class EntityProgressBadge extends EntityProgressCardBase {
     }
 
     .icon ha-state-icon {
-      --mdc-icon-size: var(--epb-icon-and-shape-size);
+      --mdc-icon-size: var(--epb-icon-size);
       --ha-icon-display: flex;
-      height: var(--epb-icon-and-shape-size);
-      width: var(--epb-icon-and-shape-size);
+      height: var(--epb-icon-size);
+      width: var(--epb-icon-size);
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
     }
 
-    .${CARD.htmlStructure.elements.nameGroup.class} {
+    .${CARD.htmlStructure.elements.nameGroup.class},
+    .${CARD.htmlStructure.elements.nameGroup.class} > span {
       height: 10px !important;
-    }
-    .${CARD.htmlStructure.elements.nameCombined.class} {
       font-size: 10px !important;
       font-style: normal !important;
       font-weight: 500 !important;
@@ -5627,24 +5843,25 @@ class EntityProgressBadge extends EntityProgressCardBase {
       margin-right: 5px !important;
     }
 
-    .${CARD.htmlStructure.elements.detailCombined.class} {
-      font-size: var(--ha-badge-font-size, var(--ha-font-size-s)) !important;
-      font-style: normal !important;
-      font-weight: 500 !important;
-      letter-spacing: 0.1px !important;
-      color: var(--primary-text-color)
+    .${CARD.htmlStructure.elements.detailGroup.class},
+    .${CARD.htmlStructure.elements.detailGroup.class} > span {
+    font-size: var(--ha-badge-font-size, var(--ha-font-size-s)) !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.1px !important;
+    color: var(--primary-text-color)
     }
     .${CARD.htmlStructure.elements.secondaryInfo.class} {
-      gap: 5px !important;
+    gap: 5px !important;
     }
     .${CARD.htmlStructure.elements.detailGroup.class} {
-      min-width: unset !important;
-      max-width: unset !important;
+    min-width: unset !important;
+    max-width: unset !important;
     }
     .${CARD.style.dynamic.clickable.icon} .${CARD.htmlStructure.sections.left.class}:hover .${CARD.htmlStructure.elements.shape.class} {
-      background-color: unset !important;
+    background-color: unset !important;
     }
-  `;
+    `;
 
   setConfig(config) {
     if (!config) {
@@ -5698,7 +5915,6 @@ customElements.define(CARD.meta.badge.typeName, EntityProgressBadge);
 RegistrationHelper.registerCard(CARD.meta.card);
 RegistrationHelper.registerBadge(CARD.meta.badge);
 
-
 /******************************************************************************************
  * 📦 Template Card
  ******************************************************************************************/
@@ -5706,14 +5922,14 @@ RegistrationHelper.registerBadge(CARD.meta.badge);
 /******************************************************************************************
  * 🛠️ TemplateCardView
  * ========================================================================================
- * 
+ *
  * ✅ Card view
- * 
+ *
  * 📌 Purpose:
  *   - Manage card configuration.
  *   - Process and apply parameters required to render the card.
  *   - Serve as the interface between raw config and visual output.
- * 
+ *
  * @class
  * @extends ConfigHelper
  */
@@ -5740,6 +5956,7 @@ class TemplateCardView extends ConfigHelper {
     'icon_tap_action',
     'icon_hold_action',
     'icon_double_tap_action',
+    'reverse_secondary_info_row',
   ]);
 
   // === PRIVATE METHODS (DEF VALUE) ===
@@ -5817,10 +6034,12 @@ class TemplateCardView extends ConfigHelper {
       this.cardDoubleTapAction !== CARD.interactions.action.none.action
     );
   }
-
+  get hasReversedSecondaryInfoRow() {
+    return this.config.reverse_secondary_info_row === true;
+  }
   get hasVisibleShape() {
     return (
-      this.config.force_circular_background ||
+      this.config.force_circular_background === true ||
       [
         CARD.interactions.action.navigate.action,
         CARD.interactions.action.url.action,
@@ -5860,14 +6079,13 @@ class TemplateCardView extends ConfigHelper {
 /******************************************************************************************
  * 🛠️ EntityProgressTemplate
  * ========================================================================================
- * 
+ *
  * ✅ HA CARD "entity-progress-card-template"
- * 
+ *
  * @class
  * @extends EntityProgressCardBase
  */
 class EntityProgressTemplate extends EntityProgressCardBase {
-  static _demoMode = false;
   _debug = CARD.config.debug.card;
   _cardView = new TemplateCardView();
   _hassProvider = HassProviderSingleton.getInstance();
@@ -5880,7 +6098,16 @@ class EntityProgressTemplate extends EntityProgressCardBase {
     this._manageShape();
     this._setupClickableTarget();
     this._actionHelper.init(this._resourceManager, this._cardView.config, this._clickableTarget);
-    if (EntityProgressTemplate._isDemoMode) this._processDemoValue();
+    if (this.isDemo) this._processDemoValue();
+
+    // AJOUT : Forcer le traitement Jinja après l'initialisation complète
+    if (this.hass && !this.isDemo) {
+      // Utiliser un micro-task pour s'assurer que tout est initialisé
+      Promise.resolve().then(() => {
+        this._processJinjaFields();
+      });
+    }
+
     if (this.hass) this._watchWebSocket();
   }
 
@@ -5902,21 +6129,19 @@ class EntityProgressTemplate extends EntityProgressCardBase {
   }
 
   _handleHassUpdate() {
-    const timeoutId = 'hass-update-throttle';
     if (!this._resourceManager) this._resourceManager = new ResourceManager();
-    if (this._resourceManager.hasInterval(timeoutId)) return;
+    const throttleId = 'hass-update-throttle';
 
-    this._resourceManager.setTimeout(
+    this._resourceManager.throttle(
       () => {
         this._processJinjaFields();
       },
-      100,
-      timeoutId
+      50,
+      throttleId
     );
   }
 
   static getStubConfig(hass) {
-    EntityProgressTemplate._demoMode = true;
     return {
       type: `custom:${CARD.meta.template.typeName}`,
       entity: EntityProgressCard.getStubEntity(hass),
@@ -5927,6 +6152,7 @@ class EntityProgressTemplate extends EntityProgressCardBase {
       badge_color: 'green',
       percent: 50,
       force_circular_background: true,
+      isDemo: true,
     };
   }
 
@@ -5943,14 +6169,6 @@ class EntityProgressTemplate extends EntityProgressCardBase {
       [CARD.style.dynamic.clickable.icon, this._cardView.hasClickableIcon],
       [CARD.style.dynamic.frameless.class, this._cardView.config.frameless === true],
     ]);
-  }
-
-  // === DOM MANAGEMENT ===
-
-  _updateCSSValue(key, value) {
-    this._updateElement(CARD.htmlStructure.card.element, (el) => {
-      this._setStylePropertyIfChanged(el.style, key, value);
-    });
   }
 
   // === WATERMARK MANAGEMENT ===
@@ -6044,6 +6262,12 @@ class EntityProgressTemplate extends EntityProgressCardBase {
   }
 
   // === JINJA TEMPLATE RENDERING ===
+  _forceJinjaProcessing() {
+    if (!this._resourceManager) {
+      this._resourceManager = new ResourceManager();
+    }
+    this._processJinjaFields();
+  }
 
   _getRenderHandlers(content) {
     return {
@@ -6087,7 +6311,7 @@ class EntityProgressTemplate extends EntityProgressCardBase {
   }
 
   _validateProcessJinjaFields() {
-    return !this._resourceManager || EntityProgressTemplate._isDemoMode ? false : true;
+    return !this.isDemo && this.hass;
   }
 
   _getTemplateFields() {
@@ -6105,8 +6329,8 @@ class EntityProgressTemplate extends EntityProgressCardBase {
     };
   }
 
-  static get _isDemoMode() {
-    return EntityProgressTemplate._demoMode;
+  get isDemo() {
+    return this._cardView.config.isDemo;
   }
 }
 
@@ -6125,7 +6349,7 @@ RegistrationHelper.registerCard(CARD.meta.template);
 /******************************************************************************************
  * 🛠️ ConfigUpdateEventHandler: Configuration Update Manager
  * ========================================================================================
- * 
+ *
  * ✅ Handles dynamic updates to the configuration object of a custom card via UI events.
  *
  * 📌 Purpose:
@@ -6335,7 +6559,7 @@ class ConfigUpdateEventHandler {
  * ✅ Custom Editor for configuring the `EntityProgressCard`.
  *
  * 📌 Purpose:
- * 
+ *
  * This class defines a custom web component responsible for rendering
  * a user interface in the Home Assistant Lovelace GUI editor. It allows
  * users to interactively configure the card's settings and manage
@@ -6355,7 +6579,7 @@ class ConfigUpdateEventHandler {
  * - Internal state is managed with private class fields (#).
  * - Entity attributes are automatically extracted to populate select fields.
  * - Supports both YAML and GUI editing modes.
- * 
+ *
  * @class
  * @extends HTMLElement
  */
@@ -6377,6 +6601,8 @@ class EntityProgressCardEditor extends HTMLElement {
   #currentLanguage = CARD.config.language;
   #isListenersAttached = false;
 
+  // === LIFECYCLE METHODS ===
+
   constructor() {
     super();
     this.#log = initLogger(this, EntityProgressCardEditor.#debug, [
@@ -6385,7 +6611,7 @@ class EntityProgressCardEditor extends HTMLElement {
       'setConfig',
       'toggleAccordion',
       'render',
-    ]);    
+    ]);
     this.attachShadow({ mode: CARD.config.shadowMode });
     this.#hassProvider = HassProviderSingleton.getInstance();
     this.#log.debug('Loaded');
@@ -6406,6 +6632,8 @@ class EntityProgressCardEditor extends HTMLElement {
     this.#isListenersAttached = false;
     this.#isYAML = true;
   }
+
+  // === PUBLIC API METHODS ===
 
   set hass(hass) {
     if (!hass) {
@@ -6448,276 +6676,87 @@ class EntityProgressCardEditor extends HTMLElement {
     this.#updateFields();
   }
 
-  #updateFields() {
-    this.#log.debug('#updateFields()');
-
-    const standardFieldType = new Set(['ha-select', 'ha-textfield']);
-    const excludeStandardType = new Set([CARD.editor.keyMappings.attribute, CARD.editor.keyMappings.max_value_attribute]);
-
-    for (const [key, element] of this.#domElements) {
-      if (standardFieldType.has(element.localName) && !excludeStandardType.has(key)) {
-        this.#updateStandardField(key, element);
-      } else if (element.localName === 'ha-form') {
-        this.#updateHAForm(element, key, this.#config[key]);
-      }
-    }
-
-    // Theme
-    this.#toggleFieldDisable(CARD.editor.keyMappings.theme, this.#config.theme !== undefined);
-
-    const entityHasAttribute = this.#updateAttributFromEntity('entity', 'attribute');
-    this.#toggleFieldDisable(this.editorFields.basicConfiguration.attribute.isInGroup, !entityHasAttribute);
-
-    const maxVlueHasAttribute = this.#updateAttributFromEntity('max_value', 'max_value_attribute');
-    this.#toggleFieldDisable(this.editorFields.content.field.max_value_attribute.isInGroup, !maxVlueHasAttribute);
-
-    // hide
-    this.#updateToggleFields();
+  get editorStyle() {
+    return this.constructor._editorStyle;
   }
 
-  #updateStandardField(key, element) {
-    this.#log.debug('editor.#updateStandardField()');
-    this.#log.debug('  ✅ key ', key);
-    this.#log.debug('  ✅ element: ', element);
-    const newValue = Object.hasOwn(this.#config, key) ? this.#config[key] : '';
-    const currentValue = element.value;
-    const shouldUpdate = typeof currentValue === 'string' ? currentValue !== String(newValue) : currentValue !== newValue;
-
-    if (shouldUpdate) {
-      element.value = newValue;
-      this.#log.debug('  🆕 updateFields - update: ', [key, newValue]);
-    }
-    this.#log.debug('  ✅ done');
+  get editorFields() {
+    return this.constructor._editorFields;
   }
 
-  #updateHAForm(form, key, newValue) {
-    this.#log.debug('👉 editor.#updateHAForm()');
-    this.#log.debug('  ✅ Update HA Form (Before) ------> ', form.data);
-    this.#log.debug('  ✅ NewValue: ', newValue);
-
-    if (form.data === undefined || (newValue !== undefined && form.data[key] !== newValue)) {
-      this.#log.debug('  🆕 NewValue: update.');
-      form.data = {
-        ...form.data,
-        [key]: newValue,
-      };
-      this.#log.debug(form.data);
-    } else if (newValue === undefined && form.data[key] !== undefined) {
-      this.#log.debug('  🆕 key: set undef...');
-      form.data = {
-        ...form.data,
-        [key]: undefined,
-      };
-    }
-    this.#log.debug('  ✅ Update HA Form (after) ------> ', form.data);
-  }
-
-  #updateAttributFromEntity(entity, attribute) {
-    this.#log.debug('#updateAttributFromEntity()');
-    this.#log.debug(`  📎 entity: ${entity}`);
-    this.#log.debug(`  📎 attribute: ${attribute}`);
-
-    // Création d'une instance EntityOrValue pour l'entité courante
-    const curEntity = new EntityOrValue();
-    curEntity.value = this.#config[entity];
-    const attributeList = curEntity.attributesListForEditor;
-    this.#log.debug('  📎 attribute liste:', attributeList);
-
-    // Si l'entité a changé et que l'entité courante a des attributs, on régénère la liste.
-    if (this.#previous[entity] !== this.#config[entity] && curEntity.hasAttribute) {
-      this.#previous[entity] = this.#config[entity];
-      const targetElement = this.#domElements.get(attribute);
-      if (targetElement) {
-        this.#updateChoices(targetElement, attribute, attributeList);
-      }
-      this.#log.debug(`  ✅ updateFields - ${entity} attributes list: `, attributeList);
-    }
-
-    // Si l'attribut n'est pas défini dans la config ET
-    // que l'entité possède des attributs ET
-    // que la valeur du select ne correspond pas encore au defaultAttribute :
-    if (this.#config[attribute] === undefined && curEntity.hasAttribute) {
-      this.#log.debug(`  ✅ updateFields - Attribute ${attribute} (default): in progress...`);
-      this.#applySelectValueOnUpdate(this.#domElements.get(attribute), curEntity.defaultAttribute);
-    }
-
-    if (
-      this.#config[attribute] &&
-      curEntity.hasAttribute &&
-      Object.hasOwn(curEntity.attributes, this.#config[attribute]) &&
-      this.#domElements.get(attribute).value !== this.#config[attribute]
-    ) {
-      this.#domElements.get(attribute).value = this.#config[attribute];
-      this.#log.debug(`  ✅ updateFields - Attribute ${attribute}: `, curEntity.attributes);
-    }
-
-    return curEntity.hasAttribute;
-  }
-  async #applySelectValueOnUpdate(select, value) {
-    await select.updateComplete;
-
-    const values = Array.from(select.children).map((el) => el.getAttribute('value'));
-    if (values.includes(value)) {
-      select.value = value;
-      this.#log.debug('  ✅ applySelectValueOnUpdate - Entity attribute (default): ', value);
-    } else {
-      this.#log.debug('  ❌ applySelectValueOnUpdate - Default attribute not found in select options', values);
-    }
-  }
-  #updateToggleFields() {
-    const hide = this.#config.hide || [];
-    const toggleMappings = {
-      toggle_force_circular_background: this.#config.force_circular_background === true,
-      toggle_unit: this.#config.disable_unit !== true,
-      toggle_icon: !hide.includes('icon'),
-      toggle_name: !hide.includes('name'),
-      toggle_value: !hide.includes('value'),
-      toggle_secondary_info: !hide.includes('secondary_info'),
-      toggle_progress_bar: !hide.includes('progress_bar'),
-    };
-
-    for (const [toggleKey, shouldBeChecked] of Object.entries(toggleMappings)) {
-      const toggle = this.#domElements.get(toggleKey);
-      if (toggle && toggle.checked !== shouldBeChecked) {
-        toggle.checked = shouldBeChecked;
-      }
-    }
-  }
-
-  #addEventListener() {
-    this.#log.debug('#addEventListener');
-    const fieldsToProcess = [
-      this.editorFields.basicConfiguration,
-      this.editorFields.content.field,
-      this.editorFields.interaction.field,
-      this.editorFields.theme.field,
-    ];
-    fieldsToProcess.forEach((fieldObject) => {
-      Object.keys(fieldObject).forEach((field) => {
-        const value = fieldObject[field]; // Use the correct fieldObject
-        this.#addEventListenerFor(value.name, value.type);
-      });
-    });
-    this.#accordionTitleList.forEach((title, index) => {
-      this.#resourceManager.addEventListener(
-        title,
-        CARD.interactions.event.click,
-        () => {
-          this.toggleAccordion(index);
-        },
-        undefined, // options
-        `accordionTitle-${index}`
-      );
-    });
-  }
-
-  #addEventListenerFor(name, type) {
-    this.#log.debug(`#addEventListenerFor(${name}, ${type})`);
-    if (!this.#domElements.get(name)) {
-      console.error(`Element ${name} not found!`);
-      return;
-    }
-    const isHASelect = CARD.editor.fields[type]?.element === CARD.editor.fields.select.element;
-    const isToggle = CARD.editor.fields[type]?.element === CARD.editor.fields.toggle.element;
-    const events = isHASelect ? CARD.interactions.event.HASelect : isToggle ? CARD.interactions.event.toggle : CARD.interactions.event.other;
-
-    this.#log.debug('Event:', events);
-
-    if (isHASelect) {
-      this.#resourceManager.addEventListener(
-        this.#domElements.get(name),
-        CARD.interactions.event.closed,
-        (event) => {
-          event.stopPropagation();
-        },
-        undefined, // options
-        `close-StopPropa-${name}`
-      );
-    }
-    events.forEach((eventType) => {
-      this.#resourceManager.addEventListener(this.#domElements.get(name), eventType, this.#onChanged.bind(this), undefined, `${eventType}-${name}`);
-    });
-  }
-
-  #onChanged(changedEvent) {
-    this.#log.debug('#onChanged()');
-    this.#log.debug('  📎 ', changedEvent);
-
-    const configUpdateEventHandler = new ConfigUpdateEventHandler(Object.assign({}, this.#config));
-    const newConfig = configUpdateEventHandler.updateConfig(changedEvent);
-
-    this.#sendNewConfig(newConfig);
-  }
-
-  #sendNewConfig(newConfig) {
-    this.#log.debug('#sendNewConfig()');
-    if (newConfig.grid_options) {
-      const { grid_options, ...rest } = newConfig;
-      newConfig = { ...rest, grid_options };
-    }
-    this.#log.debug('  📎 newConfig: ', newConfig);
-    const messageEvent = new CustomEvent(CARD.interactions.event.configChanged, {
-      detail: { config: newConfig },
-      bubbles: true,
-      composed: true,
-    });
-    this.dispatchEvent(messageEvent);
-  }
-
-  #toggleFieldDisable(key, disable) {
-    this.#container.classList.toggle(`${CARD.style.dynamic.hide}-${key}`, disable);
-  }
+  // === EDITOR BUILDING ===
 
   /**
-   * Update a list of choices to a given `<select>` element based on the specified list type.
+   * Renders the editor interface for configuring the card's settings.
+   *
+   * @returns {void}
    */
-  #updateChoices(select, type, choices = null) {
-    this.#log.debug('#updateChoices() ', {select, type, choices});
+  render() {
+    const style = document.createElement(CARD.style.element);
+    style.textContent = this.editorStyle;
     const fragment = document.createDocumentFragment();
+    fragment.appendChild(style);
+    this.#container = document.createElement(CARD.editor.fields.container.element);
+    this.#container.classList.add(CARD.editor.fields.container.class);
 
-    const list = [CARD.editor.fields.attribute.type, CARD.editor.fields.max_value_attribute.type].includes(type) ? choices : FIELD_OPTIONS[type];
-    if (!list) {
-      return;
+    this.#renderFields(this.#container, this.editorFields.basicConfiguration);
+    for (const section of Object.keys(this.editorFields)) {
+      if (section === 'basicConfiguration') continue;
+      this.#renderAccordion(this.#container, this.editorFields[section]);
     }
-    this.#log.debug('  📌 list: ', list);
 
-    list.forEach((optionData) => {
-      const option = document.createElement(CARD.editor.fields.listItem.element);
-      const value = optionData.value !== undefined ? optionData.value : optionData;
-      option.setAttribute('value', String(value));
+    this.#container.appendChild(EntityProgressCardEditor.#makeHelpIcon());
+    fragment.appendChild(this.#container);
+    this.shadowRoot.appendChild(fragment);
+  }
 
-      switch (type) {
-        case CARD.editor.fields.layout.type:
-        case CARD.editor.fields.theme.type:
-        case CARD.editor.fields.bar_size.type: {
-          const label = LANGUAGES[this.#currentLanguage].editor.option[type][optionData.value];
-          const haIcon = document.createElement(CARD.editor.fields.iconItem.element);
-          haIcon.setAttribute(CARD.editor.fields.iconItem.attribute, optionData.icon);
-          haIcon.classList.add(CARD.editor.fields.iconItem.class);
-          option.appendChild(haIcon);
-          option.append(label);
-          break;
-        }
-        case CARD.editor.fields.attribute.type:
-        case CARD.editor.fields.max_value_attribute.type:
-          option.innerHTML = `${optionData.label}`;
-          break;
-        default:
-          throw new Error('Choices: Unknown case');
-      }
-      // select.appendChild(option);
-      fragment.appendChild(option);
+  #renderAccordion(parent, inputFields) {
+    const accordionItem = document.createElement(CARD.editor.fields.accordion.item.element);
+    accordionItem.classList.add(CARD.editor.fields.accordion.item.class);
+    this.#accordionList.push(accordionItem);
+
+    const accordionTitle = document.createElement(CARD.editor.fields.accordion.title.element);
+    this.#accordionTitleList.push(accordionTitle);
+    accordionTitle.classList.add(CARD.editor.fields.accordion.title.class);
+    const icon = document.createElement(CARD.editor.fields.accordion.icon.element);
+    icon.setAttribute('icon', inputFields.title.icon);
+    icon.classList.add(CARD.editor.fields.accordion.icon.class);
+    accordionTitle.appendChild(icon);
+
+    const title = document.createTextNode(LANGUAGES[this.#currentLanguage].editor.title[inputFields.title.name]);
+    accordionTitle.appendChild(title);
+
+    const accordionArrow = document.createElement(CARD.editor.fields.accordion.arrow.element);
+    accordionArrow.classList.add(CARD.editor.fields.accordion.arrow.class);
+    accordionArrow.setAttribute('icon', CARD.editor.fields.accordion.arrow.icon);
+    accordionTitle.appendChild(accordionArrow);
+    accordionItem.appendChild(accordionTitle);
+
+    const accordionContent = document.createElement(CARD.editor.fields.accordion.content.element);
+    accordionContent.classList.add(CARD.editor.fields.accordion.content.class);
+
+    this.#renderFields(accordionContent, inputFields.field);
+
+    accordionItem.appendChild(accordionContent);
+    parent.appendChild(accordionItem);
+  }
+
+  #renderFields(parent, inputFields) {
+    Object.values(inputFields).forEach((field) => {
+      this.#log.debug('#renderFields - field: ', field);
+      parent.appendChild(
+        this.#createField({
+          name: field.name,
+          label: LANGUAGES[this.#currentLanguage].editor.field[field.name],
+          type: field.type,
+          isInGroup: field.isInGroup,
+          width: field.width,
+          schema: field.schema !== undefined ? field.schema : null,
+        })
+      );
     });
-    select.replaceChildren(fragment);
   }
 
-  static #computeCustomLabel(s, label) {
-    return label;
-  }
-
-  /**
-   * Creates a form field based on the provided configuration and appends it to a container.
-   */
   #createField({ name, label, type, required, isInGroup, width, schema = null }) {
     this.#log.debug('#createField()');
     let inputElement = null;
@@ -6810,6 +6849,51 @@ class EntityProgressCardEditor extends HTMLElement {
 
     return inputElement;
   }
+
+  static #computeCustomLabel(s, label) {
+    return label;
+  }
+
+  #updateChoices(select, type, choices = null) {
+    this.#log.debug('#updateChoices() ', { select, type, choices });
+    const fragment = document.createDocumentFragment();
+
+    const list = [CARD.editor.fields.attribute.type, CARD.editor.fields.max_value_attribute.type].includes(type) ? choices : FIELD_OPTIONS[type];
+    if (!list) {
+      return;
+    }
+    this.#log.debug('  📌 list: ', list);
+
+    list.forEach((optionData) => {
+      const option = document.createElement(CARD.editor.fields.listItem.element);
+      const value = optionData.value !== undefined ? optionData.value : optionData;
+      option.setAttribute('value', String(value));
+
+      switch (type) {
+        case CARD.editor.fields.layout.type:
+        case CARD.editor.fields.theme.type:
+        case CARD.editor.fields.bar_size.type: {
+          const label = LANGUAGES[this.#currentLanguage].editor.option[type][optionData.value];
+          const haIcon = document.createElement(CARD.editor.fields.iconItem.element);
+          haIcon.setAttribute(CARD.editor.fields.iconItem.attribute, optionData.icon);
+          haIcon.classList.add(CARD.editor.fields.iconItem.class);
+          option.appendChild(haIcon);
+          option.append(label);
+          break;
+        }
+        case CARD.editor.fields.attribute.type:
+        case CARD.editor.fields.max_value_attribute.type:
+          option.innerHTML = `${optionData.label}`;
+          break;
+        default:
+          throw new Error('Choices: Unknown case');
+      }
+      // select.appendChild(option);
+      fragment.appendChild(option);
+    });
+    select.replaceChildren(fragment);
+  }
+
   static #makeHelpIcon() {
     const link = document.createElement(CARD.documentation.link.element);
     link.href = CARD.documentation.link.documentationUrl;
@@ -6828,6 +6912,261 @@ class EntityProgressCardEditor extends HTMLElement {
     return link;
   }
 
+  // === EDITOR EVENT ===
+
+  #addEventListener() {
+    this.#log.debug('#addEventListener');
+    const allFields = [
+      ...Object.values(this.editorFields.basicConfiguration),
+      ...Object.values(this.editorFields.content.field),
+      ...Object.values(this.editorFields.interaction.field),
+      ...Object.values(this.editorFields.theme.field),
+    ];
+
+    allFields.forEach((field) => {
+      this.#addEventListenerFor(field.name, field.type);
+    });
+
+    this.#accordionTitleList.forEach((title, index) => {
+      this.#resourceManager.addEventListener(
+        title,
+        CARD.interactions.event.click,
+        () => {
+          this.toggleAccordion(index);
+        },
+        undefined, // options
+        `accordionTitle-${index}`
+      );
+    });
+  }
+
+  #addEventListenerFor(name, type) {
+    this.#log.debug(`#addEventListenerFor(${name}, ${type})`);
+    if (!this.#domElements.get(name)) {
+      console.error(`Element ${name} not found!`);
+      return;
+    }
+    const isHASelect = CARD.editor.fields[type]?.element === CARD.editor.fields.select.element;
+    const isToggle = CARD.editor.fields[type]?.element === CARD.editor.fields.toggle.element;
+    const events = isHASelect ? CARD.interactions.event.HASelect : isToggle ? CARD.interactions.event.toggle : CARD.interactions.event.other;
+
+    this.#log.debug('Event:', events);
+
+    if (isHASelect) {
+      this.#resourceManager.addEventListener(
+        this.#domElements.get(name),
+        CARD.interactions.event.closed,
+        (event) => {
+          event.stopPropagation();
+        },
+        undefined, // options
+        `close-StopPropa-${name}`
+      );
+    }
+    events.forEach((eventType) => {
+      this.#resourceManager.addEventListener(this.#domElements.get(name), eventType, this.#onChanged.bind(this), undefined, `${eventType}-${name}`);
+    });
+  }
+
+  #onChanged(changedEvent) {
+    this.#log.debug('#onChanged()');
+    this.#log.debug('  📎 ', changedEvent);
+
+    const configUpdateEventHandler = new ConfigUpdateEventHandler(Object.assign({}, this.#config));
+    const newConfig = configUpdateEventHandler.updateConfig(changedEvent);
+
+    this.#sendNewConfig(newConfig);
+  }
+
+  #sendNewConfig(newConfig) {
+    this.#log.debug('#sendNewConfig()');
+    let finalConfig = newConfig;
+    if (newConfig.grid_options) {
+      const { grid_options, ...rest } = newConfig;
+      finalConfig = { ...rest, grid_options };
+    }
+
+    this.#log.debug('📎 Config: ', finalConfig);
+
+    const messageEvent = new CustomEvent(CARD.interactions.event.configChanged, {
+      detail: { config: finalConfig },
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(messageEvent);
+  }
+
+  // === EDITOR REFRESH ===
+
+  #updateFields() {
+    this.#log.debug('#updateFields()');
+
+    const standardFieldType = new Set(['ha-select', 'ha-textfield']);
+    const excludeStandardType = new Set([CARD.editor.keyMappings.attribute, CARD.editor.keyMappings.max_value_attribute]);
+
+    const updates = [];
+
+    for (const [key, element] of this.#domElements) {
+      if (standardFieldType.has(element.localName) && !excludeStandardType.has(key)) {
+        const update = this.#prepareStandardFieldUpdate(key, element);
+        if (update) updates.push(update);
+      } else if (element.localName === 'ha-form') {
+        const update = this.#prepareHAFormUpdate(element, key, this.#config[key]);
+        if (update) updates.push(update);
+      }
+    }
+
+    // Apply all updates in batch
+    updates.forEach((update) => update());
+
+    // Handle special fields
+    this.#updateSpecialFields();
+  }
+
+  #prepareStandardFieldUpdate(key, element) {
+    const newValue = Object.hasOwn(this.#config, key) ? this.#config[key] : '';
+    const currentValue = element.value;
+    const shouldUpdate = typeof currentValue === 'string' ? currentValue !== String(newValue) : currentValue !== newValue;
+
+    if (shouldUpdate) {
+      this.#log.debug('🆕 updateFields - update: ', [key, newValue]);
+      return () => {
+        element.value = newValue;
+      };
+    }
+    return null;
+  }
+
+  #prepareHAFormUpdate(form, key, newValue) {
+    const currentData = form.data;
+    const needsUpdate =
+      currentData === undefined ||
+      (newValue !== undefined && currentData[key] !== newValue) ||
+      (newValue === undefined && currentData[key] !== undefined);
+
+    if (needsUpdate) {
+      this.#log.debug('🆕 updateFields - update: ', [key, newValue]);
+      return () => {
+        form.data = {
+          ...currentData,
+          [key]: newValue,
+        };
+      };
+    }
+    return null;
+  }
+
+  #updateSpecialFields() {
+    // Theme toggle
+    this.#toggleFieldDisable(CARD.editor.keyMappings.theme, this.#config.theme !== undefined);
+
+    // Attribute updates
+    const entityHasAttribute = this.#updateAttributeFromEntity('entity', 'attribute');
+    this.#toggleFieldDisable(this.editorFields.basicConfiguration.attribute.isInGroup, !entityHasAttribute);
+
+    const maxValueHasAttribute = this.#updateAttributeFromEntity('max_value', 'max_value_attribute');
+    this.#toggleFieldDisable(this.editorFields.content.field.max_value_attribute.isInGroup, !maxValueHasAttribute);
+
+    // Toggle fields
+    this.#updateToggleFields();
+  }
+
+  #toggleFieldDisable(key, disable) {
+    this.#container.classList.toggle(`${CARD.style.dynamic.hide}-${key}`, disable);
+  }
+
+  /**
+   * Updates the list of available attributes for a given entity in the corresponding selector.
+   * When the entity changes, updates the options and selects a default attribute if necessary.
+   *
+   * @param {string} entity - The key name of the entity in the config (e.g., 'entity' or 'max_value').
+   * @param {string} attribute - The key name of the attribute to update.
+   * @returns {boolean} - Returns true if the entity has attributes.
+   */
+  #updateAttributeFromEntity(entity, attribute) {
+    this.#log.debug('#updateAttributeFromEntity()');
+    this.#log.debug(`  📎 entity: ${entity}`);
+    this.#log.debug(`  📎 attribute: ${attribute}`);
+
+    // Create an EntityOrValue instance for the current entity
+    const curEntity = new EntityOrValue();
+    curEntity.value = this.#config[entity];
+    const attributeList = curEntity.attributesListForEditor;
+    this.#log.debug('  📎 attribute liste:', attributeList);
+
+    // If the entity has changed and the current entity has attributes, regenerate the list.
+    if (this.#previous[entity] !== this.#config[entity] && curEntity.hasAttribute) {
+      this.#previous[entity] = this.#config[entity];
+      const targetElement = this.#domElements.get(attribute);
+      if (targetElement) {
+        this.#updateChoices(targetElement, attribute, attributeList);
+      }
+      this.#log.debug(`  ✅ updateFields - ${entity} attributes list: `, attributeList);
+    }
+    // If the attribute is not defined in the config AND
+    // the entity has attributes AND
+    // the selected value does not yet match the defaultAttribute:
+    if (this.#config[attribute] === undefined && curEntity.hasAttribute) {
+      this.#log.debug(`  ✅ updateFields - Attribute ${attribute} (default): in progress...`);
+      this.#applySelectValueOnUpdate(this.#domElements.get(attribute), curEntity.defaultAttribute);
+    }
+
+    if (
+      this.#config[attribute] &&
+      curEntity.hasAttribute &&
+      Object.hasOwn(curEntity.attributes, this.#config[attribute]) &&
+      this.#domElements.get(attribute).value !== this.#config[attribute]
+    ) {
+      this.#domElements.get(attribute).value = this.#config[attribute];
+      this.#log.debug(`  ✅ updateFields - Attribute ${attribute}: `, curEntity.attributes);
+    }
+
+    return curEntity.hasAttribute;
+  }
+
+  /**
+   * Applies a default value to a select element once it has finished updating.
+   * Checks if the value exists among the options before setting it.
+   *
+   * @param {HTMLElement} select - The select element to update.
+   * @param {string} value - The value to apply.
+   */
+  async #applySelectValueOnUpdate(select, value) {
+    await select.updateComplete;
+
+    const values = Array.from(select.children).map((el) => el.getAttribute('value'));
+    if (values.includes(value)) {
+      select.value = value;
+      this.#log.debug('  ✅ applySelectValueOnUpdate - Entity attribute (default): ', value);
+    } else {
+      this.#log.debug('  ❌ applySelectValueOnUpdate - Default attribute not found in select options', values);
+    }
+  }
+
+  #updateToggleFields() {
+    const hide = this.#config.hide || [];
+    const toggleMappings = {
+      toggle_force_circular_background: this.#config.force_circular_background === true,
+      toggle_unit: this.#config.disable_unit !== true,
+      toggle_icon: !hide.includes('icon'),
+      toggle_name: !hide.includes('name'),
+      toggle_value: !hide.includes('value'),
+      toggle_secondary_info: !hide.includes('secondary_info'),
+      toggle_progress_bar: !hide.includes('progress_bar'),
+    };
+
+    const toggleUpdates = [];
+    for (const [toggleKey, shouldBeChecked] of Object.entries(toggleMappings)) {
+      const toggle = this.#domElements.get(toggleKey);
+      if (toggle && toggle.checked !== shouldBeChecked) {
+        toggleUpdates.push(() => (toggle.checked = shouldBeChecked));
+      }
+    }
+
+    toggleUpdates.forEach((update) => update());
+  }
+  // === ACCORDION ANIMATION ===
+
   toggleAccordion(index) {
     const accordion = this.#accordionList[index];
     const panel = accordion.querySelector('.accordion-content');
@@ -6835,124 +7174,88 @@ class EntityProgressCardEditor extends HTMLElement {
 
     const isExpanding = !accordion.classList.contains('expanded');
 
+    // Clean up existing animation
+    this.#resourceManager.remove(`accordionTransition-${index}`);
+
     if (isExpanding) {
-      // Préparation à l'expansion
-      panel.style.display = 'flex'; // pour éviter une disparition instantanée
-      panel.style.maxHeight = `${panel.scrollHeight}px`;
-      panel.style.paddingTop = '30px';
-      panel.style.paddingBottom = '30px';
-      panel.style.opacity = '1';
-
-      const _ = panel.offsetHeight; // eslint-disable-line no-unused-vars
-
-      accordion.classList.add('expanded');
-
-      // Supprime max-height après la transition
-      const onTransitionEnd = () => {
-        panel.removeEventListener('transitionend', onTransitionEnd);
-        panel.style.maxHeight = 'none';
-      };
-      panel.addEventListener('transitionend', onTransitionEnd);
+      this.#expandAccordion(accordion, panel, index);
     } else {
-      // Ajoute une classe temporaire pour désactiver l'opacité des enfants
-      accordion.classList.add('collapsing');
-
-      // Commence par réinitialiser le max-height pour animer proprement
-      panel.style.maxHeight = `${panel.scrollHeight}px`;
-
-      // Reflow forcé avant de mettre max-height à 0
-      const _ = panel.offsetHeight; // eslint-disable-line no-unused-vars
-
-      panel.style.maxHeight = '0';
-      panel.style.paddingTop = '0';
-      panel.style.paddingBottom = '0';
-      panel.style.opacity = '0';
-
-      const onTransitionEnd = () => {
-        panel.removeEventListener('transitionend', onTransitionEnd);
-        accordion.classList.remove('expanded');
-        accordion.classList.remove('collapsing');
-        panel.style.display = '';
-      };
-      panel.addEventListener('transitionend', onTransitionEnd);
+      this.#collapseAccordion(accordion, panel, index);
     }
   }
 
-  #renderFields(parent, inputFields) {
-    Object.values(inputFields).forEach((field) => {
-      this.#log.debug('#renderFields - field: ', field);
-      parent.appendChild(
-        this.#createField({
-          name: field.name,
-          label: LANGUAGES[this.#currentLanguage].editor.field[field.name],
-          type: field.type,
-          isInGroup: field.isInGroup,
-          width: field.width,
-          schema: field.schema !== undefined ? field.schema : null,
-        })
-      );
+  #expandAccordion(accordion, panel, index) {
+    // Set initial state
+    Object.assign(panel.style, {
+      display: 'flex',
+      maxHeight: '0',
+      paddingTop: '0',
+      paddingBottom: '0',
+      opacity: '0',
+    });
+
+    // Force reflow
+    const _ = panel.offsetHeight; // eslint-disable-line no-unused-vars
+
+    accordion.classList.add('expanded');
+
+    // Animate to final state
+    requestAnimationFrame(() => {
+      Object.assign(panel.style, {
+        maxHeight: `${panel.scrollHeight}px`,
+        paddingTop: '30px',
+        paddingBottom: '30px',
+        opacity: '1',
+      });
+    });
+
+    this.#addAccordionTransitionListener(panel, index, () => {
+      panel.style.maxHeight = 'none';
     });
   }
 
-  #renderAccordion(parent, inputFields) {
-    const accordionItem = document.createElement(CARD.editor.fields.accordion.item.element);
-    accordionItem.classList.add(CARD.editor.fields.accordion.item.class);
-    this.#accordionList.push(accordionItem);
+  #collapseAccordion(accordion, panel, index) {
+    accordion.classList.add('collapsing');
 
-    const accordionTitle = document.createElement(CARD.editor.fields.accordion.title.element);
-    this.#accordionTitleList.push(accordionTitle);
-    accordionTitle.classList.add(CARD.editor.fields.accordion.title.class);
-    const icon = document.createElement(CARD.editor.fields.accordion.icon.element);
-    icon.setAttribute('icon', inputFields.title.icon);
-    icon.classList.add(CARD.editor.fields.accordion.icon.class);
-    accordionTitle.appendChild(icon);
+    // Set current height
+    panel.style.maxHeight = `${panel.scrollHeight}px`;
+    const _ = panel.offsetHeight; // eslint-disable-line no-unused-vars
 
-    const title = document.createTextNode(LANGUAGES[this.#currentLanguage].editor.title[inputFields.title.name]);
-    accordionTitle.appendChild(title);
+    requestAnimationFrame(() => {
+      Object.assign(panel.style, {
+        maxHeight: '0',
+        paddingTop: '0',
+        paddingBottom: '0',
+        opacity: '0',
+      });
+    });
 
-    const accordionArrow = document.createElement(CARD.editor.fields.accordion.arrow.element);
-    accordionArrow.classList.add(CARD.editor.fields.accordion.arrow.class);
-    accordionArrow.setAttribute('icon', CARD.editor.fields.accordion.arrow.icon);
-    accordionTitle.appendChild(accordionArrow);
-    accordionItem.appendChild(accordionTitle);
+    this.#addAccordionTransitionListener(panel, index, () => {
+      accordion.classList.remove('expanded', 'collapsing');
 
-    const accordionContent = document.createElement(CARD.editor.fields.accordion.content.element);
-    accordionContent.classList.add(CARD.editor.fields.accordion.content.class);
-
-    this.#renderFields(accordionContent, inputFields.field);
-
-    accordionItem.appendChild(accordionContent);
-    parent.appendChild(accordionItem);
+      // Reset styles
+      Object.assign(panel.style, {
+        display: '',
+        maxHeight: '',
+        paddingTop: '',
+        paddingBottom: '',
+        opacity: '',
+      });
+    });
   }
 
-  /**
-   * Renders the editor interface for configuring the card's settings.
-   *
-   * @returns {void}
-   */
-  render() {
-    const style = document.createElement(CARD.style.element);
-    style.textContent = this.editorStyle;
-    const fragment = document.createDocumentFragment();
-    fragment.appendChild(style);
-    this.#container = document.createElement(CARD.editor.fields.container.element);
-    this.#container.classList.add(CARD.editor.fields.container.class);
-
-    this.#renderFields(this.#container, this.editorFields.basicConfiguration);
-    for (const section of Object.keys(this.editorFields)) {
-      if (section === 'basicConfiguration') continue;
-      this.#renderAccordion(this.#container, this.editorFields[section]);
-    }
-
-    this.#container.appendChild(EntityProgressCardEditor.#makeHelpIcon());
-    fragment.appendChild(this.#container);
-    this.shadowRoot.appendChild(fragment);
-  }
-  get editorStyle() {
-    return this.constructor._editorStyle;
-  }
-  get editorFields() {
-    return this.constructor._editorFields;
+  #addAccordionTransitionListener(panel, index, callback) {
+    this.#resourceManager.addEventListener(
+      panel,
+      'transitionend',
+      (e) => {
+        if (e.target !== panel) return;
+        callback();
+        this.#resourceManager.remove(`accordionTransition-${index}`);
+      },
+      undefined,
+      `accordionTransition-${index}`
+    );
   }
 }
 
@@ -6960,7 +7263,7 @@ class EntityProgressCardEditor extends HTMLElement {
  * 🛠️ EntityProgressBadgeEditor
  * ========================================================================================
  * ✅ Manage the badge editor.
- * 
+ *
  * This class extends `EntityProgressCardEditor` and provides a specialized version of the editor
  * for a progress badge (circular badge), with a reduced set of configurable fields.
  *
@@ -6972,20 +7275,24 @@ class EntityProgressCardEditor extends HTMLElement {
  */
 class EntityProgressBadgeEditor extends EntityProgressCardEditor {
   static _editorStyle = `
-  ${CARD_EDITOR_CSS}
-
-  .hide {
-    display: none;
-  }`;
+   ${CARD_EDITOR_CSS}
+ 
+   .hide {
+     display: none;
+   }`;
   static _editorFields = (() => {
     const baseFields = structuredClone(EntityProgressCardEditor._editorFields);
     const hide = 'hide';
-    baseFields.interaction.field.icon_tap_action.isInGroup = hide;
-    baseFields.interaction.field.icon_hold_action.isInGroup = hide;
-    baseFields.interaction.field.icon_double_tap_action.isInGroup = hide;
-    baseFields.theme.field.toggleCircular.isInGroup = hide;
-    baseFields.theme.field.bar_size.isInGroup = hide;
-    baseFields.theme.field.layout.isInGroup = hide;
+    const fieldsToHide = ['icon_tap_action', 'icon_hold_action', 'icon_double_tap_action', 'toggleCircular', 'bar_size', 'layout'];
+
+    fieldsToHide.forEach((curField) => {
+      if (baseFields.interaction?.field?.[curField]) {
+        baseFields.interaction.field[curField].isInGroup = hide;
+      }
+      if (baseFields.theme?.field?.[curField]) {
+        baseFields.theme.field[curField].isInGroup = hide;
+      }
+    });
 
     return baseFields;
   })();
