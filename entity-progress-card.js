@@ -15,7 +15,7 @@
  * More informations here: https://github.com/francois-le-ko4la/lovelace-entity-progress-card/
  *
  * @author ko4la
- * @version 1.4.8-2
+ * @version 1.4.9
  *
  */
 
@@ -23,7 +23,7 @@
  * PARAMETERS
  */
 
-const VERSION = '1.4.7';
+const VERSION = '1.4.9';
 const CARD = {
   meta: {
     card: {
@@ -44,7 +44,7 @@ const CARD = {
   },
   config: {
     dev: true,
-    debug: { card: false, editor: false, interactionHandler: false, ressourceManager: false, hass: false },
+    debug: { card: false, editor: false, interactionHandler: false, ressourceManager: true, hass: false },
     language: 'en',
     value: { min: 0, max: 100 },
     unit: {
@@ -229,6 +229,7 @@ const CARD = {
     dynamic: {
       card: {
         minWidth: { var: '--epb-card-min-width' },
+        height: { var: '--epb-card-height' },
       },
       badge: {
         color: { var: '--epb-badge-color', default: 'var(--orange-color)' },
@@ -2329,11 +2330,12 @@ const CARD_CSS = `
   --epb-detail-max-width: 60%;
   --epb-detail-min-width: 45px;
   --epb-vertical-gap: 1px;
+
 }
 
  /* === BASE CARD STYLES === */
 ${CARD.htmlStructure.card.element} {
-  height: 100%;
+  height: var (${CARD.style.dynamic.card.height.var}, 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2387,12 +2389,14 @@ ${CARD.htmlStructure.card.element} {
 
 /* === LAYOUT ORIENTATIONS === */
 .${CARD.layout.orientations.vertical.label} .${CARD.htmlStructure.sections.container.class} {
-  min-height: ${CARD.layout.orientations.vertical.minHeight};
+  min-height: var(${CARD.style.dynamic.card.height.var}, ${CARD.layout.orientations.vertical.minHeight});
+  height: var(${CARD.style.dynamic.card.height.var}, unset);
   flex-direction: column;
 }
 
 .${CARD.layout.orientations.horizontal.label} .${CARD.htmlStructure.sections.container.class} {
-  min-height: ${CARD.layout.orientations.horizontal.minHeight};
+  min-height: var(${CARD.style.dynamic.card.height.var}, ${CARD.layout.orientations.horizontal.minHeight});
+  height: var(${CARD.style.dynamic.card.height.var}, unset);
   flex-direction: row;
 }
 
@@ -2442,6 +2446,13 @@ ${CARD.htmlStructure.card.element} {
   height: var(--epb-icon-size, var(--epb-icon-default-size));
   color: var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default});
 }
+
+.custom-icon-img {
+  width: var(--epb-icon-size, var(--epb-icon-default-size));
+  height: var(--epb-icon-size, var(--epb-icon-default-size));
+  border-radius: 50%;
+  object-fit: cover;
+}  
 
 /* === RIGHT SECTION (TEXT CONTENT) === */
 .${CARD.htmlStructure.sections.right.class} {
@@ -2902,8 +2913,6 @@ ${CARD.htmlStructure.card.element} {
 .${CARD.layout.orientations.vertical.label}.${CARD.style.dynamic.marginless.class} .${CARD.htmlStructure.sections.container.class},
 .${CARD.layout.orientations.horizontal.label}.${CARD.style.dynamic.marginless.class} .${CARD.htmlStructure.sections.container.class} {
   min-height: unset;
-  padding-top: 4px;
-  padding-bottom: 4px;
 }
 
 .${CARD.layout.orientations.vertical.label}.${CARD.style.dynamic.marginless.class} .${CARD.htmlStructure.sections.left.class} {
@@ -3412,7 +3421,7 @@ class NumberFormatter {
   };
 
   static getSpaceCharacter(locale, unit) {
-    const set = this.unitsNoSpace[locale] || this.unitsNoSpace['en-US'];
+    const set = NumberFormatter.unitsNoSpace[locale] || NumberFormatter.unitsNoSpace['en-US'];
     return set.has(unit.toLowerCase()) ? '' : CARD.config.unit.space;
   }
 
@@ -3422,6 +3431,7 @@ class NumberFormatter {
     const formattedValue = new Intl.NumberFormat(locale, {
       minimumFractionDigits: decimal,
       maximumFractionDigits: decimal,
+      useGrouping: locale !== 'en',
     }).format(value);
 
     if (!unit) return formattedValue;
@@ -3429,7 +3439,7 @@ class NumberFormatter {
     const spaceMap = {
       space: CARD.config.unit.space,
       'no-space': '',
-      auto: () => this.getSpaceCharacter(locale, unit),
+      auto: () => NumberFormatter.getSpaceCharacter(locale, unit),
     };
     const space = typeof spaceMap[unitSpacing] === 'function' ? spaceMap[unitSpacing]() : spaceMap[unitSpacing];
 
@@ -3446,7 +3456,7 @@ class NumberFormatter {
     seconds = decimalPart !== undefined ? `${pad(intPart)}.${decimalPart}` : pad(seconds);
 
     if (flex) {
-      if (totalSeconds < 60) return this.formatValueAndUnit(parseFloat(seconds), decimal, 's', locale, unitSpacing);
+      if (totalSeconds < 60) return NumberFormatter.formatValueAndUnit(parseFloat(seconds), decimal, 's', locale, unitSpacing);
       if (totalSeconds < 3600) return `${pad(minutes)}:${seconds}`;
     }
 
@@ -3706,7 +3716,7 @@ class PercentHelper {
 
   // === PUBLIC API METHODS ===
 
-  valueForThemes(valueBasedOnPercentage) {
+  valueForThemes(isCustomTheme, valueBasedOnPercentage) {
     /****************************************************************************************
      * Calculates the value to display based on the selected theme and unit system.
      *
@@ -3714,9 +3724,10 @@ class PercentHelper {
      * - If the theme is linear or the unit is the default, the percentage value is returned.
      */
     let value = this.actual;
-    if (this.unit === CARD.config.unit.fahrenheit) {
-      value = ((value - 32) * 5) / 9;
-    }
+
+    if (isCustomTheme) return value;
+    if (this.unit === CARD.config.unit.fahrenheit) value = ((value - 32) * 5) / 9;
+
     return valueBasedOnPercentage || [CARD.config.unit.default, CARD.config.unit.disable].includes(this.unit) ? this.percent : value;
   }
   refresh() {
@@ -3753,6 +3764,7 @@ class ThemeManager {
   #isValid = false;
   #isLinear = false;
   #isBasedOnPercentage = false;
+  #isCustomTheme = false;
   #currentStyle = null;
 
   // === PUBLIC GETTERS / SETTERS ===
@@ -3785,6 +3797,7 @@ class ThemeManager {
     this.#currentStyle = newTheme;
     this.#isValid = true;
     this.#isLinear = false;
+    this.#isCustomTheme = true;
   }
   get customTheme() {
     return this.#currentStyle;
@@ -3794,6 +3807,9 @@ class ThemeManager {
   }
   get isBasedOnPercentage() {
     return this.#isBasedOnPercentage;
+  }
+  get isCustomTheme() {
+    return this.#isCustomTheme;
   }
   get isValid() {
     return this.#isValid;
@@ -3923,7 +3939,6 @@ class HassProviderSingleton {
   get numberFormat() {
     const format = this.#hass?.locale?.number_format;
     if (!format) return CARD.config.languageMap[CARD.config.language];
-    if (format === 'none') return null;
 
     const formatMap = {
       decimal_comma: 'de-DE', // 1.234,56 (Allemagne, France, etc.)
@@ -3931,6 +3946,7 @@ class HassProviderSingleton {
       space_comma: 'fr-FR', // 1 234,56 (France, Norvège, etc.)
       language: CARD.config.languageMap[this.language],
       system: Intl.NumberFormat().resolvedOptions().locale,
+      none: 'en',
     };
 
     return formatMap[format] || CARD.config.languageMap[CARD.config.language];
@@ -4491,7 +4507,7 @@ class EntityOrValue {
     return this.#isEntity;
   }
   set attribute(newValue) {
-    if (this.#isEntity) this.#activeHelper.attribute = newValue;
+    if (this.#activeHelper && this.#isEntity) this.#activeHelper.attribute = newValue;
   }
   get attribute() {
     return this.#isEntity ? this.#activeHelper.attribute : null;
@@ -4774,6 +4790,7 @@ class CardConfigHelper extends BaseConfigHelper {
       'additions',
       'marginless',
       'min_width',
+      'height',
       'reverse',
       'reverse_secondary_info_row',
       'decimal',
@@ -4827,9 +4844,8 @@ class CardConfigHelper extends BaseConfigHelper {
     // eslint-disable-next-line no-unused-vars
     const { watermark, ...baseDefaults } = this.filterConfig(CARD.config.defaults);
 
-    // Filtrage de la configuration selon les clés autorisées
+    if (config.center_zero === true && typeof config.min_value === 'undefined') baseDefaults.min_value = -100;
     const cleanedConfig = this.filterConfig(config);
-
     const merged = {
       ...baseDefaults,
       ...(isToggleable && { icon_tap_action: { action: 'toggle' } }),
@@ -5003,9 +5019,9 @@ class MinimalCardView {
 
     const { watermark } = this.config;
     return {
-      low: watermark.low,
+      low: this.config.center_zero === true ? 50 + watermark.low / 2 : watermark.low,
       low_color: ThemeManager.adaptColor(watermark.low_color),
-      high: watermark.high,
+      high: this.config.center_zero === true ? 50 + watermark.high / 2 : watermark.high,
       high_color: ThemeManager.adaptColor(watermark.high_color),
       opacity: watermark.opacity,
       type: watermark.type,
@@ -5110,7 +5126,7 @@ class BaseCardView extends MinimalCardView {
     this._configHelper.config = config;
 
     if (this._configHelper.config.additions) {
-      console.log(this._configHelper.config.additions);
+      //console.log(this._configHelper.config.additions);
       this._configHelper.config.additions.forEach(({ entity, attribute }) => {
         this.#entityCollection.addEntity(entity, attribute);
       });
@@ -5298,7 +5314,7 @@ class BaseCardView extends MinimalCardView {
     if (!this.isAvailable) return;
 
     this.#updatePercentHelper();
-    this.#theme.value = this.#percentHelper.valueForThemes(this.#theme.isBasedOnPercentage);
+    this.#theme.value = this.#percentHelper.valueForThemes(this.#theme.isCustomTheme, this.#theme.isBasedOnPercentage);
   }
 
   // === PRIVATE METHODS ===
@@ -5470,7 +5486,7 @@ class ResourceManager {
     return id;
   }
 
-  hasInterval(id) {
+  has(id) {
     return this.#resources.has(id); // Vérifie si un ID existe dans la Map
   }
 
@@ -5617,11 +5633,11 @@ class ActionHelper {
   }
 
   #attachListener(elem) {
-    this.#resourceManager.addEventListener(elem, 'mousedown', this.#boundHandlers.mousedown);
-    this.#resourceManager.addEventListener(elem, 'mouseup', this.#boundHandlers.mouseup);
-    this.#resourceManager.addEventListener(elem, 'mousemove', this.#boundHandlers.mousemove);
+    this.#resourceManager.addEventListener(elem, 'mousedown', this.#boundHandlers.mousedown, { passive: true });
+    this.#resourceManager.addEventListener(elem, 'mouseup', this.#boundHandlers.mouseup, { passive: true });
+    this.#resourceManager.addEventListener(elem, 'mousemove', this.#boundHandlers.mousemove, { passive: true });
     this.#resourceManager.addEventListener(elem, 'touchstart', this.#boundHandlers.touchstart, { passive: true });
-    this.#resourceManager.addEventListener(elem, 'touchend', this.#boundHandlers.touchend);
+    this.#resourceManager.addEventListener(elem, 'touchend', this.#boundHandlers.touchend, { passive: true });
     this.#resourceManager.addEventListener(elem, 'touchmove', this.#boundHandlers.touchmove, { passive: true });
   }
 
@@ -5782,7 +5798,6 @@ class EntityProgressCardBase extends HTMLElement {
   _cardView = new CardView();
   _domElements = new Map();
   _hass = null;
-  _firstHass = true;
   _clickableTarget = null;
   _actionHelper = null;
   _changeTracker = new ChangeTracker();
@@ -5813,12 +5828,17 @@ class EntityProgressCardBase extends HTMLElement {
   }
 
   connectedCallback() {
+    // console.log('Connected - Parent chain:', this._getParentChain());
+    // setTimeout(() => this._debugCardModIntegration(), 500);
     this.render();
     this._updateDynamicElementsSync();
     if (!this._resourceManager) this._resourceManager = new ResourceManager();
     this._setupClickableTarget();
     this._actionHelper.init(this._resourceManager, this._cardView.config, this._clickableTarget, this.hasDisabledIconTap);
-    if (this.hass) this._watchWebSocket();
+    if (this.hass) {
+      this._handleHassUpdate();
+      this._watchWebSocket();
+    }
   }
 
   disconnectedCallback() {
@@ -5836,6 +5856,8 @@ class EntityProgressCardBase extends HTMLElement {
       throw new Error('setConfig: invalid config');
     }
 
+    if (this.isRendered) this.reset();
+
     this._cardView.config = { ...config };
     if (typeof config.entity === 'string') this._changeTracker.watchEntity(config.entity);
     if (typeof config.max_value === 'string') this._changeTracker.watchEntity(config.max_value);
@@ -5849,18 +5871,16 @@ class EntityProgressCardBase extends HTMLElement {
    *                        state and services.
    */
   set hass(hass) {
+    console.log('sethass');
     this._log.debug('👉 set hass()');
-
+    const isFirstHass = !this.hass;
     this._changeTracker.hassState = hass;
-    if (this._changeTracker.hassState.isUpdated) {
+    if (isFirstHass || this._changeTracker.hassState.isUpdated) {
       this._assignHass(hass);
       this._handleHassUpdate();
     }
 
-    if (this._firstHass) {
-      this._firstHass = false;
-      this._watchWebSocket();
-    }
+    if (!this._wsInitialized) this._watchWebSocket();
   }
 
   get hass() {
@@ -5889,7 +5909,7 @@ class EntityProgressCardBase extends HTMLElement {
 
     if (!this._cardView.isActiveTimer) {
       this._stopAutoRefresh();
-    } else if (!this._resourceManager.hasInterval('autoRefresh')) {
+    } else if (!this._resourceManager.has('autoRefresh')) {
       this._startAutoRefresh();
     }
   }
@@ -5927,6 +5947,16 @@ class EntityProgressCardBase extends HTMLElement {
 
   get isRendered() {
     return this.#isRendered;
+  }
+
+  reset() {
+    console.log('reset');
+    this.#isRendered = false;
+    this._domElements.clear();
+    this._icon = null;
+    if (this.shadowRoot) {
+      this.shadowRoot.innerHTML = ''; // purge le contenu shadow DOM
+    }
   }
 
   get innerHTML() {
@@ -6070,6 +6100,7 @@ class EntityProgressCardBase extends HTMLElement {
     if (this._cardView.hasReversedSecondaryInfoRow) this._setStylePropertyIfChanged(card.style, '--epb-secondary-info-row-reverse', 'row-reverse');
     if (this._cardView.config.min_width)
       this._setStylePropertyIfChanged(card.style, CARD.style.dynamic.card.minWidth.var, this._cardView.config.min_width);
+    if (this._cardView.config.height) this._setStylePropertyIfChanged(card.style, CARD.style.dynamic.card.height.var, this._cardView.config.height);
   }
 
   get conditionalStyle() {
@@ -6267,80 +6298,115 @@ class EntityProgressCardBase extends HTMLElement {
 
   // === ICON MANAGEMENT ===
 
-  _showIcon() {
-    const { entityStateObj: stateObj, icon: curIcon } = this._cardView;
-    if (!stateObj && !curIcon) return;
+  _createImgIcon(altText, className = 'custom-icon-img') {
+    const img = document.createElement('img');
+    img.className = className;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.alt = altText;
+    return img;
+  }
 
-    const hasIconOverride = curIcon !== null;
-    const hasPicture = stateObj?.attributes?.entity_picture;
+  _isValidString(str) {
+    return typeof str === 'string' && str.trim() !== '';
+  }
 
-    // Nettoyer l'ancien élément
-    const iconContainer = this._domElements.get(CARD.htmlStructure.elements.icon.class);
-    if (!iconContainer) return;
+  _handleImgIcon(stateObj, iconContainer, srcPicture) {
+    const pictureAlt = stateObj?.attributes?.friendly_name || 'Entity picture';
 
-    // Si on a une image, créer un élément img
-    if (hasPicture && !hasIconOverride) {
-      if (this._icon && this._icon.tagName !== 'IMG') {
-        this._icon.remove();
-        this._icon = null;
-      }
+    if (this._icon?.tagName !== 'IMG') {
+      this._icon?.remove();
+      this._icon = this._createImgIcon(pictureAlt);
+      iconContainer.replaceChildren(this._icon);
+      this._updateCSSValue(CARD.style.dynamic.iconAndShape.icon.size.var, '36px');
+    }
+    this._icon.src = srcPicture;
+    this._icon.alt = pictureAlt;
+  }
 
-      if (!this._icon) {
-        this._updateCSSValue(CARD.style.dynamic.iconAndShape.icon.size.var, '36px');
-        this._icon = document.createElement('img');
-        this._icon.style.width = '36px';
-        this._icon.style.height = '36px';
-        this._icon.style.borderRadius = '50%';
-        this._icon.style.objectFit = 'cover';
-        iconContainer.replaceChildren(this._icon);
-      }
-
-      this._icon.src = hasPicture;
-      this._icon.alt = stateObj.attributes?.friendly_name || 'Entity picture';
-    } else {
-      // Sinon, utiliser ha-state-icon comme avant
-      if (this._icon && this._icon.tagName === 'IMG') {
-        this._icon.remove();
-        this._icon = null;
-      }
-
-      let stateObjIcon = null;
-
-      if (stateObj) {
-        const clonedAttributes = { ...stateObj.attributes };
-
-        if (hasIconOverride) {
-          clonedAttributes.icon = curIcon;
-        }
-
-        stateObjIcon = {
-          ...stateObj,
-          attributes: clonedAttributes,
-        };
-      } else if (this.isConnected) {
-        stateObjIcon = {
+  _createStateObjIcon(stateObj, curIcon, hasIconOverride, hasPicture) {
+    if (!stateObj) {
+      return this.isConnected
+        ? {
           entity_id: 'sensor.dummy',
           state: 'unknown',
           attributes: {
             icon: curIcon || 'mdi:help-circle-outline',
             friendly_name: 'Unknown Entity',
           },
-        };
-      } else {
-        return;
-      }
-
-      const firstTime = this._icon === null;
-      if (firstTime) {
-        this._icon = document.createElement('ha-state-icon');
-        this._icon.hass = this._hass;
-        this._icon.stateObj = stateObjIcon;
-        iconContainer.replaceChildren(this._icon);
-      } else {
-        this._icon.hass = this._hass;
-        this._icon.stateObj = stateObjIcon;
-      }
+        }
+        : null;
     }
+
+    if (!hasIconOverride && !hasPicture) {
+      return stateObj;
+    }
+
+    const attributes = { ...stateObj.attributes };
+
+    if (hasIconOverride) {
+      attributes.icon = curIcon;
+    }
+
+    if (hasPicture && !hasIconOverride) {
+      delete attributes.entity_picture;
+    }
+
+    return {
+      ...stateObj,
+      attributes,
+    };
+  }
+
+  _cleanupImgIcon() {
+    if (this._icon?.tagName === 'IMG') {
+      this._icon.remove();
+      this._icon = null;
+    }
+  }
+
+  _handleStateIcon(iconContainer, stateObjIcon) {
+    this._cleanupImgIcon();
+
+    if (!this._icon) {
+      this._icon = document.createElement('ha-state-icon');
+      iconContainer.replaceChildren(this._icon);
+    }
+
+    this._icon.hass = this._hass;
+    this._icon.stateObj = stateObjIcon;
+  }
+
+  _showIcon() {
+    if (!this._cardView || !this._domElements) return;
+
+    const { entityStateObj: stateObj, icon: curIcon } = this._cardView;
+    const hasIconOverride = this._isValidString(curIcon);
+    const srcPicture = stateObj?.attributes?.entity_picture;
+    const hasPicture = this._isValidString(srcPicture);
+
+    const iconContainer = this._domElements.get(CARD.htmlStructure.elements.icon.class);
+    if (!iconContainer) {
+      console.error('Icon container not found for _showIcon.');
+      return;
+    }
+
+    if (hasIconOverride) {
+      const stateObjIcon = this._createStateObjIcon(stateObj, curIcon, hasIconOverride, hasPicture);
+      if (stateObjIcon) {
+        this._handleStateIcon(iconContainer, stateObjIcon);
+      }
+      return;
+    }
+
+    if (hasPicture) {
+      this._handleImgIcon(stateObj, iconContainer, srcPicture);
+      return;
+    }
+
+    const stateObjIcon = this._createStateObjIcon(stateObj, curIcon, hasIconOverride, hasPicture);
+    if (!stateObjIcon) return;
+    this._handleStateIcon(iconContainer, stateObjIcon);
   }
 
   // === SHAPE MANAGEMENT ===
@@ -6457,6 +6523,10 @@ class EntityProgressCardBase extends HTMLElement {
 
   // === TEMPLATE PROCESSING ===
 
+  get _wsInitialized() {
+    return this._resourceManager && this._resourceManager.has('ws-disconnected') && this._resourceManager.remove('ws-ready');
+  }
+
   _unwatchWebSocket() {
     if (this._resourceManager) {
       this._resourceManager.remove('ws-disconnected');
@@ -6477,7 +6547,7 @@ class EntityProgressCardBase extends HTMLElement {
           this._resourceManager.remove(`template-${key}`);
         }
       },
-      undefined,
+      { passive: true },
       'ws-disconnected'
     );
 
@@ -6489,7 +6559,7 @@ class EntityProgressCardBase extends HTMLElement {
         if (!this._resourceManager) this._resourceManager = new ResourceManager(); // net reconnect
         this._processJinjaFields();
       },
-      undefined,
+      { passive: true },
       'ws-ready'
     );
   }
@@ -6537,11 +6607,14 @@ class EntityProgressCardBase extends HTMLElement {
 
     // Add null check right before using _resourceManager
     if (!this._resourceManager) {
-      console.warn(`[Template ${key}] ResourceManager is null, skipping subscription.`);
+      this._log.debug(`[Template ${key}] ResourceManager is null, skipping subscription.`);
       return;
     }
 
     try {
+      this._log.debug('key:', key);
+      this._log.debug('template:', template);
+
       const unsub = await this.hass.connection.subscribeMessage((msg) => this._renderJinja(key, msg.result), {
         type: 'render_template',
         template: template,
@@ -6549,7 +6622,7 @@ class EntityProgressCardBase extends HTMLElement {
 
       // Check again after the async operation
       if (!this._resourceManager) {
-        console.warn(`[Template ${key}] ResourceManager became null during subscription, cleaning up.`);
+        this._log.debug(`[Template ${key}] ResourceManager became null during subscription, cleaning up.`);
         unsub(); // Clean up the subscription
         return;
       } else if (!this.isConnected) {
@@ -6561,7 +6634,7 @@ class EntityProgressCardBase extends HTMLElement {
         this._resourceManager.addSubscription(unsub, subscriptionKey);
       }
     } catch (error) {
-      console.error(`Failed to subscribe to template ${key}:`, error);
+      this._log.error(`Failed to subscribe to template ${key}:`, error);
     }
   }
 
@@ -6651,7 +6724,7 @@ class EntityProgressBadge extends EntityProgressCardBase {
       min-height: 36px !important;
       max-height: 36px !important;
       height: var(--ha-badge-size, 36px);
-      min-width: var(--ha-badge-size, 110px);
+      min-width: var(--epb-card-min-width, var(--ha-badge-size, 110px));
       width: 100%;
       border-radius: var(--ha-badge-border-radius,calc(var(--ha-badge-size,36px)/ 2));
     }
@@ -6698,18 +6771,12 @@ class EntityProgressBadge extends EntityProgressCardBase {
     `;
 
   setConfig(config) {
-    if (!config) {
-      throw new Error('setConfig: invalid config');
+    super.setConfig(config);
+    
+    // Force un refresh pour les badges dans l'éditeur
+    if (this._hass) {
+      setTimeout(() => this.refresh(), 0);
     }
-
-    this._cardView.config = { ...config };
-
-    if (!this.isRendered) {
-      this.render();
-      return;
-    }
-    this._rebuildStyle();
-    this._updateDynamicElementsSync();
   }
 
   _rebuildStyle() {
@@ -6791,6 +6858,7 @@ class TemplateConfigHelper extends BaseConfigHelper {
       'frameless',
       'marginless',
       'min_width',
+      'height',
       'tap_action',
       'hold_action',
       'double_tap_action',
@@ -6890,7 +6958,7 @@ class EntityProgressTemplate extends EntityProgressCardBase {
       });
     }
 
-    if (this.hass) this._watchWebSocket();
+    if (this.hass && !this._wsInitialized) this._watchWebSocket();
   }
 
   setConfig(config) {
@@ -6898,12 +6966,10 @@ class EntityProgressTemplate extends EntityProgressCardBase {
   }
 
   set hass(hass) {
+    const isFirstHass = !this.hass;
     this._hassProvider.hass = hass;
     this._handleHassUpdate();
-    if (this._firstHass) {
-      this._firstHass = false;
-      this._watchWebSocket();
-    }
+    if (isFirstHass && !this._wsInitialized) this._watchWebSocket();
   }
 
   get hass() {
@@ -7063,9 +7129,7 @@ class EntityProgressTemplate extends EntityProgressCardBase {
   _renderSecondary(content) {
     // multiline
     const hasLineBreak = /<br\s*\/?>/i.test(content);
-    const wrappedContent = hasLineBreak
-      ? `<span class="multiline">${content}</span>`
-      : content;
+    const wrappedContent = hasLineBreak ? `<span class="multiline">${content}</span>` : `${content}`;
 
     this._renderTextContent(CARD.htmlStructure.elements.customInfo.class, wrappedContent);
   }
@@ -7076,7 +7140,8 @@ class EntityProgressTemplate extends EntityProgressCardBase {
 
   _renderTextContent(className, formattedContent) {
     this._updateElement(className, (el) => {
-      EntityProgressCardBase._setInnerHTMLIfChanged(el, formattedContent.trim());
+      const safeContent = typeof formattedContent === 'string' ? formattedContent.trim() : '';
+      EntityProgressCardBase._setInnerHTMLIfChanged(el, safeContent);
     });
   }
 
@@ -7702,7 +7767,7 @@ class EntityProgressCardEditor extends HTMLElement {
         () => {
           this.toggleAccordion(index);
         },
-        undefined, // options
+        { passive: true }, // options
         `accordionTitle-${index}`
       );
     });
@@ -7727,12 +7792,18 @@ class EntityProgressCardEditor extends HTMLElement {
         (event) => {
           event.stopPropagation();
         },
-        undefined, // options
+        { passive: true }, // options
         `close-StopPropa-${name}`
       );
     }
     events.forEach((eventType) => {
-      this.#resourceManager.addEventListener(this.#domElements.get(name), eventType, this.#onChanged.bind(this), undefined, `${eventType}-${name}`);
+      this.#resourceManager.addEventListener(
+        this.#domElements.get(name),
+        eventType,
+        this.#onChanged.bind(this),
+        { passive: true },
+        `${eventType}-${name}`
+      );
     });
   }
 
@@ -8021,7 +8092,7 @@ class EntityProgressCardEditor extends HTMLElement {
         callback();
         this.#resourceManager.remove(`accordionTransition-${index}`);
       },
-      undefined,
+      { passive: true },
       `accordionTransition-${index}`
     );
   }
