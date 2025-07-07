@@ -6416,6 +6416,7 @@ class EntityProgressCardBase extends HTMLElement {
   // === ICON MANAGEMENT ===
 
   _createImgIcon(altText, className = 'custom-icon-img') {
+    this._log.debug('_createImgIcon');
     const img = document.createElement('img');
     img.className = className;
     img.loading = 'lazy';
