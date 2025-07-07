@@ -43,8 +43,8 @@ const CARD = {
     },
   },
   config: {
-    dev: true,
-    debug: { card: false, editor: false, interactionHandler: false, ressourceManager: true, hass: false },
+    dev: false,
+    debug: { card: false, editor: false, interactionHandler: false, ressourceManager: false, hass: false },
     language: 'en',
     value: { min: 0, max: 100 },
     unit: {
@@ -2447,13 +2447,6 @@ ${CARD.htmlStructure.card.element} {
   color: var(${CARD.style.dynamic.iconAndShape.color.var}, ${CARD.style.dynamic.iconAndShape.color.default});
 }
 
-.custom-icon-img {
-  width: var(--epb-icon-size, var(--epb-icon-default-size));
-  height: var(--epb-icon-size, var(--epb-icon-default-size));
-  border-radius: 50%;
-  object-fit: cover;
-}  
-
 /* === RIGHT SECTION (TEXT CONTENT) === */
 .${CARD.htmlStructure.sections.right.class} {
   display: flex;
@@ -4507,7 +4500,7 @@ class EntityOrValue {
     return this.#isEntity;
   }
   set attribute(newValue) {
-    if (this.#activeHelper && this.#isEntity) this.#activeHelper.attribute = newValue;
+    if (this.#isEntity) this.#activeHelper.attribute = newValue;
   }
   get attribute() {
     return this.#isEntity ? this.#activeHelper.attribute : null;
@@ -4844,8 +4837,9 @@ class CardConfigHelper extends BaseConfigHelper {
     // eslint-disable-next-line no-unused-vars
     const { watermark, ...baseDefaults } = this.filterConfig(CARD.config.defaults);
 
-    if (config.center_zero === true && typeof config.min_value === 'undefined') baseDefaults.min_value = -100;
+    // Filtrage de la configuration selon les clés autorisées
     const cleanedConfig = this.filterConfig(config);
+
     const merged = {
       ...baseDefaults,
       ...(isToggleable && { icon_tap_action: { action: 'toggle' } }),
@@ -5486,7 +5480,7 @@ class ResourceManager {
     return id;
   }
 
-  has(id) {
+  hasInterval(id) {
     return this.#resources.has(id); // Vérifie si un ID existe dans la Map
   }
 
@@ -5798,6 +5792,7 @@ class EntityProgressCardBase extends HTMLElement {
   _cardView = new CardView();
   _domElements = new Map();
   _hass = null;
+  _firstHass = true;
   _clickableTarget = null;
   _actionHelper = null;
   _changeTracker = new ChangeTracker();
@@ -5835,10 +5830,7 @@ class EntityProgressCardBase extends HTMLElement {
     if (!this._resourceManager) this._resourceManager = new ResourceManager();
     this._setupClickableTarget();
     this._actionHelper.init(this._resourceManager, this._cardView.config, this._clickableTarget, this.hasDisabledIconTap);
-    if (this.hass) {
-      this._handleHassUpdate();
-      this._watchWebSocket();
-    }
+    if (this.hass) this._watchWebSocket();
   }
 
   disconnectedCallback() {
@@ -5856,8 +5848,6 @@ class EntityProgressCardBase extends HTMLElement {
       throw new Error('setConfig: invalid config');
     }
 
-    if (this.isRendered) this.reset();
-
     this._cardView.config = { ...config };
     if (typeof config.entity === 'string') this._changeTracker.watchEntity(config.entity);
     if (typeof config.max_value === 'string') this._changeTracker.watchEntity(config.max_value);
@@ -5871,16 +5861,18 @@ class EntityProgressCardBase extends HTMLElement {
    *                        state and services.
    */
   set hass(hass) {
-    console.log('sethass');
     this._log.debug('👉 set hass()');
-    const isFirstHass = !this.hass;
+
     this._changeTracker.hassState = hass;
-    if (isFirstHass || this._changeTracker.hassState.isUpdated) {
+    if (this._changeTracker.hassState.isUpdated) {
       this._assignHass(hass);
       this._handleHassUpdate();
     }
 
-    if (!this._wsInitialized) this._watchWebSocket();
+    if (this._firstHass) {
+      this._firstHass = false;
+      this._watchWebSocket();
+    }
   }
 
   get hass() {
@@ -5909,7 +5901,7 @@ class EntityProgressCardBase extends HTMLElement {
 
     if (!this._cardView.isActiveTimer) {
       this._stopAutoRefresh();
-    } else if (!this._resourceManager.has('autoRefresh')) {
+    } else if (!this._resourceManager.hasInterval('autoRefresh')) {
       this._startAutoRefresh();
     }
   }
@@ -5947,16 +5939,6 @@ class EntityProgressCardBase extends HTMLElement {
 
   get isRendered() {
     return this.#isRendered;
-  }
-
-  reset() {
-    console.log('reset');
-    this.#isRendered = false;
-    this._domElements.clear();
-    this._icon = null;
-    if (this.shadowRoot) {
-      this.shadowRoot.innerHTML = ''; // purge le contenu shadow DOM
-    }
   }
 
   get innerHTML() {
@@ -6100,7 +6082,8 @@ class EntityProgressCardBase extends HTMLElement {
     if (this._cardView.hasReversedSecondaryInfoRow) this._setStylePropertyIfChanged(card.style, '--epb-secondary-info-row-reverse', 'row-reverse');
     if (this._cardView.config.min_width)
       this._setStylePropertyIfChanged(card.style, CARD.style.dynamic.card.minWidth.var, this._cardView.config.min_width);
-    if (this._cardView.config.height) this._setStylePropertyIfChanged(card.style, CARD.style.dynamic.card.height.var, this._cardView.config.height);
+    if (this._cardView.config.height)
+      this._setStylePropertyIfChanged(card.style, CARD.style.dynamic.card.height.var, this._cardView.config.height);
   }
 
   get conditionalStyle() {
@@ -6298,115 +6281,80 @@ class EntityProgressCardBase extends HTMLElement {
 
   // === ICON MANAGEMENT ===
 
-  _createImgIcon(altText, className = 'custom-icon-img') {
-    const img = document.createElement('img');
-    img.className = className;
-    img.loading = 'lazy';
-    img.decoding = 'async';
-    img.alt = altText;
-    return img;
-  }
+  _showIcon() {
+    const { entityStateObj: stateObj, icon: curIcon } = this._cardView;
+    if (!stateObj && !curIcon) return;
 
-  _isValidString(str) {
-    return typeof str === 'string' && str.trim() !== '';
-  }
+    const hasIconOverride = curIcon !== null;
+    const hasPicture = stateObj?.attributes?.entity_picture;
 
-  _handleImgIcon(stateObj, iconContainer, srcPicture) {
-    const pictureAlt = stateObj?.attributes?.friendly_name || 'Entity picture';
+    // Nettoyer l'ancien élément
+    const iconContainer = this._domElements.get(CARD.htmlStructure.elements.icon.class);
+    if (!iconContainer) return;
 
-    if (this._icon?.tagName !== 'IMG') {
-      this._icon?.remove();
-      this._icon = this._createImgIcon(pictureAlt);
-      iconContainer.replaceChildren(this._icon);
-      this._updateCSSValue(CARD.style.dynamic.iconAndShape.icon.size.var, '36px');
-    }
-    this._icon.src = srcPicture;
-    this._icon.alt = pictureAlt;
-  }
+    // Si on a une image, créer un élément img
+    if (hasPicture && !hasIconOverride) {
+      if (this._icon && this._icon.tagName !== 'IMG') {
+        this._icon.remove();
+        this._icon = null;
+      }
 
-  _createStateObjIcon(stateObj, curIcon, hasIconOverride, hasPicture) {
-    if (!stateObj) {
-      return this.isConnected
-        ? {
+      if (!this._icon) {
+        this._updateCSSValue(CARD.style.dynamic.iconAndShape.icon.size.var, '36px');
+        this._icon = document.createElement('img');
+        this._icon.style.width = '36px';
+        this._icon.style.height = '36px';
+        this._icon.style.borderRadius = '50%';
+        this._icon.style.objectFit = 'cover';
+        iconContainer.replaceChildren(this._icon);
+      }
+
+      this._icon.src = hasPicture;
+      this._icon.alt = stateObj.attributes?.friendly_name || 'Entity picture';
+    } else {
+      // Sinon, utiliser ha-state-icon comme avant
+      if (this._icon && this._icon.tagName === 'IMG') {
+        this._icon.remove();
+        this._icon = null;
+      }
+
+      let stateObjIcon = null;
+
+      if (stateObj) {
+        const clonedAttributes = { ...stateObj.attributes };
+
+        if (hasIconOverride) {
+          clonedAttributes.icon = curIcon;
+        }
+
+        stateObjIcon = {
+          ...stateObj,
+          attributes: clonedAttributes,
+        };
+      } else if (this.isConnected) {
+        stateObjIcon = {
           entity_id: 'sensor.dummy',
           state: 'unknown',
           attributes: {
             icon: curIcon || 'mdi:help-circle-outline',
             friendly_name: 'Unknown Entity',
           },
-        }
-        : null;
-    }
-
-    if (!hasIconOverride && !hasPicture) {
-      return stateObj;
-    }
-
-    const attributes = { ...stateObj.attributes };
-
-    if (hasIconOverride) {
-      attributes.icon = curIcon;
-    }
-
-    if (hasPicture && !hasIconOverride) {
-      delete attributes.entity_picture;
-    }
-
-    return {
-      ...stateObj,
-      attributes,
-    };
-  }
-
-  _cleanupImgIcon() {
-    if (this._icon?.tagName === 'IMG') {
-      this._icon.remove();
-      this._icon = null;
-    }
-  }
-
-  _handleStateIcon(iconContainer, stateObjIcon) {
-    this._cleanupImgIcon();
-
-    if (!this._icon) {
-      this._icon = document.createElement('ha-state-icon');
-      iconContainer.replaceChildren(this._icon);
-    }
-
-    this._icon.hass = this._hass;
-    this._icon.stateObj = stateObjIcon;
-  }
-
-  _showIcon() {
-    if (!this._cardView || !this._domElements) return;
-
-    const { entityStateObj: stateObj, icon: curIcon } = this._cardView;
-    const hasIconOverride = this._isValidString(curIcon);
-    const srcPicture = stateObj?.attributes?.entity_picture;
-    const hasPicture = this._isValidString(srcPicture);
-
-    const iconContainer = this._domElements.get(CARD.htmlStructure.elements.icon.class);
-    if (!iconContainer) {
-      console.error('Icon container not found for _showIcon.');
-      return;
-    }
-
-    if (hasIconOverride) {
-      const stateObjIcon = this._createStateObjIcon(stateObj, curIcon, hasIconOverride, hasPicture);
-      if (stateObjIcon) {
-        this._handleStateIcon(iconContainer, stateObjIcon);
+        };
+      } else {
+        return;
       }
-      return;
-    }
 
-    if (hasPicture) {
-      this._handleImgIcon(stateObj, iconContainer, srcPicture);
-      return;
+      const firstTime = this._icon === null;
+      if (firstTime) {
+        this._icon = document.createElement('ha-state-icon');
+        this._icon.hass = this._hass;
+        this._icon.stateObj = stateObjIcon;
+        iconContainer.replaceChildren(this._icon);
+      } else {
+        this._icon.hass = this._hass;
+        this._icon.stateObj = stateObjIcon;
+      }
     }
-
-    const stateObjIcon = this._createStateObjIcon(stateObj, curIcon, hasIconOverride, hasPicture);
-    if (!stateObjIcon) return;
-    this._handleStateIcon(iconContainer, stateObjIcon);
   }
 
   // === SHAPE MANAGEMENT ===
@@ -6523,10 +6471,6 @@ class EntityProgressCardBase extends HTMLElement {
 
   // === TEMPLATE PROCESSING ===
 
-  get _wsInitialized() {
-    return this._resourceManager && this._resourceManager.has('ws-disconnected') && this._resourceManager.remove('ws-ready');
-  }
-
   _unwatchWebSocket() {
     if (this._resourceManager) {
       this._resourceManager.remove('ws-disconnected');
@@ -6614,7 +6558,7 @@ class EntityProgressCardBase extends HTMLElement {
     try {
       this._log.debug('key:', key);
       this._log.debug('template:', template);
-
+      
       const unsub = await this.hass.connection.subscribeMessage((msg) => this._renderJinja(key, msg.result), {
         type: 'render_template',
         template: template,
@@ -6771,12 +6715,18 @@ class EntityProgressBadge extends EntityProgressCardBase {
     `;
 
   setConfig(config) {
-    super.setConfig(config);
-    
-    // Force un refresh pour les badges dans l'éditeur
-    if (this._hass) {
-      setTimeout(() => this.refresh(), 0);
+    if (!config) {
+      throw new Error('setConfig: invalid config');
     }
+
+    this._cardView.config = { ...config };
+
+    if (!this.isRendered) {
+      this.render();
+      return;
+    }
+    this._rebuildStyle();
+    this._updateDynamicElementsSync();
   }
 
   _rebuildStyle() {
@@ -6958,7 +6908,7 @@ class EntityProgressTemplate extends EntityProgressCardBase {
       });
     }
 
-    if (this.hass && !this._wsInitialized) this._watchWebSocket();
+    if (this.hass) this._watchWebSocket();
   }
 
   setConfig(config) {
@@ -6966,10 +6916,12 @@ class EntityProgressTemplate extends EntityProgressCardBase {
   }
 
   set hass(hass) {
-    const isFirstHass = !this.hass;
     this._hassProvider.hass = hass;
     this._handleHassUpdate();
-    if (isFirstHass && !this._wsInitialized) this._watchWebSocket();
+    if (this._firstHass) {
+      this._firstHass = false;
+      this._watchWebSocket();
+    }
   }
 
   get hass() {
