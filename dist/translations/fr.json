@@ -1,0 +1,11 @@
+{
+  "ui": {
+    "panel": {
+      "my_component": {
+        "labels": {
+          "entity_temperature": "Capteur de température"
+        }
+      }
+    }
+  }
+}
