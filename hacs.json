@@ -2,4 +2,10 @@
   "name": "test",
   "render_readme": true,
   "filename": "test.js"
+  "files": [
+    "test.js",
+    "translations/en.json",
+    "translations/fr.json",
+    "translations/de.json"
+  ]
 }
