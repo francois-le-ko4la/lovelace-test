@@ -1,7 +1,7 @@
 {
   "name": "test",
   "render_readme": true,
-  "filename": "test.js"
+  "filename": "test.js",
   "files": [
     "test.js",
     "translations/en.json",
