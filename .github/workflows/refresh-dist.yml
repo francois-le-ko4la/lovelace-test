@@ -1,0 +1,69 @@
+name: Refresh dist
+
+on:
+  workflow_dispatch:
+
+env:
+  CARD_NAME: test
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Clean dist
+        run: rm -rf dist
+
+      - name: Clean debug calls
+        run: |
+          set -euo pipefail
+          mkdir -p dist/translations
+
+          cp src/${{ env.CARD_NAME }}.js dist/${{ env.CARD_NAME }}.tmp.js
+
+          patterns=(
+            's/;[[:space:]]*$/;/g'
+            '/this\.[_#]log = initLogger(.*);$/d'
+            '/this\.[_#]log = initLogger(/,/);$/d'
+            '/this\.[_#]log = Logger\.create/d'
+            '/[_#]log = null;/d'
+            '/this\.[_#]log\.debug/d'
+            '/[_#]debug = CARD\.config\.debug\./d'
+            '/static [_#]debug = CARD\.config\.debug\./d'
+            '/^const Logger = {$/,/^};$/d'
+            '/^function initLogger(/,/^}$/d'
+          )
+
+          for pattern in "${patterns[@]}"; do
+            sed -i "$pattern" dist/${{ env.CARD_NAME }}.tmp.js
+          done
+
+          sed -i 's/debug: { card: [^,]*, editor: [^,]*, interactionHandler: [^,]*, ressourceManager: [^,]*, hass: [^}]* }/debug: { card: false, editor: false, interactionHandler: false, ressourceManager: false, hass: false }/g' dist/${{ env.CARD_NAME }}.tmp.js
+          sed -i 's/^[[:space:]]*dev: true,$/    dev: false,/g' dist/${{ env.CARD_NAME }}.tmp.js
+          sed -i '/^$/N;/^\n$/d' dist/${{ env.CARD_NAME }}.tmp.js
+
+      - name: Minify
+        run: |
+          npx esbuild dist/${{ env.CARD_NAME }}.tmp.js \
+            --minify \
+            --target=es2022 \
+            --outfile=dist/${{ env.CARD_NAME }}.js
+          rm dist/${{ env.CARD_NAME }}.tmp.js
+
+      - name: Copy translations
+        run: cp src/translations/*.json dist/translations/
+
+      - name: Commit dist
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/
+          git commit -m "chore: refresh dist" || echo "Nothing to commit"
+          git push
