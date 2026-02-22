@@ -2,9 +2,5 @@
   "name": "test",
   "render_readme": true,
   "filename": "test.js",
-  "files": [
-    "test.js",
-    "translations/en.json",
-    "translations/fr.json"
-  ]
+  "zip_release": true
 }
