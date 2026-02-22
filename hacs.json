@@ -5,7 +5,6 @@
   "files": [
     "test.js",
     "translations/en.json",
-    "translations/fr.json",
-    "translations/de.json"
+    "translations/fr.json"
   ]
 }
