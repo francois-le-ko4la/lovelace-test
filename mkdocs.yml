@@ -9,11 +9,20 @@ extra:
   # The home page is built from this file (README.md in the card's repo).
   readme: EPC-README.md
 
+extra_css:
+  - stylesheets/extra.css
+
 hooks:
   - hooks.py
 
 theme:
   name: material
+  icon:
+    logo: material/progress-check
+  favicon: assets/favicon.svg
+  font:
+    text: Roboto
+    code: Roboto Mono
   features:
     - navigation.tabs
     - navigation.top
@@ -21,19 +30,22 @@ theme:
     - search.highlight
     - search.suggest
     - toc.follow
+    - toc.integrate
     - content.code.copy
+    - navigation.instant
+    - header.autohide
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: blue
-      accent: light blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: blue
-      accent: light blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Light mode

@@ -1,0 +1,46 @@
+/* Home Assistant's look: its blue, its dark surfaces, card-like blocks. */
+:root {
+  --md-primary-fg-color: #03a9f4;
+  --md-primary-fg-color--light: #4fc3f7;
+  --md-primary-fg-color--dark: #0288d1;
+  --md-accent-fg-color: #ff9800;
+  --epc-radius: 12px;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #111111;
+  --md-default-fg-color--lightest: #ffffff14;
+  --md-code-bg-color: #1c1c1c;
+  --md-primary-fg-color: #1c1c1c;
+  --md-typeset-a-color: #4fc3f7;
+}
+
+.md-grid {
+  max-width: 1440px;
+}
+
+/* Blocks read as HA cards. */
+.md-typeset .admonition,
+.md-typeset details,
+.md-typeset pre > code,
+.md-typeset table:not([class]),
+.md-typeset img {
+  border-radius: var(--epc-radius);
+}
+
+.md-typeset table:not([class]) {
+  overflow: hidden;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition,
+[data-md-color-scheme="slate"] .md-typeset details {
+  background-color: #1c1c1c;
+}
+
+/* Option headings (`bar_effect`) stand out as code chips. */
+.md-typeset h4 code,
+.md-typeset h3 code {
+  background-color: color-mix(in srgb, var(--md-primary-fg-color--light) 18%, transparent);
+  border-radius: 6px;
+  padding: 0.1em 0.4em;
+}
