@@ -94,11 +94,11 @@ _Status_ is ✅ when all four counts are above zero, else ⚠️ and the zeros.
 | [`name`](configuration.md#name) | ✅ | ✅ | ✅ | ✅ | · | · | · | — | 45 | 24 | 465 | 35 | ✅ |
 | [`name_info`](configuration.md#name_info) | ✅ | · | ✅ | · | · | ✅ | ✅ | — | 8 | 4 | 4 | 7 | ✅ |
 | [`peak_marker`](configuration.md#peak_marker) | ✅ | · | · | · | ✅ | ✅ | ✅ | `{"window":7200,"type":"line","opacity":0.8,"line_size":"1px"}` | 22 | 4 | 13 | 13 | ✅ |
-| [`percent`](configuration.md#percent) | · | ✅ | · | ✅ | · | · | · | — | 25 | 5 | 17 | 13 | ✅ |
+| [`percent`](configuration.md#percent-jinja) | · | ✅ | · | ✅ | · | · | · | — | 25 | 5 | 17 | 13 | ✅ |
 | [`reverse`](configuration.md#reverse) | ✅ | · | ✅ | · | · | ✅ | ✅ | `false` | 9 | 2 | 3 | 2 | ✅ |
 | [`reverse_secondary_info_row`](configuration.md#reverse_secondary_info_row) | ✅ | ✅ | ✅ | ✅ | · | ✅ | ✅ | `false` | 4 | 2 | 2 | 4 | ✅ |
 | [`rows`](configuration.md#rows) | · | · | · | · | · | ✅ | · | — | 21 | 1 | 0 | 17 | ⚠️ Demo |
-| [`secondary`](configuration.md#secondary) | · | ✅ | · | ✅ | · | · | · | — | 13 | 7 | 13 | 7 | ✅ |
+| [`secondary`](configuration.md#secondary-jinja) | · | ✅ | · | ✅ | · | · | · | — | 13 | 7 | 13 | 7 | ✅ |
 | [`state_content`](configuration.md#state_content) | ✅ | · | ✅ | · | · | ✅ | ✅ | — | 9 | 2 | 8 | 6 | ✅ |
 | [`status_label`](configuration.md#status_label) | ✅ | ✅ | · | · | · | ✅ | · | `{"position":"right","color_source":"bar"}` | 11 | 3 | 29 | 4 | ✅ |
 | [`tap_action`](configuration.md#xyz_action) | ✅ | ✅ | ✅ | ✅ | · | ✅ | ✅ | `{"action":"more-info"}` | 5 | 5 | 15 | 1 | ✅ |

@@ -1,5 +1,3 @@
-<a id="top"></a>
-
 # 🎨 Themes
 
 <!-- dev-banner -->
@@ -7,32 +5,6 @@
 > This is the documentation of the development branch: it may describe
 > options not released yet. For the latest release, see the [documentation site](https://francois-le-ko4la.github.io/lovelace-test/).
 <!-- /dev-banner -->
-
-Jump to the specific section:
-
-- [Token color](#token-color)
-- [Predefined theme](#predefined-theme)
-  - 🔌 [Battery (adapts to charging state)](#battery-adaptive)
-  - 🪫 [Critical when low (Battery...)](#critical-low)
-  - 💽 [Optimal when low](#optimal-low)
-  - 🔥 [Critical when high (CPU, RAM, disk usage...)](#critical-high)
-  - 🔋 [Optimal when high](#optimal-high)
-  - 🎯 [Critical when extreme (Tank level, deviation...)](#critical-extreme)
-  - 🎯
-    [Critical when extreme, centered (`center_zero`)](#critical-extreme-center)
-  - 💡 [Light](#light)
-  - 🌡️ [Temperature](#temperature)
-  - 💧 [Humidity](#humidity)
-  - 🦠 [VOC](#voc)
-  - 🦠 [PM 2.5](#pm25)
-- [Custom theme & bar_color_mode](#custom-theme)
-- [Adapt to HA custom theme](#adapt-to-ha-custom-theme)
-  - [CSS hooks](#css)
-  - [Usage](#usage)
-- [card_mod / uix and card structure](#card-mod-and-card-structure)
-  - [Class Name Updates & Migration Guide](#class-name-migration)
-  - [DOM](#dom)
-- [Card sizing](#card-sizing)
 
 ## Token color
 
@@ -200,8 +172,6 @@ as defined by the CSS standard.
 | state-weather-windy                           | `var(--state-weather-windy-color)`                           |
 | state-weather-windy_variant                   | `var(--state-weather-windy_variant-color)`                   |
 
-[🔼 Back to top]
-
 ## Predefined theme
 
 Predefined themes (Card and Badge) are built-in Lovelace themes provided by
@@ -227,7 +197,7 @@ your interface with minimal effort.
 
 <a id="battery-adaptive"></a>
 
-### 🔌 Battery (adapts to charging state)
+### Battery (adapts to charging state)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -263,11 +233,9 @@ theme: battery_adaptive
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
 
-[🔼 Back to top]
-
 <a id="critical-low"></a>
 
-### 🪫 Critical when low (Battery...)
+### Critical when low (Battery...)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -313,11 +281,9 @@ theme: critical_when_low
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
 
-[🔼 Back to top]
-
 <a id="optimal-low"></a>
 
-### 💽 Optimal when low
+### Optimal when low
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -363,11 +329,9 @@ theme: optimal_when_low
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
 
-[🔼 Back to top]
-
 <a id="critical-high"></a>
 
-### 🔥 Critical when high (CPU, RAM, disk usage...)
+### Critical when high (CPU, RAM, disk usage...)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -411,11 +375,9 @@ theme: critical_when_high
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
 
-[🔼 Back to top]
-
 <a id="optimal-high"></a>
 
-### 🔋 Optimal when high
+### Optimal when high
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -463,11 +425,9 @@ theme: optimal_when_high
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
 
-[🔼 Back to top]
-
 <a id="critical-extreme"></a>
 
-### 🎯 Critical when extreme (Tank level, deviation...)
+### Critical when extreme (Tank level, deviation...)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -515,11 +475,9 @@ theme: critical_when_extreme
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
 
-[🔼 Back to top]
-
 <a id="critical-extreme-center"></a>
 
-### 🎯 Critical when extreme, centered (`center_zero`)
+### Critical when extreme, centered (`center_zero`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -573,11 +531,7 @@ theme: critical_when_extreme_center
 > already covers more fully) — pick the plain `critical_when_extreme` instead
 > for a non-`center_zero` card.
 
-[🔼 Back to top]
-
-<a id="light"></a>
-
-### 💡 Light
+### Light
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -625,11 +579,7 @@ icon_tap_action:
 </details>
 <br />
 
-[🔼 Back to top]
-
-<a id="temperature"></a>
-
-### 🌡️ Temperature
+### Temperature
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -684,11 +634,7 @@ icon_tap_action:
 > Fahrenheit values are converted to apply the correct color. Make sure to set
 > your unit to `°F` correctly in order to see the accurate color representation.
 
-[🔼 Back to top]
-
-<a id="humidity"></a>
-
-### 💧 Humidity
+### Humidity
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -738,11 +684,7 @@ icon_tap_action:
 </details>
 <br />
 
-[🔼 Back to top]
-
-<a id="voc"></a>
-
-### 🦠 VOC
+### VOC
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -803,11 +745,9 @@ icon_tap_action:
 > shall prevail. The lower the value, the better it is generally considered to
 > be. With this card you can use `custom_theme` to define your own ranges.
 
-[🔼 Back to top]
-
 <a id="pm25"></a>
 
-### 🦠 PM 2.5
+### PM 2.5
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -867,8 +807,6 @@ icon_tap_action:
 > provided here and the device's documentation or current standards, the latter
 > shall prevail. The lower the value, the better it is generally considered to
 > be. With this card you can use `custom_theme` to define your own ranges.
-
-[🔼 Back to top]
 
 <a id="custom-theme"></a>
 
@@ -1000,8 +938,6 @@ bar_color_mode: rainbow
 > themes (e.g. `light`), zone boundaries are derived automatically by splitting
 > 0–100% into equal segments (5 levels → 0–20%, 20–40%, …).
 
-[🔼 Back to top]
-
 ## Adapt to HA custom theme
 
 <a id="css"></a>
@@ -1071,8 +1007,6 @@ bar_color_mode: rainbow
 | `--epb-label-color`                   | Status Label | Color      | `status_label` pill text color                                                                                                                        | `#ffffff`     |
 | `--epb-label-background-color`        | Status Label | Color      | `status_label` pill background color                                                                                                                  | `#333333`     |
 | `--epb-label-border-color`            | Status Label | Border     | `status_label` pill border color                                                                                                                      | `#ff6600`     |
-
-<a id="usage"></a>
 
 ### Usage
 
@@ -1207,8 +1141,6 @@ card_mod: # or: uix:
 > [Class Name Updates & Migration Guide](#class-name-migration) if it's ever
 > renamed in a future release.
 
-[🔼 Back to top]
-
 <a id="card-mod-and-card-structure"></a>
 
 ## card_mod / uix and card structure
@@ -1245,8 +1177,6 @@ guide you in updating your custom card modifications.
 | `progress-bar-low-zero`          | `zero`                   | Zero mark for center-zero bars                                                                  |
 | `progress-bar-low-wm`            | `low`                    | Low watermark marker                                                                            |
 | `progress-bar-high-wm`           | `high`                   | High watermark marker                                                                           |
-
-[🔼 Back to top]
 
 ### DOM
 
@@ -1447,8 +1377,6 @@ ha-card...
          └─ div.zero.mark
 ```
 
-[🔼 Back to top]
-
 ## Card sizing
 
 <a id="card-sizing"></a>
@@ -1550,6 +1478,3 @@ frameless: true
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues/133
 [card_mod]: https://github.com/thomasloven/lovelace-card-mod
 
-[🔼 Back to top]
-
-[🔼 Back to top]: #top

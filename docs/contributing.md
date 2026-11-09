@@ -11,29 +11,16 @@ First off, thank you for considering contributing to Entity Progress Card! 🎉
 It's people like you that make Entity Progress Card such a great tool for the
 community.
 
-## 📋 Table of Contents
-
-- [Code of Conduct](#code-of-conduct)
-- [How Can I Contribute?](#how-can-i-contribute)
-- [Getting Started](#getting-started)
-- [Contribution Guidelines](#contribution-guidelines)
-- [Community](#community)
-- [Questions](#questions)
-
-<a id="code-of-conduct"></a>
-
-## 🤝 Code of Conduct
+## Code of Conduct
 
 This project and everyone participating in it is governed by our [Code of
 Conduct]. By participating, you are expected to uphold this code.  
 **In short: Be respectful, be inclusive, and help create a positive environment
 for everyone.**
 
-<a id="how-can-i-contribute"></a>
+## How Can I Contribute?
 
-## 🚀 How Can I Contribute?
-
-### Reporting Bugs 🐛
+### Reporting Bugs
 
 Before creating bug reports, please check the [Errors, Deprecations &
 Troubleshooting Guide] and the existing [GitHub Issues] to avoid duplicates.
@@ -45,7 +32,7 @@ When you create a bug report, please include as many details as possible:
 - **Include your Home Assistant version and browser information**
 - **Add screenshots if applicable**
 
-### Suggesting Enhancements 💡
+### Suggesting Enhancements
 
 Enhancement suggestions are tracked as [GitHub Issues]. When creating an
 enhancement suggestion:
@@ -55,14 +42,14 @@ enhancement suggestion:
 - **Provide specific examples to demonstrate the idea**
 - **Explain why this enhancement would be useful**
 
-### Contributing Code 👨‍💻
+### Contributing Code
 
 - Fix bugs
 - Add new features
 - Add or improve translations
 - Optimize performance
 
-### Documentation 📚
+### Documentation
 
 - Fix typos or grammatical errors
 - Add missing documentation
@@ -70,7 +57,7 @@ enhancement suggestion:
 - Add examples or tutorials
 - Translate documentation
 
-### Translations 🌍
+### Supported languages
 
 We welcome translations for new languages! Currently supported languages:
 
@@ -114,9 +101,7 @@ We welcome translations for new languages! Currently supported languages:
 - 🇨🇳 zh-Hans - 中文（简体） (Chinese, Simplified)
 - 🇹🇼 zh-Hant - 中文（繁體） (Chinese, Traditional)
 
-<a id="getting-started"></a>
-
-## 🛠️ Getting Started
+## Getting Started
 
 > [!TIP]
 >
@@ -143,9 +128,7 @@ We welcome translations for new languages! Currently supported languages:
    npm install
    ```
 
-<a id="contribution-guidelines"></a>
-
-## 📝 Contribution Guidelines
+## Contribution Guidelines
 
 ### Code Style
 
@@ -246,9 +229,7 @@ dev build, and it would be noise on a user's dashboard.
 [demo-dashboard-dev.yaml]: demo-dashboard-dev.yaml
 [demo-dashboard-helpers.yaml]: demo-dashboard-helpers.yaml
 
-<a id="community"></a>
-
-## 💬 Community
+## Community
 
 ### Discord Server
 
@@ -266,16 +247,14 @@ Join our [Discord] community for:
 - **Feature requests**: [Discord] / [GitHub Issues]
 - **Bug reports**: [GitHub Issues]
 
-<a id="questions"></a>
-
-## ❓ Questions?
+## Questions?
 
 Don't hesitate to ask! We're here to help:
 
 - **[Discord]**: Join our community server
 - **[GitHub Issues]**: For specific technical questions
 
-## 🙏 Thank You
+## Thank You
 
 Every contribution, no matter how small, is valuable and appreciated. Whether
 you're fixing a typo, adding a feature, or helping other users, you're making

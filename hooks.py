@@ -10,22 +10,10 @@ from mkdocs.structure.files import File
 DEV_BANNER = re.compile(r"<!-- dev-banner -->.*?<!-- /dev-banner -->\n?", re.S)
 
 
-# Navigation written for github.com, which the theme already provides: the
-# "Table of Contents" sections, the link list under a page title, and the
-# "Back to top" links (navigation.top).
-TOC_SECTION = re.compile(r"^## [^\n]*Table of Contents\n.*?(?=^## |\Z)", re.S | re.M)
-TITLE_TOC = re.compile(r"^(# [^\n]*\n)\s*\n(?:[ \t]*- [^\n]*\]\(#[^\n]*\n)+", re.M)
-BACK_TO_TOP = re.compile(r"^\[🔼 Back to top\](?::[^\n]*)?\n", re.M)
 # <picture> follows the OS scheme, Material's toggle only hides #only-light/dark.
 PICTURE = re.compile(
     r'<picture>\s*<source media="\(prefers-color-scheme: dark\)"\s+srcset="([^"]+)"\s*/?>\s*'
     r'<img src="([^"]+)"(.*?)/?>\s*</picture>', re.S)
-
-
-def _strip_github_nav(markdown: str) -> str:
-    markdown = TOC_SECTION.sub("", markdown)
-    markdown = TITLE_TOC.sub(r"\1\n", markdown)
-    return BACK_TO_TOP.sub("", markdown)
 
 
 def _local(markdown: str, repo_url: str, site_url: str) -> str:
@@ -49,7 +37,7 @@ def on_files(files, config):
 
 
 def on_page_markdown(markdown, page, config, files):
-    markdown = _strip_github_nav(DEV_BANNER.sub("", markdown))
+    markdown = DEV_BANNER.sub("", markdown)
     markdown = _local(markdown, config.repo_url, config.site_url).replace("../README.md", "index.md")
     markdown = PICTURE.sub(r'<img src="\2#only-light"\3/><img src="\1#only-dark"\3/>', markdown)
     # Raw HTML paths are not rewritten by MkDocs: a page is served one folder down.

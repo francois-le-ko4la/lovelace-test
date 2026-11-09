@@ -26,13 +26,13 @@ verify your backups before proceeding.
 > - Ask questions and get help from the maintainers and community
 > - Check for known issues or required changes
 
-## 🚦 Two ways to test
+## Two ways to test
 
-- **[Method 1 — HACS pre-release](#-method-1--hacs-pre-release-quick-production-install)**:
+- **[Method 1 — HACS pre-release](#method-1--hacs-pre-release-quick-production-install)**:
   installs the RC directly on your production setup, through HACS itself.
   Quickest option, and open to anyone — but it does update your live
   installation, so make sure you have a backup.
-- **[Method 2 — Manual isolated install](#-method-2--manual-isolated-install-side-by-side-zero-risk)**:
+- **[Method 2 — Manual isolated install](#method-2--manual-isolated-install-side-by-side-zero-risk)**:
   the RC runs side-by-side with your stable card, under a different type
   (`custom:entity-progress-card-rc`), with zero risk to your production config.
   Better suited for deeper testing, or if you'd rather not touch your live setup
@@ -40,7 +40,7 @@ verify your backups before proceeding.
 
 Both are equally welcome — pick whichever fits how you like to test.
 
-### ⚡ Method 1 — HACS pre-release (quick, production install)
+### Method 1 — HACS pre-release (quick, production install)
 
 > [!WARNING]
 >
@@ -48,7 +48,7 @@ Both are equally welcome — pick whichever fits how you like to test.
 > Make sure you have a recent backup/snapshot of your Home Assistant config
 > before proceeding, and expect to roll back if something breaks.
 
-#### ⬇️ Install the RC version
+#### Install the RC version
 
 - **HACS**: go into the repository ➡️ click ⋮ (upper right) ➡️ choose
   **Redownload** ➡️ choose **"Need a different version?"**; the release
@@ -61,20 +61,20 @@ Both are equally welcome — pick whichever fits how you like to test.
 - Install it like you would any other update, then reload the browser cache
   (**`CTRL`** + **`F5`** or clear cache).
 
-#### 🧪 Test the RC Card in Lovelace
+#### Test the RC Card in Lovelace
 
 This RC build is the same `custom:entity-progress-card` type as the stable
 release — there's no separate `-rc` type here, and nothing to duplicate or
 change in your YAML. Your existing cards are already running the RC as soon as
 HACS finishes updating.
 
-#### 🧼 Cleanup / Rolling back
+#### Cleanup / Rolling back
 
 If you want to go back to the stable version, use **Redownload** (HACS) or
 **Install another version** (Marketplace) and pick the latest stable version,
 or restore your backup.
 
-### 🧰 Method 2 — Manual isolated install (side-by-side, zero risk)
+### Method 2 — Manual isolated install (side-by-side, zero risk)
 
 > [!WARNING]
 >
@@ -82,9 +82,9 @@ or restore your backup.
 > not** overwrite the HACS installation. Instead, follow this isolated setup
 > process.
 
-#### ⬇️ Install the RC version
+#### Install the RC version
 
-##### 📁 Copy it to a test directory
+##### Copy it to a test directory
 
 From the RC's release page on GitHub, download `entity-progress-card.js`, its
 editor `entity-progress-card-editor.js`, and the
@@ -101,7 +101,7 @@ mkdir -p config/www/test/
 > editor for the test cards; without the language file, the visual editor falls
 > back to English.
 
-##### ➕ Add the resource, with a suffix
+##### Add the resource, with a suffix
 
 - Go to **Settings** ➡️ **Dashboards** ➡️ **Resources** ➡️ **`⋮`** ➡️ **Add
   Resource**
@@ -117,7 +117,7 @@ to the stable ones HACS installed, and its diagnostic answers to `EPB_RC`. Any
 lowercase word or number works (`?suffix=test`), up to 16 characters. The two
 copies find their own editor and language files, even with the same file name.
 
-#### 🧪 Test the RC Card in Lovelace
+#### Test the RC Card in Lovelace
 
 ##### How to use the RC version
 
@@ -137,7 +137,7 @@ type: custom:entity-progress-card-rc
 
 This allows side-by-side testing of the stable and RC versions.
 
-#### 🧼 Cleanup (Optional)
+#### Cleanup (Optional)
 
 Once you're done testing:
 
@@ -145,7 +145,7 @@ Once you're done testing:
 - Delete `entity-progress-card.js`, `entity-progress-card-editor.js` and the
   `entity-progress-card-*.json` files from `/config/www/test/`
 
-## ✅ Testing Checklist
+## Testing Checklist
 
 A standard checklist, whichever method you used:
 
@@ -156,7 +156,7 @@ A standard checklist, whichever method you used:
 - [ ] Performance is ok
 - [ ] Mobile/tablet display works correctly
 
-## 📝 Providing Feedback
+## Providing Feedback
 
 Feedback will be done on Discord only. When reporting issues, please include:
 

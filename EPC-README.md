@@ -1,3 +1,6 @@
+<!-- markdownlint-disable-next-line MD013 -->
+<img src="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/epc-logo/epc-icon-dc8ccf.svg" alt="Entity Progress Card logo" width="120" align="right" />
+
 # Lovelace Entity Progress Card
 
 [![Home Assistant][ha-badge]][repo-link]

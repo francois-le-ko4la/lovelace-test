@@ -1,5 +1,3 @@
-<a id="top"></a>
-
 # 🍳 Cookbook
 
 <!-- dev-banner -->
@@ -14,79 +12,6 @@ the basics. See [`configuration.md`](configuration.md) if you want the
 authoritative reference instead (every option, every type, every default,
 cross-variant compatibility badges).
 
-## Table of Contents
-
-- 🧩 [Variant reference](#variant-reference) — which one, then options,
-  defaults, and quick examples
-  - 🧱 [Entity Progress Components](#components)
-    - [Component Overview](#components-overview)
-    - [Purpose & Use Cases](#purpose)
-      - [Entity Progress Card](#purpose-progress-card)
-      - [When to Use the Template Version?](#purpose-template)
-      - [Badge vs. Card – Which One?](#purpose-badge)
-  - [Entity Progress Card](#card)
-    - [Options](#card-options)
-    - [Getting Started](#card-getting-started)
-    - [Power Features](#card-power-features)
-  - [Entity Progress Card Template](#card-template)
-    - [Options](#card-template-options)
-    - [Getting Started](#card-template-getting-started)
-    - [Power Features](#card-template-power-features)
-  - [Entity Progress Badge](#badge)
-    - [Options](#badge-options)
-    - [Getting Started](#badge-getting-started)
-  - [Entity Progress Badge Template](#badge-template)
-    - [Options](#badge-template-options)
-    - [Getting Started](#badge-template-getting-started)
-  - [Entity Progress Tile Feature](#tile-feature)
-    - [Options](#tile-feature-options)
-    - [Getting Started](#tile-feature-getting-started)
-  - [Entity Progress Multi-Card / Multi-Feature](#multi)
-    - [Options](#multi-options)
-    - [Getting Started](#multi-getting-started)
-- ✨ [Effects & formatting](#effects-formatting) — cross-cutting, work the same
-  on every variant
-  - [Visual Effects](#visual-effects)
-    - [`bar_effect`: shimmer, gradient, glass, radius](#effect-bar-effects)
-    - [`bar_segments`: discrete blocks instead of a continuous fill](#effect-bar-segments)
-    - [`bar_ring`: shape the ring around the icon](#effect-bar-ring)
-    - [`interpolate`: smooth color transitions between zones](#effect-interpolate)
-    - [`force_circular_background`: the icon's circle, always on](#effect-force-circular-background)
-    - [`icon_animation`: washing_machine, battery_charging, spin, ping…](#effect-icon-animation)
-    - [`alert_when`: the card reacts on its own](#effect-alert-when)
-    - [`watermark`: markers without leaving the bar](#effect-watermark)
-    - [`bar_color_mode: segment`: theme zones as distinct blocks](#effect-segment)
-    - [`bar_color_mode: rainbow_full`: the whole theme, always visible](#effect-rainbow)
-    - [`status_label`: a GitHub-style pill, colored automatically](#effect-status-label)
-    - [`trend_indicator`: which way the value is moving](#effect-trend-indicator)
-    - [`peak_marker`: min/max/average, right on the bar](#effect-peak-marker)
-    - [`custom_theme`: your own color zones](#effect-custom-theme)
-    - [`bar_stack`: several entities, one bar](#effect-bar-stack)
-    - [`center_zero`: bidirectional bars](#effect-center-zero)
-    - [`hide: [shape]`: drop the icon's circular background](#effect-hide-shape)
-    - [`density: compact`: the smallest useful footprint, either layout](#effect-density-compact)
-  - [Display Formatting](#display-formatting)
-    - [`unit_position`: currency-style values](#format-unit-position)
-    - [`value_compact`: abbreviate large numbers](#format-value-compact)
-    - [`value_sign`: force an explicit +/-](#format-value-sign)
-- 🌟 [Real-world recipes](#real-world-recipes) — full narrative walkthroughs
-  - [Recreate the Showcase](#recreate-the-showcase)
-    - [Living room — full rainbow, centered, with a status pill](#showcase-living-room)
-    - [Garage — a pulsing alert on a vertical thermometer](#showcase-garage)
-    - [Energy — two bars and a net balance, in one Tile feature](#showcase-energy)
-    - [Printer — ink levels in a Mushroom Template card](#showcase-printer)
-  - 🧺
-    [The Laundry Mystery: Decoding Washer Entities Across Brands](#laundry-mystery)
-  - 🌀
-    [Washing Machine Progress: Three Brands, Three Approaches](#washing-machine-three-brands)
-  - 🧮 [Cracking a Complex Case with a Simple Helper](#simple-helper)
-  - 🔒 [Don't Let It Expire! (SSL Certificate Countdown)](#ssl-expiry)
-  - 🌅 [Follow the Sun](#follow-the-sun)
-
----
-
-<a id="variant-reference"></a>
-
 ## Variant reference
 
 Which one to use, and how to configure it once you've picked: an overview to
@@ -97,7 +22,7 @@ recipes below.
 
 <a id="components"></a>
 
-### 🧱 Entity Progress Components
+### Entity Progress Components
 
 This documentation is meant to help you understand and use the different Entity
 Progress components in Home Assistant (cards and badges, both standard and
@@ -105,7 +30,7 @@ template versions), providing clear guidance.
 
 <a id="components-overview"></a>
 
-#### 📚 Component Overview
+#### Component Overview
 
 | Component                                      | Description                                                      |
 | ---------------------------------------------- | ---------------------------------------------------------------- |
@@ -119,15 +44,13 @@ template versions), providing clear guidance.
 Each component is suited for different use cases, depending on display needs,
 complexity, and UI layout.
 
-[🔼 Back to top]
-
 <a id="purpose"></a>
 
-#### 🎯 Purpose & Use Cases
+#### Purpose & Use Cases
 
 <a id="purpose-progress-card"></a>
 
-##### ✅ Entity Progress Card
+##### Entity Progress Card
 
 This card is ideal when:
 
@@ -143,11 +66,9 @@ _Examples_:
 - Display remaining battery percentage for a device.
 - Monitor the progress of a running script or automation.
 
-[🔼 Back to top]
-
 <a id="purpose-template"></a>
 
-##### 🧠 When to Use the Template Version?
+##### When to Use the Template Version?
 
 Use the Template version (card or badge) when:
 
@@ -164,11 +85,9 @@ _Examples_:
 - Dynamically adjust color or shape based on a formula.
 - Show remaining laundry time based on a template sensor.
 
-[🔼 Back to top]
-
 <a id="purpose-badge"></a>
 
-##### 🔳 Badge vs. Card – Which One?
+##### Badge vs. Card – Which One?
 
 | Use a **Card** when…                         | Use a **Badge** when…                      |
 | -------------------------------------------- | ------------------------------------------ |
@@ -176,13 +95,11 @@ _Examples_:
 | You need to show actions, icons, and text    | You just need quick-glance visuals         |
 | You rely on theme integration and animations | You want to embed progress in compact form |
 
-[🔼 Back to top]
-
 ---
 
 <a id="card"></a>
 
-### 🧩 Entity Progress Card
+### Entity Progress Card
 
 The one you'll reach for by default: one entity, one bar, zero surprises. Drop
 it in, and it already knows what to show — right unit, right icon, right math,
@@ -196,7 +113,7 @@ work out on its own.
 
 <a id="card-options"></a>
 
-#### 🛠️ Options
+#### Options
 
 <details>
 <summary>Show options</summary>
@@ -273,11 +190,9 @@ value/min/max (`max_value` can still override). Any other numeric entity is
 treated as the current value, with min/max from `0`/`100`, config, or an
 external entity via `max_value`.
 
-[🔼 Back to top]
-
 <a id="card-getting-started"></a>
 
-#### 🧪 Getting Started
+#### Getting Started
 
 > [!TIP]
 >
@@ -702,11 +617,9 @@ cards:
 </details>
 <br />
 
-[🔼 Back to top]
-
 <a id="card-power-features"></a>
 
-#### 🚀 Power Features
+#### Power Features
 
 Real-world setups that go beyond a quick config — brand-specific washing machine
 quirks, deriving a percentage from a start/end time via a Helper, an SSL
@@ -719,13 +632,11 @@ certificate expiry countdown:
 - 🧮 [Cracking a Complex Case with a Simple Helper](#simple-helper)
 - 🔒 [Don't Let It Expire! (SSL Certificate Countdown)](#ssl-expiry)
 
-[🔼 Back to top]
-
 ---
 
 <a id="card-template"></a>
 
-### 🧩 Entity Progress Card Template
+### Entity Progress Card Template
 
 When the base Card's math doesn't cover your case — multi-sensor formulas,
 non-linear scales, conditional colors — this is where you drop into Jinja and
@@ -744,7 +655,7 @@ fixed min/max.
 
 <a id="card-template-options"></a>
 
-#### 🛠️ Options
+#### Options
 
 <details>
 <summary>Show options</summary>
@@ -801,11 +712,9 @@ fixed min/max.
 
 See [Full Configuration Reference][FCR].
 
-[🔼 Back to top]
-
 <a id="card-template-getting-started"></a>
 
-#### 🧪 Getting Started
+#### Getting Started
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -870,24 +779,20 @@ tap_action:
 </details>
 <br />
 
-[🔼 Back to top]
-
 <a id="card-template-power-features"></a>
 
-#### 🚀 Power Features
+#### Power Features
 
 A dynamic sun-tracking bar — progress toward the next sunrise/sunset, live
 countdown, color that flips with the horizon — entirely computed in Jinja:
 
 - 🌅 [Follow the Sun](#follow-the-sun)
 
-[🔼 Back to top]
-
 ---
 
 <a id="badge"></a>
 
-### 🧩 Entity Progress Badge
+### Entity Progress Badge
 
 The Card, shrunk to fit a header row — same read at a glance, a fraction of the
 space.
@@ -898,7 +803,7 @@ view's other badges, not as the dashboard's main focus.
 
 <a id="badge-options"></a>
 
-#### 🛠️ Options
+#### Options
 
 <details>
 <summary>Show options</summary>
@@ -953,11 +858,9 @@ view's other badges, not as the dashboard's main focus.
 
 See [Full Configuration Reference][FCR]. We use the same syntax as the card.
 
-[🔼 Back to top]
-
 <a id="badge-getting-started"></a>
 
-#### 🧪 Getting Started
+#### Getting Started
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -1006,13 +909,11 @@ bar_effect: shimmer
 </details>
 <br />
 
-[🔼 Back to top]
-
 ---
 
 <a id="badge-template"></a>
 
-### 🧩 Entity Progress Badge Template
+### Entity Progress Badge Template
 
 Same shrink, but Jinja-powered end to end — for when a badge needs the same
 custom math as the Card Template.
@@ -1029,7 +930,7 @@ already exposes directly.
 
 <a id="badge-template-options"></a>
 
-#### 🛠️ Options
+#### Options
 
 <details>
 <summary>Show options</summary>
@@ -1071,11 +972,9 @@ already exposes directly.
 
 See [Full Configuration Reference][FCR].
 
-[🔼 Back to top]
-
 <a id="badge-template-getting-started"></a>
 
-#### 🧪 Getting Started
+#### Getting Started
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -1146,13 +1045,11 @@ color: |-
 </details>
 <br />
 
-[🔼 Back to top]
-
 ---
 
 <a id="tile-feature"></a>
 
-### 🧩 Entity Progress Tile Feature
+### Entity Progress Tile Feature
 
 The **Entity Progress Tile Feature** (`entity-progress-feature`) embeds a
 progress bar directly inside a standard Home Assistant **Tile** card. It renders
@@ -1166,7 +1063,7 @@ bolted on, not a replacement.
 
 <a id="tile-feature-options"></a>
 
-#### 🛠️ Options
+#### Options
 
 <details>
 <summary>Show options</summary>
@@ -1201,11 +1098,9 @@ bolted on, not a replacement.
 
 See [Full Configuration Reference][FCR].
 
-[🔼 Back to top]
-
 <a id="tile-feature-getting-started"></a>
 
-#### 🧪 Getting Started
+#### Getting Started
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -1268,13 +1163,11 @@ features:
 </details>
 <br />
 
-[🔼 Back to top]
-
 ---
 
 <a id="multi"></a>
 
-### 🧩 Entity Progress Multi-Card / Multi-Feature
+### Entity Progress Multi-Card / Multi-Feature
 
 Several entities, one card: instead of a wall of individual bars, stack them
 under a single header.
@@ -1295,7 +1188,7 @@ aggregator only stacks them and divides the available height.
 
 <a id="multi-options"></a>
 
-#### 🛠️ Options
+#### Options
 
 <details>
 <summary>Show options</summary>
@@ -1328,11 +1221,9 @@ size its own text.
 
 See [Full Configuration Reference][FCR].
 
-[🔼 Back to top]
-
 <a id="multi-getting-started"></a>
 
-#### 🧪 Getting Started
+#### Getting Started
 
 **Standalone card**:
 
@@ -1411,8 +1302,6 @@ grid_options:
 </details>
 <br />
 
-[🔼 Back to top]
-
 ---
 
 <a id="effects-formatting"></a>
@@ -1422,9 +1311,7 @@ grid_options:
 Cross-cutting, work the same on every variant above, not tied to any one of
 them.
 
-<a id="visual-effects"></a>
-
-### ✨ Visual Effects
+### Visual Effects
 
 Most of what makes this card feel alive doesn't show up in a static screenshot.
 Each GIF below is captured straight from
@@ -1488,8 +1375,6 @@ bar_effect:
 
 See [`bar_effect`](configuration.md#bar_effect) for the full list.
 
-[🔼 Back to top]
-
 <a id="effect-bar-segments"></a>
 
 #### `bar_segments`: discrete blocks instead of a continuous fill
@@ -1516,8 +1401,6 @@ bar_segments: 10
 </details>
 
 Works with any orientation, size, or color mode/effect.
-
-[🔼 Back to top]
 
 <a id="effect-bar-ring"></a>
 
@@ -1560,8 +1443,6 @@ bar_ring:
 [`bar_segments`](#effect-bar-segments) cuts the ring into blocks too.
 `--epb-ring-softness` sets the softness for a whole theme.
 
-[🔼 Back to top]
-
 <a id="effect-interpolate"></a>
 
 #### `interpolate`: smooth color transitions between zones
@@ -1594,8 +1475,6 @@ custom_theme:
 
 </details>
 
-[🔼 Back to top]
-
 <a id="effect-force-circular-background"></a>
 
 #### `force_circular_background`: the icon's circle, always on
@@ -1622,11 +1501,9 @@ force_circular_background: true
 
 </details>
 
-[🔼 Back to top]
-
 <a id="effect-icon-animation"></a>
 
-#### `icon_animation`: washing_machine, battery_charging, spin, ping…
+#### `icon_animation`: washing_machine, battery_charging, spin, ping
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -1715,8 +1592,6 @@ icon_animation: battery_charging
 
 </details>
 <br />
-
-[🔼 Back to top]
 
 <a id="effect-alert-when"></a>
 
@@ -1845,8 +1720,6 @@ See [`alert_when`](configuration.md#alert_when) for every
 `highlight`/`animation` combination, and `watermark`/`min_value`/`max_value` for
 the same entity-or-Jinja pattern applied to thresholds that don't alert.
 
-[🔼 Back to top]
-
 <a id="effect-watermark"></a>
 
 #### `watermark`: markers without leaving the bar
@@ -1894,8 +1767,6 @@ watermark:
 That's `type: striped` - see [`watermark`](configuration.md#watermark) for what
 the other five (`blended`, `area`, `triangle`, `round`, `line`) each look like.
 
-[🔼 Back to top]
-
 <a id="effect-segment"></a>
 
 #### `bar_color_mode: segment`: theme zones as distinct blocks
@@ -1925,8 +1796,6 @@ bar_color_mode: segment
 
 </details>
 <br />
-
-[🔼 Back to top]
 
 <a id="effect-rainbow"></a>
 
@@ -1960,8 +1829,6 @@ bar_color_mode: rainbow_full
 
 See [`bar_color_mode`](configuration.md#bar_color_mode) for `segment` and plain
 `rainbow`.
-
-[🔼 Back to top]
 
 <a id="effect-status-label"></a>
 
@@ -2008,8 +1875,6 @@ status_label:
 See [`status_label`](configuration.md#status_label) for the `{label, color}`
 object form and `color_source`.
 
-[🔼 Back to top]
-
 <a id="effect-trend-indicator"></a>
 
 #### `trend_indicator`: which way the value is moving
@@ -2034,8 +1899,6 @@ trend_indicator: true
 ```
 
 </details>
-
-[🔼 Back to top]
 
 <a id="effect-peak-marker"></a>
 
@@ -2069,8 +1932,6 @@ peak_marker:
 ```
 
 </details>
-
-[🔼 Back to top]
 
 <a id="effect-custom-theme"></a>
 
@@ -2108,8 +1969,6 @@ custom_theme:
 ```
 
 </details>
-
-[🔼 Back to top]
 
 <a id="effect-bar-stack"></a>
 
@@ -2184,8 +2043,6 @@ Three modes, three different questions answered:
 See [`bar_stack`](configuration.md#bar_stack) for `subtract`, ordering, and
 auto-shaded colors.
 
-[🔼 Back to top]
-
 <a id="effect-center-zero"></a>
 
 #### `center_zero`: bidirectional bars
@@ -2217,8 +2074,6 @@ See [`center_zero`](configuration.md#center_zero) for a custom center point
 (e.g. a nominal voltage) and [`bar_stack`](configuration.md#bar_stack)'s `net`
 mode, which combines naturally with it.
 
-[🔼 Back to top]
-
 <a id="effect-hide-shape"></a>
 
 #### `hide: [shape]`: drop the icon's circular background
@@ -2246,8 +2101,6 @@ hide:
 
 Same result, via CSS instead of YAML: the
 [`--epb-icon-shape-opacity`](theme.md#css) hook.
-
-[🔼 Back to top]
 
 <a id="effect-density-compact"></a>
 
@@ -2287,13 +2140,9 @@ See [`density`](configuration.md#density) for exactly what it sets under the
 hood (`bar_position`, `hide`, `multiline`) and how it interacts with a Sections
 view's own grid sizing.
 
-[🔼 Back to top]
-
 ---
 
-<a id="display-formatting"></a>
-
-### 🔢 Display Formatting
+### Display Formatting
 
 Not animated, but just as much about the card reading correctly at a glance —
 how the number itself is shown.
@@ -2327,8 +2176,6 @@ unit_spacing: no-space
 
 `$100` instead of `100$`. Has no effect once `unit` is empty or hidden.
 
-[🔼 Back to top]
-
 <a id="format-value-compact"></a>
 
 #### `value_compact`: abbreviate large numbers
@@ -2357,8 +2204,6 @@ unit_spacing: no-space
 
 `1200` becomes `1.2k`, `1500000` becomes `1.5M` — locale-aware, trailing zeros
 trimmed (`1.2k`, not `1.20k`).
-
-[🔼 Back to top]
 
 <a id="format-value-sign"></a>
 
@@ -2391,20 +2236,14 @@ value_sign: true
 `42` becomes `+42`, zero stays unsigned. Clarifies the direction of a delta at a
 glance — most useful on `center_zero`/`bar_stack: { mode: net }` cards.
 
-[🔼 Back to top]
-
 ---
-
-<a id="real-world-recipes"></a>
 
 ## Real-world recipes
 
 Full narrative walkthroughs (why, how, and the YAML that got there), the ones
 linked from each variant's `Power Features` above.
 
-<a id="recreate-the-showcase"></a>
-
-### 🌟 Recreate the Showcase
+### Recreate the Showcase
 
 The GIF at the top of the [README](../README.md) isn't a mockup — it's this
 project's own [demo dashboard](demo-dashboard.yaml) (the "EP Showcase" view),
@@ -2450,8 +2289,6 @@ whole gradient with a sliding marker instead of a partial fill,
 [`status_label`](configuration.md#status_label) adds the pill — no Jinja
 condition needed for a fixed label.
 
-[🔼 Back to top]
-
 <a id="showcase-garage"></a>
 
 #### Garage — a pulsing alert on a vertical thermometer
@@ -2492,8 +2329,6 @@ Same `rainbow_full` idea as Living room, this time
 [`layout: vertical`](configuration.md#layout) and an
 [`alert_when`](configuration.md#alert_when) label that only appears — and pings
 — once the value actually crosses 30.
-
-[🔼 Back to top]
 
 <a id="showcase-energy"></a>
 
@@ -2556,8 +2391,6 @@ Each Multi row prints its own value, and the Multi holds those values in one
 column ([`bar_aligned`](configuration.md#bar_aligned), on by default) so the two
 bars start at the same x whatever the reading — `900 W` and `1600 W` are not the
 same width.
-
-[🔼 Back to top]
 
 <a id="showcase-printer"></a>
 
@@ -2635,13 +2468,11 @@ an [`entity-progress-multi-feature`](#multi) under its content
 template's own — it turns orange under 10 % ink or on a paper fault, and shows
 the tile's orange exclamation mark when a sensor is unavailable.
 
-[🔼 Back to top]
-
 ---
 
 <a id="laundry-mystery"></a>
 
-### 🧺 The Laundry Mystery: Decoding Washer Entities Across Brands
+### The Laundry Mystery: Decoding Washer Entities Across Brands
 
 **Why?**
 
@@ -2729,13 +2560,11 @@ this approach, you can create a single card that works with different
 integrations while displaying relevant information in a clear and consistent
 manner.
 
-[🔼 Back to top]
-
 ---
 
 <a id="washing-machine-three-brands"></a>
 
-### 🌀 Washing Machine Progress: Three Brands, Three Approaches
+### Washing Machine Progress: Three Brands, Three Approaches
 
 **Why?**
 
@@ -2842,13 +2671,11 @@ icon: mdi:washing-machine
 icon_animation: washing_machine
 ```
 
-[🔼 Back to top]
-
 ---
 
 <a id="simple-helper"></a>
 
-### 🧮 Cracking a Complex Case with a Simple Helper
+### Cracking a Complex Case with a Simple Helper
 
 **Why?**
 
@@ -2932,13 +2759,11 @@ percentage accurately reflects the time remaining regardless of the task's total
 duration. This solution effectively extends our card usage vision, and enhances
 the user experience.
 
-[🔼 Back to top]
-
 ---
 
 <a id="ssl-expiry"></a>
 
-### 🔒 Don't Let It Expire! (SSL Certificate Countdown)
+### Don't Let It Expire! (SSL Certificate Countdown)
 
 This example is similar to the previous one that used a Home Assistant helper
 but relying more on system-level tools — offering potentially greater efficiency
@@ -3115,13 +2940,9 @@ Let's Encrypt certificate, it's recommended to:
 
 These topics are beyond the scope of this guide.
 
-[🔼 Back to top]
-
 ---
 
-<a id="follow-the-sun"></a>
-
-### 🌅 Follow the Sun
+### Follow the Sun
 
 **🧐 Why?**
 
@@ -3258,11 +3079,8 @@ visual (progress bar + color) and textual (countdown + time) information. It
 adapts based on current time and sun data, making it a smart and engaging way to
 track solar cycles from your dashboard.
 
-[🔼 Back to top]
-
 <!-- Links -->
 
-[🔼 Back to top]: #top
 [FCR]:
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/configuration.md
 [config-entity]:

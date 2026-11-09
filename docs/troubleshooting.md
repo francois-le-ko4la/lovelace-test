@@ -17,7 +17,7 @@ However, you might encounter a real bug — something unexpected that breaks
 functionality and requires further investigation. That’s where troubleshooting
 comes in.
 
-## ❗ Error handling
+## Error handling
 
 This card includes error handling to prevent visual issues and ensure the UI
 stays clean and stable. We handle two main categories of errors in the card:
@@ -113,7 +113,7 @@ it goes away as soon as the template renders a number.
 `EPB.doctor.cards()` lists the cards on the page. Its `entity state` column
 gives the state and, when it is not the card's own entity, the field at fault:
 `⏳ unavailable (max_value)`, or `⏳ unavailable (max_value, Jinja)` for a
-template. See [Run the built-in diagnostic](#-run-the-built-in-diagnostic).
+template. See [Run the built-in diagnostic](#run-the-built-in-diagnostic).
 
 Then, in Home Assistant:
 
@@ -124,11 +124,9 @@ Then, in Home Assistant:
 3. If the entity is `unavailable` or `unknown`, the card is right: fix the
    integration or the device, not the card.
 
-<a id="deprecated-options"></a>
+## Deprecated Options
 
-## ⚠️ Deprecated Options
-
-### 📋 What's removed or deprecated
+### What's removed or deprecated
 
 Over time, some configuration options have been deprecated in favor of more
 flexible or clearer alternatives. While the card tries to maintain backward
@@ -173,7 +171,7 @@ In this context, we have two types of deprecated options:
 <img src="images/deprecated-a040a4.png" alt="deprecated" width="1000px"/>
 </details>
 
-### 🔄 How migration works
+### How migration works
 
 You don't have to rewrite anything by hand:
 
@@ -209,7 +207,7 @@ their config never said otherwise.
 As with any edit: check that the card still looks right, and that the values it
 displays match what you expect, before saving the dashboard.
 
-## 🐞 Troubleshooting
+## Troubleshooting
 
 ### Introduction
 
@@ -223,9 +221,7 @@ encounter an issue.
 > This card **does not alter** your existing configuration. It only displays
 > entities — nothing is modified, removed, or broken in your actual setup.
 
-<a id="browser-compatibility"></a>
-
-### 🌐 Browser Compatibility
+### Browser Compatibility
 
 Some issues aren't a bug — the browser is simply below the supported version.
 
@@ -245,7 +241,7 @@ Some issues aren't a bug — the browser is simply below the supported version.
   effort only: the card itself loads and works (see [issue #128]), but matching
   this version isn't a guarantee, just a courtesy where it's cheap.
 
-### ✅ What to do?
+### What to do?
 
 #### Try common quick checks first
 
@@ -352,7 +348,7 @@ Some issues aren't a bug — the browser is simply below the supported version.
 - YAML configuration snippets (if relevant)
 - Any visible error messages (from the console or logs)
 
-#### 🐞 Copy the issue report from the card editor
+#### Copy the issue report from the card editor
 
 The quickest way: open the card in the visual editor and click the bug icon in
 its top-left corner. It copies a report ready to paste into your issue — the
@@ -361,7 +357,7 @@ without effect marked, and a `# drawn from:` comment with the range and value
 the bar is drawn from. On a Multi card, use the icon on the card itself, not on
 one of its rows.
 
-#### 🩺 Run the built-in diagnostic
+#### Run the built-in diagnostic
 
 The card ships with a small diagnostic helper that collects most of the
 information above in one shot. Open your browser's developer console (`F12` or
@@ -412,7 +408,7 @@ your browser received them: compare them with the `sha256:` digest GitHub shows
 beside each file of the release to make sure you run the published one. They
 need HTTPS.
 
-#### 🔎 Enable debug logging (`?debug=…`)
+#### Enable debug logging (`?debug=…`)
 
 For harder cases, the card can print detailed per-area logs to the browser
 console — no special build required. Add a `?debug=…` query to the card's
