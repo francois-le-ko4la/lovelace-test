@@ -32,4 +32,7 @@ def on_files(files, config):
 
 def on_page_markdown(markdown, page, config, files):
     markdown = DEV_BANNER.sub("", markdown)
-    return _local(markdown, config.repo_url, config.site_url).replace("../README.md", "index.md")
+    markdown = _local(markdown, config.repo_url, config.site_url).replace("../README.md", "index.md")
+    # Raw HTML paths are not rewritten by MkDocs: a page is served one folder down.
+    up = "../" * page.url.count("/")
+    return re.sub(r'\b(src|srcset|href)="(?![a-z]+:|/|#|\.\./)', rf'\1="{up}', markdown)
