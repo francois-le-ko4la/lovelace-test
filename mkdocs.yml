@@ -17,8 +17,7 @@ hooks:
 
 theme:
   name: material
-  icon:
-    logo: material/progress-check
+  logo: assets/logo.svg
   favicon: assets/favicon.svg
   font:
     text: Roboto
