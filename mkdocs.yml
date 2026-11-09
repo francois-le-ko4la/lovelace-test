@@ -1,0 +1,74 @@
+site_name: Entity Progress Card
+site_url: https://francois-le-ko4la.github.io/lovelace-test/
+site_description: A Home Assistant Lovelace card showing an entity's progress as a bar.
+repo_url: https://github.com/francois-le-ko4la/lovelace-entity-progress-card
+repo_name: lovelace-entity-progress-card
+edit_uri: edit/main/docs/
+
+extra:
+  # The home page is built from this file (README.md in the card's repo).
+  readme: EPC-README.md
+
+hooks:
+  - hooks.py
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - toc.follow
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+
+nav:
+  - Home: index.md
+  - Configuration: configuration.md
+  - Cookbook: cookbook.md
+  - Theme: theme.md
+  - Troubleshooting: troubleshooting.md
+  - Testing an RC: rc-testing.md
+  - Contributing: contributing.md
+
+not_in_nav: |
+  code_of_conduct.md
+  development.md
+  option-map.md
+
+markdown_extensions:
+  - github-callouts
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      # GitHub's anchors (an emoji heading keeps its leading "-"), so the
+      # links written for github.com resolve here too.
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg

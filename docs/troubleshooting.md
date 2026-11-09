@@ -1,0 +1,519 @@
+# 🚨 Errors, Deprecations & Troubleshooting
+
+<!-- dev-banner -->
+> [!NOTE]
+> This is the documentation of the development branch: it may describe
+> options not released yet. For the latest release, see the [documentation site](https://francois-le-ko4la.github.io/lovelace-test/).
+<!-- /dev-banner -->
+
+Not all errors are the same — and not every issue means something is broken.
+
+This card is designed to gracefully handle common errors in your Lovelace
+configuration or entity state. These are usually minor and expected, and the
+card will notify you directly in the UI when they occur (for example, a missing
+entity or invalid value).
+
+However, you might encounter a real bug — something unexpected that breaks
+functionality and requires further investigation. That’s where troubleshooting
+comes in.
+
+## ❗ Error handling
+
+This card includes error handling to prevent visual issues and ensure the UI
+stays clean and stable. We handle two main categories of errors in the card:
+
+1. **Configuration Errors** These occur when the card is incorrectly set up in
+   the Lovelace config. Examples:
+   - Missing entity ID
+   - Invalid or unsupported attributes
+   - Incorrect min/max values
+
+2. **Runtime Errors (Entity State Issues)** These happen while the card is
+   running and are related to the entity’s current state. Examples:
+   - Entity is not found, unavailable or offline
+   <details>
+   <summary><strong>Show the screenshot (click to expand)</strong></summary>
+   <!-- markdownlint-disable-next-line MD013 -->
+   <img src="images/errors-f73970.png" alt="errors" width="1000px"/>
+   </details>
+
+<a id="unavailable-entities"></a>
+
+### When an entity or a Jinja field is unavailable, unknown or not found
+
+A card can depend on several entities (its own `entity`, an entity in
+`min_value`, `max_value`, `watermark`, `alert_when`, `bar_stack`) and on Jinja
+templates. When one of them cannot give a value, the card does not guess: it
+stops drawing what depends on it, and says which one is at fault.
+
+The three states have the same effect:
+
+- `unavailable`: the integration behind the entity is offline.
+- `unknown`: the entity exists but has no value yet.
+- `not found`: no entity has this ID in Home Assistant (a typo, or a removed
+  entity).
+
+#### Required and extra entities
+
+What the bar is drawn from is **required**: without it, any percentage would be
+made up. The rest only **adds information** and is dropped on its own.
+
+| Entity                                               | Role     | When it is down                                        |
+| ---------------------------------------------------- | -------- | ------------------------------------------------------ |
+| The card's `entity`                                  | Required | The bar stops, the state replaces the value            |
+| An entity in `min_value` or `max_value`              | Required | The bar stops, the line names the entity               |
+| A Jinja template in `min_value` or `max_value`       | Required | The bar stops, the line names the field (see below)    |
+| An entity or template in `watermark.low`/`.high`     | Extra    | That mark is not drawn, the bar is unchanged           |
+| An entity or template in `alert_when.above`/`.below` | Extra    | That threshold is ignored, it cannot trigger the alert |
+| An entity in `bar_stack.entities`                    | Extra    | Left out of the total                                  |
+
+#### What the card shows
+
+When a required entity is down, the bar stops: 0 %, in the disabled color (the
+default color for `unknown`), and the value is replaced by a line naming the
+cause. The icon and the badge show the matching error look.
+
+- The card's own entity: its state, as Home Assistant words it (`Unavailable`).
+- An entity in `min_value` or `max_value`: its name and state, for example
+  `sensor.limit · Unavailable`.
+- A Jinja template in `min_value` or `max_value`: the field and `JINJA`, for
+  example `max_value · JINJA unavailable`.
+
+When several required entities are down at once, the card names the first of
+`entity`, `max_value`, `min_value`. Fix it, and the next one shows up if it is
+still down.
+
+#### Jinja templates
+
+A Jinja `min_value` or `max_value` can fail in four ways, all shown alike:
+
+- Home Assistant refuses the template (a syntax error, an unknown filter).
+- The template has an unclosed delimiter (`{{`, `{%` or `{#`). It is not even
+  sent to Home Assistant.
+- Home Assistant reports an error while rendering it.
+- It renders something that is not a number, such as `unavailable` or `unknown`
+  (what `states('sensor.x')` returns for an entity that is down).
+
+The line then reads `max_value · JINJA unavailable`, followed by Home
+Assistant's own message instead of `unavailable` when it gives one. The card
+also writes a notice in the browser console, once per template, and again when
+the template changes.
+
+Until Home Assistant has answered for the first time, a Jinja range is
+**waiting**: the bar is grayed and no value is shown. This is not an error, and
+it goes away as soon as the template renders a number.
+
+> [!NOTE]
+>
+> A timer ignores `min_value` and `max_value`: it runs on its own duration. They
+> never put a timer in error.
+
+#### Find the cause
+
+`EPB.doctor.cards()` lists the cards on the page. Its `entity state` column
+gives the state and, when it is not the card's own entity, the field at fault:
+`⏳ unavailable (max_value)`, or `⏳ unavailable (max_value, Jinja)` for a
+template. See [Run the built-in diagnostic](#-run-the-built-in-diagnostic).
+
+Then, in Home Assistant:
+
+1. **Developer tools → States**: look the entity up. If it is missing, check the
+   ID in the card's YAML.
+2. **Developer tools → Template**: paste the Jinja template. The error shown
+   there is the one the card receives.
+3. If the entity is `unavailable` or `unknown`, the card is right: fix the
+   integration or the device, not the card.
+
+<a id="deprecated-options"></a>
+
+## ⚠️ Deprecated Options
+
+### 📋 What's removed or deprecated
+
+Over time, some configuration options have been deprecated in favor of more
+flexible or clearer alternatives. While the card tries to maintain backward
+compatibility, these options may stop working in future releases.
+
+In the development of this card, we strive to avoid breaking changes as much as
+possible. When such changes are unavoidable, we do our best to support and guide
+users through the transition.
+
+In this context, we have two types of deprecated options:
+
+- **Removed**: These were removed to prevent duplication and potential conflicts
+  with the new system. It was important to remove them for stability reasons.
+- **Deprecated** but still active options: These options may have been used in
+  many different cards, and migrating them requires reviewing the configurations
+  of all those cards. Therefore, we allow time before disabling them, provide a
+  system to detect if you are affected, and will remove them later.
+
+| Option / Value                | Status         | Replacement / Recommended Action                              | Since version | Current Behavior                               |
+| ----------------------------- | -------------- | ------------------------------------------------------------- | ------------- | ---------------------------------------------- |
+| `navigate_to`                 | **Removed**    | Use `tap_action: navigate`                                    | `v1.2.0`      | Ignored, console warning                       |
+| `show_more_info`              | **Removed**    | Use `tap_action: more-info`                                   | `v1.2.0`      | Ignored, console warning                       |
+| `theme: 'battery'`            | **Deprecated** | Use `optimal_when_high`                                       | `v1.1.8-11`   | Still works, shows warning                     |
+| `theme: 'cpu'`                | **Deprecated** | Use `optimal_when_low`                                        | `v1.1.8-11`   | Still works, shows warning                     |
+| `theme: 'memory'`             | **Deprecated** | Use `optimal_when_low`                                        | `v1.1.8-11`   | Still works, shows warning                     |
+| `max_value: <entity id>`      | **Deprecated** | Use `max_value: { entity: <id>, attribute: <optional> }`      | `v1.6.0`      | Auto-migrated for the session, console warning |
+| `max_value_attribute`         | **Deprecated** | Fold into `max_value: { entity, attribute }`                  | `v1.6.0`      | Auto-migrated for the session, console warning |
+| `disable_unit`                | **Deprecated** | Use `hide: ['unit', ...]`                                     | `v1.6.0`      | Auto-migrated for the session, console warning |
+| `icon_animation: none`        | **Deprecated** | Omit the option — unset already means no animation            | `v1.6.2`      | Auto-migrated for the session, console warning |
+| `max_value` = native scale    | **Deprecated** | Omit it — the card already rescales to 0-100                  | `v1.6.3`      | Auto-migrated for the session, no warning      |
+| `show_value` (Multi)          | **Deprecated** | Use `hide: [...]` — `false` adds `secondary_info`             | `v1.6.3`      | Auto-migrated for the session, console warning |
+| `value_position` (Multi)      | **Deprecated** | Use `reverse_secondary_info_row` (`right` → `true`)           | `v1.6.3`      | Auto-migrated for the session, console warning |
+| `additions`                   | **Deprecated** | Use `bar_stack: { mode: 'proportional', entities: [...] }`    | `v1.6.0`      | Auto-migrated for the session, console warning |
+| `watermark.low: <entity id>`  | **Deprecated** | Use `watermark.low: { entity: <id>, attribute: <optional> }`  | `v1.6.0`      | Auto-migrated for the session, console warning |
+| `watermark.high: <entity id>` | **Deprecated** | Use `watermark.high: { entity: <id>, attribute: <optional> }` | `v1.6.0`      | Auto-migrated for the session, console warning |
+| `watermark.low_attribute`     | **Deprecated** | Fold into `watermark.low: { entity, attribute }`              | `v1.6.0`      | Auto-migrated for the session, console warning |
+| `watermark.high_attribute`    | **Deprecated** | Fold into `watermark.high: { entity, attribute }`             | `v1.6.0`      | Auto-migrated for the session, console warning |
+
+<details>
+<summary><strong>Show the screenshot (click to expand)</strong></summary>
+<!-- markdownlint-disable-next-line MD013 -->
+<img src="images/deprecated-a040a4.png" alt="deprecated" width="1000px"/>
+</details>
+
+### 🔄 How migration works
+
+You don't have to rewrite anything by hand:
+
+- **Deprecated** options (table above) keep working exactly as before — the card
+  understands them internally and applies the modern equivalent automatically,
+  whether or not you ever open the editor.
+- **Removed** options (`navigate_to`, `show_more_info`) have had no effect for a
+  long time already; migrating just cleans them up rather than guessing a
+  replacement for something that hasn't run in years.
+
+When you open the visual editor on a card that still uses a legacy option, a
+**Migrate config** button appears in the top-right corner. One click rewrites
+your YAML to the current syntax — the rendered card doesn't change, only how
+it's written. If you already wrote the new option next to the old one, the new
+one is what counts: the old one is simply removed.
+
+The same button shows up for an option that has no effect where it is set —
+`text_effect` on a bar that isn't `overlay` or `background`, a `bar_color_mode`
+without a theme. The click takes it out of your YAML; undo the change that made
+it pointless while the editor is still open, and it comes back as it was.
+
+To find every card that needs it, on every dashboard — views you never open
+included — run this in the browser console (F12) on any dashboard:
+
+```js
+EPB.doctor.audit();
+```
+
+It lists each card with its deprecated options and those without effect, and
+Multi cards whose rows switched to the 1.6.3 look (icon, name and value) because
+their config never said otherwise.
+
+As with any edit: check that the card still looks right, and that the values it
+displays match what you expect, before saving the dashboard.
+
+## 🐞 Troubleshooting
+
+### Introduction
+
+Despite all efforts to provide a stable and bug-free card, you might still
+encounter an issue.
+
+> [!IMPORTANT]
+>
+> **Don't panic! And above all, do not delete your dashboards!**
+>
+> This card **does not alter** your existing configuration. It only displays
+> entities — nothing is modified, removed, or broken in your actual setup.
+
+<a id="browser-compatibility"></a>
+
+### 🌐 Browser Compatibility
+
+Some issues aren't a bug — the browser is simply below the supported version.
+
+|      Platform       |        Browsers        |                    |                          |                        |                      |
+| :-----------------: | :--------------------: | :----------------: | :----------------------: | :--------------------: | :------------------: |
+|   ![HA][ha-logo]    | ![Chrome][chrome-logo] | ![Edge][edge-logo] | ![Firefox][firefox-logo] | ![Safari][safari-logo] | ![Opera][opera-logo] |
+| **Home Assistant**  |       **Chrome**       |      **Edge**      |       **Firefox**        |       **Safari**       |      **Opera**       |
+|      `2024.0+`      |         `98+`          |       `98+`        |          `94+`           |        `15.4+`         |        `84+`         |
+| Full visual effects |         `111+`         |       `111+`       |          `113+`          |        `16.2+`         |        `97+`         |
+
+- **First row** — functional minimum: the card loads and works.
+- **Second row** — a few purely decorative touches (icon tint, alert/ping pulse,
+  bar gradient sheen) need these newer versions; below that they just degrade
+  gracefully, same information, less vivid. See the [graphic effects
+  compatibility overview] for exactly what's affected on which browser.
+- **Older Chromium (e.g. Chrome 92, common on embedded/kiosk panels)** — best
+  effort only: the card itself loads and works (see [issue #128]), but matching
+  this version isn't a guarantee, just a courtesy where it's cheap.
+
+### ✅ What to do?
+
+#### Try common quick checks first
+
+- **Already on the latest version?**  
+  ➡️ Check your installed version against the [latest release] — HACS (or the
+  Marketplace, under **Settings → Updates**) flags an update when one is
+  available. It can lag before it shows a new release though: if your version
+  looks outdated but no update is offered, open the card and use
+  **⋮ → Redownload** (HACS) or **⋮ → Install another version** (Marketplace) to
+  install the current release rather than waiting.
+- **A pre-release (RC) already fixes it?**  
+  ➡️ Patches and new features often ship first as a release candidate
+  (`x.y.z-rcN`) before the stable release. Check [all releases] (includes
+  pre-releases) — your issue may already be fixed there.
+- **Card not loading?**  
+  ➡️ Ensure the resource is properly added to Lovelace.
+- **HACS or the Marketplace not detecting the card?**  
+  ➡️ Try clearing your browser cache or restarting Home Assistant.
+- **Card missing gradients/pulse animations, or looks a bit flat?**  
+  ➡️ Likely just an older browser — see
+  [Browser Compatibility](#browser-compatibility) above.
+- **Card not rendering, a `Cannot use 'import.meta' outside a module` error, or
+  pop-ups (e.g. browser_mod) freezing?**  
+  ➡️ Your resource is registered as a classic **"JavaScript"** type (deprecated
+  by Home Assistant) instead of **"JavaScript Module"**. HA loads classic
+  scripts differently, and older builds couldn't survive it — the card failed to
+  load and could freeze browser_mod pop-ups (see [issue #108]). **Fix:**
+  Settings → Dashboards → ⋮ → Resources, open the entry, set **Resource type →
+  JavaScript Module**, then hard-refresh. (Recent builds load correctly either
+  way and print a console warning when they detect the classic type.)
+- **The visual editor doesn't open — Home Assistant shows its YAML editor
+  instead?**  
+  ➡️ The editor ships beside the card in `entity-progress-card-editor.js`, and
+  loads the first time you open one. A manual install needs that file next to
+  `entity-progress-card.js`; the console says why it didn't load
+  (`Visual editor unavailable: …`). Right after an update, hard-refresh: a card
+  still cached from the previous version refuses the new editor.
+- **Still not working?**  
+  ➡️ Open your browser’s JavaScript console to check for any errors.
+
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable MD007 MD022 MD023 -->
+
+   <details>
+   <summary> How to open the JavaScript console (click to expand)</summary>
+
+  #### 🦊 Firefox
+
+  - **Method 1: Keyboard Shortcut**
+    - Press **`F12`** or **`Ctrl`** + **`Shift`** + **`K`** (Mac: **`⌘`** +
+      **`⌥`** + **`K`**)
+  - **Method 2: Menu Navigation**
+    - Click the **`≡`** menu button (top-right)
+    - Go to **Web Developer** → **Web Console**
+
+  #### 🌐 Chrome / Chromium
+
+  - **Method 1: Keyboard Shortcut**
+    - Press **`F12`** or **`Ctrl`** + **`Shift`** + **`J`** (Mac: **`⌘`** +
+      **`⌥`** + **`J`**)
+  - **Method 2: Menu Navigation**
+    - Click the **`⋮`** three-dot menu (top-right)
+    - Go to **More tools** ➡️ **Developer tools**
+    - Select the **Console** tab
+
+  #### 🧭 Safari
+
+  - **Method 1: Keyboard Shortcut**
+    - Press Mac: **`⌘`** + **`⌥`** + **`C`**
+  - **Method 2: Menu Navigation**  
+    Enable the Develop menu first (if not already enabled):
+    - Go to **Safari** ➡️ **Preferences** ➡️ **Advanced**
+    - Check **Show Develop menu in menu bar**
+    - Click **Develop** ➡️ **Show JavaScript Console**
+
+  #### 🐘 Opera
+
+  - **Method 1: Keyboard Shortcut**  
+    Press **`Ctrl`** + **`Shift`** + **`I`** (Mac: **`⌘`** + **`⌥`** + **`I`**)
+  - **Method 2: Menu Navigation**  
+    Click the O menu button (top-left)  
+    Go to **Developer** ➡️ **Developer tools**  
+    Select the **Console** tab
+
+  #### 🧱 Edge
+
+  - **Method 1: Keyboard Shortcut**  
+    Press **`F12`** or **`Ctrl`** + **`Shift`** + **`I`** (Mac: **`⌘`** +
+    **`⌥`** + **`I`**)
+  - **Method 2: Menu Navigation**  
+    Click the **`⋯`** three-dot menu (top-right)  
+    Go to **More tools** ➡️ **Developer tools**  
+    Select the **Console** tab
+
+  </details>
+
+<!-- markdownlint-enable MD007 MD022 MD023 -->
+<!-- prettier-ignore-end -->
+
+#### Gather some useful information
+
+- Home Assistant version
+- Browser used
+- YAML configuration snippets (if relevant)
+- Any visible error messages (from the console or logs)
+
+#### 🐞 Copy the issue report from the card editor
+
+The quickest way: open the card in the visual editor and click the bug icon in
+its top-left corner. It copies a report ready to paste into your issue — the
+diagnostic below, then the card's YAML with its deprecated options and options
+without effect marked, and a `# drawn from:` comment with the range and value
+the bar is drawn from. On a Multi card, use the icon on the card itself, not on
+one of its rows.
+
+#### 🩺 Run the built-in diagnostic
+
+The card ships with a small diagnostic helper that collects most of the
+information above in one shot. Open your browser's developer console (`F12` or
+`Ctrl`/`Cmd` + `Shift` + `I`, then the **Console** tab) on any dashboard, and
+run:
+
+```js
+EPB.doctor.dump();
+```
+
+> [!NOTE]
+>
+> On a development build the helper answers to `EPB_DEV` instead, and on a copy
+> loaded with `?suffix=rc` to `EPB_RC`: each copy keeps its own. `EPB.help()`
+> lists every command; the former `EPB_DIAG.dump()` still works.
+
+To look at one card in particular, `EPB.doctor.cards()` lists the cards on the
+page, numbered, each with a `config` state (`✅ ok`, `❌ invalid`,
+`⚠️ deprecated`, `🧹 no effect`, `🎨 new look`) and an `entity state` (`✅ ok`,
+`⏳ unavailable`, `❓ unknown`, `🚫 not found`), the exact findings in
+`details`, and a `drawn` line (`min 0 · max 100 · value 42 · 42%`) when the bar
+has a range to compute. `EPB.doctor.inspect(2)` shows one of them — or
+`EPB.doctor.inspect($0)` after picking it in the DevTools' Elements tab — with
+the value and the range its bar is drawn from, and the config it ended up with.
+`EPB.doctor.jinja(2)` lists its Jinja fields, each with Home Assistant's last
+result or error, `EPB.doctor.history(2)` the samples behind its
+`trend_indicator` and `peak_marker`, and `EPB.doctor.copy(2)` prints an issue
+report for it — the same as the editor's bug icon — and copies it when the
+browser allows (otherwise run `copy($_)` right after).
+
+It prints an anonymized report — card and Home Assistant versions, browser, dark
+mode / reduced motion status, registered card types, whether the required HA
+components (`ha-card`, `ha-selector`, `action-handler`) are present, and where
+the visual editor is loaded from and whether it loaded — ready to copy/paste
+into your issue. Chrome, Edge and Opera only give their exact version and
+operating system over HTTPS; elsewhere, the user agent line is all there is.
+
+It also flags a **duplicate resource load** on its own
+(`duplicate load: ⚠️ YES`, followed by the URLs loaded) — a common,
+hard-to-diagnose cause of erratic behavior where the card ends up installed
+**twice** (e.g. via HACS or the Marketplace _and_ a leftover manual resource in
+**Settings → Dashboards → Resources**). If you see this warning, remove the
+extra resource entry first — it resolves most "impossible to reproduce" issues
+on its own.
+
+The `sha-256` lines give the first 12 characters of the card and editor files as
+your browser received them: compare them with the `sha256:` digest GitHub shows
+beside each file of the release to make sure you run the published one. They
+need HTTPS.
+
+#### 🔎 Enable debug logging (`?debug=…`)
+
+For harder cases, the card can print detailed per-area logs to the browser
+console — no special build required. Add a `?debug=…` query to the card's
+resource URL in **Settings → Dashboards → ⋮ → Resources**, e.g.:
+
+```text
+/local/community/lovelace-entity-progress-card/entity-progress-card.js?debug=card,registration
+```
+
+(`/hacsfiles/…` instead of `/local/community/…` on an install made by HACS
+before 2026.11.)
+
+Reload the page (a hard refresh, `Ctrl`/`Cmd` + `Shift` + `R`). A console
+warning confirms which areas are active. Available areas (comma-separated, or
+`all`):
+
+| Area                 | What it logs                                                                              |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| `card`               | Card lifecycle — connect / disconnect / **document move** / config / refresh, with timing |
+| `registration`       | Custom-element registration order, duplicates, and card-picker entries                    |
+| `instances`          | A per-class object-creation counter (spot leaks / over-rendering)                         |
+| `interference`       | When **another module** changes this card's host element from outside                     |
+| `editor`             | The visual editor: config in, `config-changed` out                                        |
+| `interactionHandler` | tap / hold / double-tap action resolution                                                 |
+| `hass`               | First hass, HA core version, language changes                                             |
+| `ressourceManager`   | Timers / listeners / template subscriptions                                               |
+
+For a card that misbehaves only when other cards/modules are present,
+`?debug=card,registration,interference` is the most useful combination — it
+shows lifecycle churn, registration problems, and outside interference at once.
+Copy the console output into your issue.
+
+Without access to the resource URL, `EPB.debug('card,registration')` in the
+console keeps the same areas on in this browser, across reloads; reload the page
+to apply it, and run `EPB.debug(false)` to turn them off. `EPB.debug()` shows
+what is saved.
+
+> [!NOTE]
+>
+> `?debug=…` and `EPB.debug()` only turn logging on — they change nothing else.
+> Remove the query, or run `EPB.debug(false)`, once you're done.
+
+#### Open an issue on GitHub
+
+You don’t need to be a developer to report an issue! Whether you're a beginner
+or an advanced user, your feedback is valuable!
+
+- Before creating a new issue, please first
+  **[check existing issues](https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues)**
+  to see if the problem has already been reported.
+- If not, feel free to
+  **[submit a new issue](https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues)**
+  with all the relevant information.
+
+> [!NOTE]
+>
+> When opening an issue, try to include as much information as possible.
+>
+> The more context you provide, the faster and more accurately I can help -
+> we’ll troubleshoot it together!
+>
+> To help you out, I’ve set up a simple system that asks you the right questions
+> and guides you through the process of creating a useful issue.
+
+  <details>
+  <summary><strong>Show the screenshot (click to expand)</strong></summary>
+  <!-- markdownlint-disable-next-line MD013 -->
+  <img src="images/create-issue-40db50.png" alt="create issue" width="750px"/>
+  </details>
+
+#### (Optional) roll back
+
+If you recently **updated** the card and the issue started afterward, you can:
+
+- roll back to the **previous working version** using HACS, or restore a backup
+  (the Marketplace advises it over installing an older version);
+- check if a **patch** or fix is already available;
+- wait for an update — your dashboards will remain intact.
+
+---
+
+_This troubleshooting guide is inspired by open source best practices._
+
+[latest release]:
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/releases/latest
+[all releases]:
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/releases
+[issue #108]:
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues/108
+[issue #128]:
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues/128
+[graphic effects compatibility overview]:
+  https://htmlpreview.github.io/?https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/graphic-effects-compatibility.html
+[ha-logo]: https://avatars.githubusercontent.com/u/13844975?s=64&v=4
+[chrome-logo]:
+  https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_64x64.png
+[edge-logo]:
+  https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_64x64.png
+[firefox-logo]:
+  https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_64x64.png
+[safari-logo]:
+  https://raw.githubusercontent.com/alrra/browser-logos/main/src/safari/safari_64x64.png
+[opera-logo]:
+  https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_64x64.png

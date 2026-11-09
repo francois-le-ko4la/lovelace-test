@@ -1,0 +1,617 @@
+# =============================================================================
+# Entity Progress Card — Demo dashboard helpers (packages format)
+# =============================================================================
+# Drop this file in your HA config folder (next to configuration.yaml, or in
+# your packages folder) and reference it as a package - see the `!include`
+# instructions at the top of demo-dashboard.yaml.
+input_number:
+  epb_demo_battery:
+    name: Demo battery
+    min: 0
+    max: 100
+    step: 1
+    initial: 42
+    unit_of_measurement: '%'
+    icon: mdi:battery-50
+  epb_demo_temperature:
+    name: Demo temperature
+    min: -20
+    max: 40
+    step: 0.5
+    initial: 21.5
+    unit_of_measurement: '°C'
+    icon: mdi:thermometer
+  epb_demo_power:
+    name: Demo power
+    min: -3000
+    max: 3000
+    step: 50
+    initial: -750
+    unit_of_measurement: 'W'
+    icon: mdi:transmission-tower
+  epb_demo_battery_reserved:
+    name: Demo battery (reserved)
+    min: 0
+    max: 100
+    step: 1
+    initial: 15
+    unit_of_measurement: '%'
+    icon: mdi:battery-lock
+  epb_demo_grid_consumption:
+    name: Demo grid consumption
+    min: 0
+    max: 3000
+    step: 50
+    initial: 900
+    unit_of_measurement: 'W'
+    icon: mdi:transmission-tower
+  epb_demo_solar_production:
+    name: Demo solar production
+    min: 0
+    max: 3000
+    step: 50
+    initial: 1600
+    unit_of_measurement: 'W'
+    icon: mdi:solar-power
+  # Three separate loads sharing one breaker budget - what bar_stack:
+  # proportional actually models. Defaults sum to 1800W, under the 3000W
+  # breaker used as max_value, so the demo shows a partial fill.
+  epb_demo_circuit_kitchen:
+    name: Demo circuit (kitchen)
+    min: 0
+    max: 3000
+    step: 50
+    initial: 800
+    unit_of_measurement: 'W'
+    icon: mdi:stove
+  epb_demo_circuit_living_room:
+    name: Demo circuit (living room)
+    min: 0
+    max: 3000
+    step: 50
+    initial: 600
+    unit_of_measurement: 'W'
+    icon: mdi:sofa
+  epb_demo_circuit_garage:
+    name: Demo circuit (garage)
+    min: 0
+    max: 3000
+    step: 50
+    initial: 400
+    unit_of_measurement: 'W'
+    icon: mdi:garage
+  epb_demo_printer_ink_black:
+    name: Demo printer ink (black)
+    min: 0
+    max: 100
+    step: 1
+    initial: 78
+    unit_of_measurement: '%'
+    icon: mdi:water
+  epb_demo_printer_ink_cyan:
+    name: Demo printer ink (cyan)
+    min: 0
+    max: 100
+    step: 1
+    initial: 54
+    unit_of_measurement: '%'
+    icon: mdi:water
+  epb_demo_printer_ink_magenta:
+    name: Demo printer ink (magenta)
+    min: 0
+    max: 100
+    step: 1
+    initial: 32
+    unit_of_measurement: '%'
+    icon: mdi:water
+  epb_demo_printer_ink_yellow:
+    name: Demo printer ink (yellow)
+    min: 0
+    max: 100
+    step: 1
+    initial: 9
+    unit_of_measurement: '%'
+    icon: mdi:water
+  # Fixed reference points for the "same theme, different %" comparison -
+  # standard (non-template) cards read percent from entity state only, so
+  # each % needs its own entity pinned at that value. Not meant to be moved.
+  epb_demo_theme_25:
+    name: Demo theme ref 25%
+    min: 0
+    max: 100
+    step: 1
+    initial: 25
+    unit_of_measurement: '%'
+    icon: mdi:numeric-2-box-outline
+  epb_demo_theme_50:
+    name: Demo theme ref 50%
+    min: 0
+    max: 100
+    step: 1
+    initial: 50
+    unit_of_measurement: '%'
+    icon: mdi:numeric-5-box-outline
+  epb_demo_theme_75:
+    name: Demo theme ref 75%
+    min: 0
+    max: 100
+    step: 1
+    initial: 75
+    unit_of_measurement: '%'
+    icon: mdi:numeric-7-box-outline
+  epb_demo_theme_95:
+    name: Demo theme ref 95%
+    min: 0
+    max: 100
+    step: 1
+    initial: 95
+    unit_of_measurement: '%'
+    icon: mdi:numeric-9-box-outline
+  # Fixed reference points for the "same theme, different temperature"
+  # comparison - picked to land in 4 distinct zones of the built-in
+  # `temperature` theme (see src/utils/card-themes.ts): negative -> blue,
+  # positive -> cyan, temperate -> green (comfortable), very hot -> red.
+  epb_demo_temp_negative:
+    name: Demo temperature ref (negative)
+    min: -20
+    max: 40
+    step: 0.5
+    initial: -10
+    unit_of_measurement: '°C'
+    icon: mdi:thermometer-low
+  epb_demo_temp_positive:
+    name: Demo temperature ref (positive)
+    min: -20
+    max: 40
+    step: 0.5
+    initial: 10
+    unit_of_measurement: '°C'
+    icon: mdi:thermometer
+  epb_demo_temp_temperate:
+    name: Demo temperature ref (temperate)
+    min: -20
+    max: 40
+    step: 0.5
+    initial: 22
+    unit_of_measurement: '°C'
+    icon: mdi:thermometer
+  epb_demo_temp_hot:
+    name: Demo temperature ref (very hot)
+    min: -20
+    max: 40
+    step: 0.5
+    initial: 35
+    unit_of_measurement: '°C'
+    icon: mdi:thermometer-high
+  # Fixed reference points across the 5 zones of the built-in `voc` theme
+  # (see src/utils/card-themes.ts): good -> green, moderate -> yellow,
+  # poor -> orange, bad -> red, hazardous -> deep-purple.
+  epb_demo_voc_good:
+    name: Demo VOC ref (good)
+    min: 0
+    max: 50000
+    step: 50
+    initial: 150
+    unit_of_measurement: ppb
+    icon: mdi:molecule
+  epb_demo_voc_moderate:
+    name: Demo VOC ref (moderate)
+    min: 0
+    max: 50000
+    step: 50
+    initial: 400
+    unit_of_measurement: ppb
+    icon: mdi:molecule
+  epb_demo_voc_poor:
+    name: Demo VOC ref (poor)
+    min: 0
+    max: 50000
+    step: 50
+    initial: 1500
+    unit_of_measurement: ppb
+    icon: mdi:molecule
+  epb_demo_voc_bad:
+    name: Demo VOC ref (bad)
+    min: 0
+    max: 50000
+    step: 50
+    initial: 10000
+    unit_of_measurement: ppb
+    icon: mdi:molecule
+  epb_demo_voc_hazardous:
+    name: Demo VOC ref (hazardous)
+    min: 0
+    max: 50000
+    step: 50
+    initial: 35000
+    unit_of_measurement: ppb
+    icon: mdi:molecule
+  # Fixed reference points across the 5 zones of the built-in `pm25` theme
+  # (see src/utils/card-themes.ts): good -> green, moderate -> yellow,
+  # unhealthy_sensitive -> orange, unhealthy -> red, hazardous -> deep-purple.
+  epb_demo_pm25_good:
+    name: Demo PM2.5 ref (good)
+    min: 0
+    max: 200
+    step: 1
+    initial: 6
+    unit_of_measurement: µg/m³
+    icon: mdi:air-filter
+  epb_demo_pm25_moderate:
+    name: Demo PM2.5 ref (moderate)
+    min: 0
+    max: 200
+    step: 1
+    initial: 20
+    unit_of_measurement: µg/m³
+    icon: mdi:air-filter
+  epb_demo_pm25_unhealthy_sensitive:
+    name: Demo PM2.5 ref (unhealthy for sensitive groups)
+    min: 0
+    max: 200
+    step: 1
+    initial: 45
+    unit_of_measurement: µg/m³
+    icon: mdi:air-filter
+  epb_demo_pm25_unhealthy:
+    name: Demo PM2.5 ref (unhealthy)
+    min: 0
+    max: 200
+    step: 1
+    initial: 100
+    unit_of_measurement: µg/m³
+    icon: mdi:air-filter
+  epb_demo_pm25_hazardous:
+    name: Demo PM2.5 ref (hazardous)
+    min: 0
+    max: 200
+    step: 1
+    initial: 180
+    unit_of_measurement: µg/m³
+    icon: mdi:air-filter
+  epb_demo_litter_level:
+    name: Demo litter level
+    min: 0
+    max: 100
+    step: 1
+    initial: 20
+    unit_of_measurement: '%'
+    icon: mdi:grain
+  epb_demo_litter_waste_drawer:
+    name: Demo litter waste drawer
+    min: 0
+    max: 100
+    step: 1
+    initial: 85
+    unit_of_measurement: '%'
+    icon: mdi:trash-can
+  # generic_thermostat's target_sensor (current temperature reading) - see
+  # `climate:` below for why this isn't a `template:` entity.
+  epb_demo_thermostat_temperature:
+    name: Demo thermostat room temperature
+    min: 0
+    max: 35
+    step: 0.5
+    initial: 18
+    unit_of_measurement: '°C'
+    icon: mdi:thermometer
+  # value_compact demo - large enough that the compact/full formatting
+  # difference (1.3M vs 1,250,000) is obvious at a glance.
+  epb_demo_total_energy:
+    name: Demo total energy
+    min: 0
+    max: 5000000
+    step: 1000
+    initial: 1250000
+    unit_of_measurement: 'Wh'
+    icon: mdi:lightning-bolt
+
+input_boolean:
+  epb_demo_printer:
+    name: Demo printer (online)
+    icon: mdi:printer
+    initial: true
+  epb_demo_charging:
+    name: Demo battery charging (toggle)
+    icon: mdi:power-plug
+  epb_demo_simple_mode:
+    name: Demo simple mode (toggle)
+    icon: mdi:toggle-switch
+  # issue #135 repro: two Template cards, same two entities, near-identical
+  # badge_icon/badge_color/icon_animation.jinja each checking a DIFFERENT
+  # input_select option - reproduces the reporter's own AC mode setup
+  # (input_boolean.salon_climatisation_status +
+  # input_select.climatisation_salon_mode) as closely as possible.
+  epb_demo_ac_status:
+    name: Demo AC status (toggle)
+    icon: mdi:air-conditioner
+  # generic_thermostat's heater switch - see `climate:` below.
+  epb_demo_thermostat_heater:
+    name: Demo thermostat heater
+    icon: mdi:radiator
+
+input_select:
+  epb_demo_litter_status:
+    name: Demo litter robot status
+    options:
+      - Ready
+      - Clean Cycle
+      - Cat Sensor Interrupted
+      - Sleeping
+    initial: Ready
+    icon: mdi:robot-vacuum
+  epb_demo_ac_mode:
+    name: Demo AC mode (issue #135 repro)
+    options:
+      - Faible
+      - Fort
+    initial: Faible
+    icon: mdi:air-conditioner
+
+timer:
+  epb_demo_timer:
+    name: Demo timer
+    duration: '00:05:00'
+
+# Real-world use case: a maintenance countdown (e.g. aquarium prefilter) -
+# the card's entity is a computed "days remaining" number, never written to
+# directly. The actual state that gets reset is the last-maintenance date
+# (input_datetime); a script (called from double_tap_action, same pattern as
+# a real automation) stamps it to now(). The template sensor derives days
+# remaining from it and can go negative once overdue.
+input_datetime:
+  epb_demo_maintenance_last:
+    name: Demo maintenance (last done)
+    has_date: true
+    has_time: false
+    initial: '2026-07-15'
+
+script:
+  epb_demo_reset_maintenance:
+    alias: 'Demo: reset maintenance date'
+    sequence:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.epb_demo_maintenance_last
+        data:
+          timestamp: '{{ now().timestamp() }}'
+  # 35-day interval, back-dated 33 days -> 2 days left before the deadline.
+  epb_demo_set_maintenance_near_due:
+    alias: 'Demo: set maintenance to 2 days before deadline'
+    sequence:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.epb_demo_maintenance_last
+        data:
+          timestamp: '{{ (now() - timedelta(days=33)).timestamp() }}'
+  # issue #135 repro: the reporter's own tap_action calls a script that turns
+  # the AC on AND picks a mode in one go (two state changes close together,
+  # not one at a time like a plain toggle+select) - our first repro attempt
+  # only changed one entity per tap, which turned out not to reproduce it.
+  epb_demo_ac_faible:
+    alias: 'Demo: AC on, mode Faible (issue #135 repro)'
+    sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.epb_demo_ac_status
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.epb_demo_ac_mode
+        data:
+          option: Faible
+  epb_demo_ac_fort:
+    alias: 'Demo: AC on, mode Fort (issue #135 repro)'
+    sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.epb_demo_ac_status
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.epb_demo_ac_mode
+        data:
+          option: Fort
+
+# Percentage + a `battery_charging` attribute on the SAME entity - the shape
+# icon_animation: battery_charging / theme: battery_adaptive look for (see
+# ViewCore.#entityReportsCharging in src/card/view/core.ts). input_number can't carry
+# custom attributes, hence a template sensor mirroring it instead. Toggle
+# input_boolean.epb_demo_charging to see it switch live.
+template:
+  - sensor:
+      # entity_id is derived by slugifying `name` (not unique_id, which is
+      # registry-internal only, and this template schema doesn't support
+      # object_id) - "EPB " prefix here so it slugifies to the
+      # sensor.epb_demo_battery_ev the dashboard cards actually expect.
+      - name: EPB Demo battery (EV)
+        unique_id: epb_demo_battery_ev
+        state: "{{ states('input_number.epb_demo_battery') }}"
+        unit_of_measurement: '%'
+        device_class: battery
+        icon: mdi:battery-charging-50
+        attributes:
+          battery_charging: "{{ is_state('input_boolean.epb_demo_charging', 'on') }}"
+      # Fixed-value device_class: battery sensors spanning the full range,
+      # so the auto-entities battery dashboards lay out a realistic spread
+      # (critical/low/mid/high/near-full/full) without depending on the
+      # sliders above. Static on purpose - no `input_number` behind them.
+      - name: EPB Demo battery (5%)
+        unique_id: epb_demo_battery_5
+        state: "5"
+        unit_of_measurement: '%'
+        device_class: battery
+        icon: mdi:battery-10
+      - name: EPB Demo battery (30%)
+        unique_id: epb_demo_battery_30
+        state: "30"
+        unit_of_measurement: '%'
+        device_class: battery
+        icon: mdi:battery-30
+      - name: EPB Demo battery (50%)
+        unique_id: epb_demo_battery_50
+        state: "50"
+        unit_of_measurement: '%'
+        device_class: battery
+        icon: mdi:battery-50
+      - name: EPB Demo battery (80%)
+        unique_id: epb_demo_battery_80
+        state: "80"
+        unit_of_measurement: '%'
+        device_class: battery
+        icon: mdi:battery-80
+      - name: EPB Demo battery (93%)
+        unique_id: epb_demo_battery_93
+        state: "93"
+        unit_of_measurement: '%'
+        device_class: battery
+        icon: mdi:battery-90
+      - name: EPB Demo battery (95%)
+        unique_id: epb_demo_battery_95
+        state: "95"
+        unit_of_measurement: '%'
+        device_class: battery
+        icon: mdi:battery-charging-90
+        attributes:
+          # Explicit Jinja literal, not a bare YAML `true` - cv.template
+          # stringifies a raw boolean before rendering it.
+          battery_charging: "{{ true }}"
+      - name: EPB Demo battery (100%)
+        unique_id: epb_demo_battery_100
+        state: "100"
+        unit_of_measurement: '%'
+        device_class: battery
+        icon: mdi:battery
+      # Fixed at 95% on purpose - the "Badge Template color escalation"
+      # Cookbook example (docs/cookbook.md) is meant to show red by default.
+      - name: EPB Demo disk usage
+        unique_id: epb_demo_disk_usage
+        state: "95"
+        unit_of_measurement: '%'
+        icon: mdi:harddisk
+      # Days remaining before a 35-day maintenance interval is up, derived
+      # from input_datetime.epb_demo_maintenance_last - negative once
+      # overdue. See "EPB " naming note above for why the name is prefixed.
+      # `as_datetime | as_local` (not bare as_datetime) is required: a
+      # date-only input_datetime state ("2026-07-15") parses to a naive
+      # datetime, and naive - aware (now()) raises "can't subtract
+      # offset-naive and offset-aware datetimes" - as_local forces it
+      # timezone-aware, matching now()'s own tzinfo.
+      - name: EPB Demo maintenance days
+        unique_id: epb_demo_maintenance_days
+        state: >-
+          {% set last = states('input_datetime.epb_demo_maintenance_last') | as_datetime | as_local %}
+          {{ 35 - (last.date() - now().date()).days | abs }}
+        unit_of_measurement: days
+        icon: mdi:filter
+      # Net grid balance (production - consumption) for the "Energy" tile's
+      # own header state - previously that tile's `entity:` pointed at
+      # input_number.epb_demo_power, an unrelated free-slider entity (used
+      # elsewhere in the dashboard for other center_zero examples), whose
+      # value had nothing to do with the actual grid/solar bars underneath it
+      # (confusingly, e.g. a static -750W with no connection to either
+      # entity). This computes the real net value instead, so the tile's own
+      # state actually matches what the "Net" feature below it shows.
+      - name: EPB Demo energy net
+        unique_id: epb_demo_energy_net
+        state: >-
+          {{ states('input_number.epb_demo_solar_production') | float(0)
+             - states('input_number.epb_demo_grid_consumption') | float(0) }}
+        unit_of_measurement: 'W'
+        icon: mdi:transmission-tower
+      # Error/edge-case demo states (EP Demo - Standard, unit & decimal view,
+      # last section). `availability: false` is the documented way to force a
+      # template entity into unavailable regardless of what `state` would
+      # otherwise compute - there's no equivalent "unknown" key, but a `state`
+      # template that renders to Python's `none` does the same for that state.
+      - name: EPB Demo unavailable
+        unique_id: epb_demo_unavailable
+        state: "{{ states('input_number.epb_demo_battery') }}"
+        unit_of_measurement: '%'
+        availability: '{{ false }}'
+      - name: EPB Demo unknown
+        unique_id: epb_demo_unknown
+        state: '{{ none }}'
+        unit_of_measurement: '%'
+
+  - fan:
+      # Backed by epb_demo_battery (reused as a generic 0-100 slider, same as
+      # the light/cover ones below) rather than a dedicated helper per domain -
+      # these are display-comparison demos (this card vs. a native tile), not
+      # meant to be independently controllable, so turn_on/turn_off/
+      # set_percentage are deliberately no-ops (empty action lists - still
+      # valid HA YAML, just nothing to actually do).
+      - name: EPB Demo fan
+        unique_id: epb_demo_fan
+        state: "{{ 'on' if states('input_number.epb_demo_battery') | float(0) > 0 else 'off' }}"
+        percentage: "{{ states('input_number.epb_demo_battery') | float(0) }}"
+        turn_on: []
+        turn_off: []
+        set_percentage: []
+
+  - cover:
+      - name: EPB Demo cover
+        unique_id: epb_demo_cover
+        device_class: shutter
+        state: "{{ 'open' if states('input_number.epb_demo_battery') | float(0) > 0 else 'closed' }}"
+        position: "{{ states('input_number.epb_demo_battery') | float(0) }}"
+        open_cover: []
+        close_cover: []
+        stop_cover: []
+        set_cover_position: []
+
+  - light:
+      # The card reads `brightness` for the light domain by default (see
+      # HA_CONTEXT.attributeMapping in src/utils/ha-context.ts). Per HA's
+      # actual template light source (homeassistant/components/template/
+      # light.py), supported_color_modes is inferred from which *action* is
+      # configured, not from the read-side template: ColorMode.BRIGHTNESS
+      # specifically comes from `set_level` being present, not `level`. A
+      # `level:` template with no `set_level:` action stays ColorMode.ONOFF
+      # forever, and never reports a `brightness` attribute at all - that's
+      # what was missing before, not a color-mode declaration key (there
+      # isn't one).
+      - name: EPB Demo light
+        unique_id: epb_demo_light
+        state: "{{ 'on' if states('input_number.epb_demo_battery') | float(0) > 0 else 'off' }}"
+        level: "{{ (states('input_number.epb_demo_battery') | float(0) * 2.55) | round(0) }}"
+        turn_on: []
+        turn_off: []
+        set_level: []
+
+  - number:
+      # A real number.* entity - input_number is read the standard way, not by
+      # its own min/max. The range reaches below zero on purpose (center_zero
+      # keeps it); set_value is a no-op, like the template entities above.
+      - name: EPB Demo number
+        unique_id: epb_demo_number
+        state: "{{ states('input_number.epb_demo_temp_negative') }}"
+        min: -50
+        max: 10
+        step: 1
+        set_value: []
+
+# Compare-with-tile section (counter): fan/cover/light above are template:
+# entities (no native YAML helper domain for them); timer and a battery
+# device_class sensor already exist elsewhere in this file
+# (timer.epb_demo_timer, sensor.epb_demo_battery_ev) and are reused as-is.
+# climate isn't a valid platform under the unified template: integration
+# (confirmed via HA's own config-check error) - generic_thermostat is the
+# real climate platform instead, same pattern Mushroom's own dev config
+# uses (piitaya/lovelace-mushroom, .hass_dev/packages/climate.yaml).
+climate:
+  - platform: generic_thermostat
+    name: EPB Demo thermostat
+    heater: input_boolean.epb_demo_thermostat_heater
+    target_sensor: input_number.epb_demo_thermostat_temperature
+    min_temp: 7
+    max_temp: 35
+    precision: 0.5
+    target_temp_step: 0.5
+    ac_mode: false
+
+counter:
+  epb_demo_counter:
+    name: EPB Demo counter
+    initial: 5
+    minimum: 0
+    maximum: 20
+    step: 1

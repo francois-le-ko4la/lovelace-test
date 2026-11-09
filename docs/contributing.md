@@ -1,0 +1,296 @@
+# Contributing to Entity Progress Card
+
+<!-- dev-banner -->
+> [!NOTE]
+> This is the documentation of the development branch: it may describe
+> options not released yet. For the latest release, see the [documentation site](https://francois-le-ko4la.github.io/lovelace-test/).
+<!-- /dev-banner -->
+
+First off, thank you for considering contributing to Entity Progress Card! 🎉
+
+It's people like you that make Entity Progress Card such a great tool for the
+community.
+
+## 📋 Table of Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [How Can I Contribute?](#how-can-i-contribute)
+- [Getting Started](#getting-started)
+- [Contribution Guidelines](#contribution-guidelines)
+- [Community](#community)
+- [Questions](#questions)
+
+<a id="code-of-conduct"></a>
+
+## 🤝 Code of Conduct
+
+This project and everyone participating in it is governed by our [Code of
+Conduct]. By participating, you are expected to uphold this code.  
+**In short: Be respectful, be inclusive, and help create a positive environment
+for everyone.**
+
+<a id="how-can-i-contribute"></a>
+
+## 🚀 How Can I Contribute?
+
+### Reporting Bugs 🐛
+
+Before creating bug reports, please check the [Errors, Deprecations &
+Troubleshooting Guide] and the existing [GitHub Issues] to avoid duplicates.
+When you create a bug report, please include as many details as possible:
+
+- **Use a clear and descriptive title**
+- **Describe the exact steps to reproduce the problem**
+- **Provide specific examples to demonstrate the steps**
+- **Include your Home Assistant version and browser information**
+- **Add screenshots if applicable**
+
+### Suggesting Enhancements 💡
+
+Enhancement suggestions are tracked as [GitHub Issues]. When creating an
+enhancement suggestion:
+
+- **Use a clear and descriptive title**
+- **Provide a step-by-step description of the suggested enhancement**
+- **Provide specific examples to demonstrate the idea**
+- **Explain why this enhancement would be useful**
+
+### Contributing Code 👨‍💻
+
+- Fix bugs
+- Add new features
+- Add or improve translations
+- Optimize performance
+
+### Documentation 📚
+
+- Fix typos or grammatical errors
+- Add missing documentation
+- Improve existing documentation
+- Add examples or tutorials
+- Translate documentation
+
+### Translations 🌍
+
+We welcome translations for new languages! Currently supported languages:
+
+- 🇸🇦 ar - العربية (Arabic)
+- 🇧🇩 bn - বাংলা (Bengali)
+- ca - Català (Catalan)
+- 🇨🇿 cs - Čeština (Czech)
+- 🇩🇰 da - Dansk (Danish)
+- 🇩🇪 de - Deutsch (German)
+- 🇬🇷 el - Ελληνικά (Greek)
+- 🇬🇧 en - English
+- 🇪🇸 es - Español (Spanish)
+- 🌎 es-419 - Español Latinoamérica (Spanish, Latin America)
+- 🇪🇪 et - Eesti (Estonian)
+- 🇫🇮 fi - Suomi (Finnish)
+- 🇫🇷 fr - Français (French)
+- 🇮🇳 hi - हिन्दी (Hindi)
+- 🇭🇷 hr - Hrvatski (Croatian)
+- 🇭🇺 hu - Magyar (Hungarian)
+- 🇮🇩 id - Bahasa Indonesia (Indonesian)
+- 🇮🇹 it - Italiano (Italian)
+- 🇯🇵 ja - 日本語 (Japanese)
+- 🇰🇷 ko - 한국어 (Korean)
+- 🇱🇹 lt - Lietuvių (Lithuanian)
+- 🇱🇻 lv - Latviešu (Latvian)
+- 🇲🇰 mk - Македонски (Macedonian)
+- 🇳🇴 nb - Norsk Bokmål (Norwegian Bokmål)
+- 🇳🇱 nl - Nederlands (Dutch)
+- 🇵🇱 pl - Polski (Polish)
+- 🇵🇹 pt - Português (Portuguese, Portugal)
+- 🇧🇷 pt-BR - Português (Portuguese, Brazil)
+- 🇷🇴 ro - Română (Romanian)
+- 🇷🇺 ru - Русский (Russian)
+- 🇸🇰 sk - Slovenský (Slovak)
+- 🇸🇮 sl - Slovenščina (Slovene)
+- 🇸🇪 sv - Svenska (Swedish)
+- 🇹🇭 th - ไทย (Thai)
+- 🇹🇷 tr - Türkçe (Turkish)
+- 🇺🇦 uk - Українська (Ukrainian)
+- 🇻🇳 vi - Tiếng Việt (Vietnamese)
+- 🇨🇳 zh-Hans - 中文（简体） (Chinese, Simplified)
+- 🇹🇼 zh-Hant - 中文（繁體） (Chinese, Traditional)
+
+<a id="getting-started"></a>
+
+## 🛠️ Getting Started
+
+> [!TIP]
+>
+> **Just fixing or adding a translation?** You don't need anything below — no
+> fork/clone, no `npm install`, no tooling. Edit `xx.json` directly in GitHub's
+> web editor and open a PR from there. See [Translations](#translations).
+
+### Fork & Clone
+
+1. Fork the repository on GitHub
+2. Clone your fork locally:
+
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/lovelace-entity-progress-card.git
+   cd lovelace-entity-progress-card
+   ```
+
+3. Install dependencies (needed to run lint/validate locally, see
+   [Testing Your Changes](#contribution-guidelines)) — this also installs a
+   pre-commit hook (husky + lint-staged) that auto-formats/lints staged
+   `src/**/*.js` and `*.md` files on every commit:
+
+   ```bash
+   npm install
+   ```
+
+<a id="contribution-guidelines"></a>
+
+## 📝 Contribution Guidelines
+
+### Code Style
+
+- **JavaScript Vanilla** syntax
+- **HTMLElement**
+- **Clear variable names** and functions
+- **Comment only the non-obvious**: a hidden constraint, a bug workaround, a WHY
+  a future reader would otherwise miss — not what the code already says by being
+  well-named. Terse when a comment is warranted at all.
+- **Follow existing code patterns**
+- **No runtime dependencies** — the shipped card stays dependency-free (see
+  [Design principles](development.md#design-principles)); devDependencies for
+  linting/building/testing are fine.
+
+### Translations
+
+**Adding a new language** (none of the existing `translations/*.json` covers it
+yet):
+
+- Copy the file `./translations/template.json` and name it with the language
+  ([code](https://developers.home-assistant.io/docs/voice/intent-recognition/supported-languages/))
+- Fill in all the empty values in `xx.json` with your translations.
+- Submit a pull request with your `xx.json`
+
+**Fixing or improving an existing translation** (a typo, an awkward wording, a
+missing key added since you last translated):
+
+- Edit `translations/xx.json` directly — no template, no copy, just change the
+  value(s) you want to fix.
+- Submit a pull request with your change.
+
+> [!NOTE]
+>
+> **You don't need to know how to code for this.** CI only checks that your JSON
+> is well-formed and matches `template.json`'s structure — you don't need to
+> touch anything else, and merging translations into the JS bundle is a
+> maintainer step done before release. If you made a mistake, the PR checks will
+> simply fail and show what's wrong; nothing gets merged broken. Stuck, or the
+> error message doesn't make sense? Open a [GitHub Issues] or ask on [Discord] —
+> we'll sort it out together.
+
+### Commit Messages
+
+Use clear and meaningful commit messages:
+
+```text
+feat: add watermark support for progress bars
+fix: resolve color theme issue with custom themes
+docs: update README with new examples
+style: improve code formatting
+refactor: optimize theme processing logic
+test: add validation for custom theme ranges
+```
+
+**Format**: `type: description`
+
+**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+
+### Testing Your Changes
+
+The automated tests cover the card's logic, the editors and the documentation
+(see the [Quick start](development.md#quick-start)), but none of them sees how a
+card looks. Before submitting a PR, please ensure:
+
+- ✅ `npm run check:code` passes locally (syntax, format, lint, types,
+  translation structure, unit tests)
+- ✅ `npm run check:push` before pushing — adds knip, the full i18n sync,
+  markdown, the DOM mount suite and both builds — CI runs the same check on
+  `src/**` changes
+- ✅ `npm run format:js:check` passes (or just commit — the pre-commit hook
+  auto-fixes formatting for you)
+- ✅ **Card loads** without console errors
+- ✅ **All existing features** still work
+- ✅ **New features** work as expected
+- ✅ **Different themes** render correctly
+- ✅ **Mobile/tablet** compatibility
+- ✅ **Various entity types** are supported
+- ✅ **Documentation** is updated — and after adding or changing an option,
+  `npm run docs:options` regenerates [`docs/option-map.md`](option-map.md),
+  which a test checks against the code
+
+**How to actually check the boxes above**: `npm run build:test` gives you
+`dist/entity-progress-card_dev.js` — point a `dashboard-resources:` entry (or a
+manually-added Lovelace resource) at it, then import
+[`docs/demo-dashboard-dev.yaml`][demo-dashboard-dev.yaml] as a Lovelace
+dashboard (and [`docs/demo-dashboard-helpers.yaml`][demo-dashboard-helpers.yaml]
+as a `homeassistant: packages:` file, for the input_helpers/scripts it
+references) in a real Home Assistant instance. It's a comprehensive showroom —
+one section per documented option, plus a non-regression card per closed bug —
+and is the actual way every fix in this project gets confirmed, not just read
+through. If your change is worth demonstrating, add a card for it in both
+`docs/demo-dashboard.yaml` and `docs/demo-dashboard-dev.yaml` — the showroom
+views are kept parallel, the `-dev` file differing only by a `-dev` suffix on
+every custom card `type:`. A card that proves a past bug stays fixed goes to the
+`-dev` file alone, in its "Regression tests" view: it is only ever run against a
+dev build, and it would be noise on a user's dashboard.
+
+[demo-dashboard-dev.yaml]: demo-dashboard-dev.yaml
+[demo-dashboard-helpers.yaml]: demo-dashboard-helpers.yaml
+
+<a id="community"></a>
+
+## 💬 Community
+
+### Discord Server
+
+Join our [Discord] community for:
+
+- Real-time support and discussions
+- RC testing coordination
+- Feature brainstorming
+- General chat
+
+### Getting Help
+
+- **General questions**: [Discord] #general channel
+- **Development help**: [Discord] #dev channel
+- **Feature requests**: [Discord] / [GitHub Issues]
+- **Bug reports**: [GitHub Issues]
+
+<a id="questions"></a>
+
+## ❓ Questions?
+
+Don't hesitate to ask! We're here to help:
+
+- **[Discord]**: Join our community server
+- **[GitHub Issues]**: For specific technical questions
+
+## 🙏 Thank You
+
+Every contribution, no matter how small, is valuable and appreciated. Whether
+you're fixing a typo, adding a feature, or helping other users, you're making
+Entity Progress Card better for everyone.
+
+**Happy Contributing!** 🚀
+
+---
+
+_This contribution guide is inspired by open source best practices._
+
+[Discord]: https://discord.gg/tyMQ2SfyNG
+[GitHub Issues]:
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues
+[Code of Conduct]:
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/code_of_conduct.md
+[Errors, Deprecations & Troubleshooting Guide]:
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/troubleshooting.md
