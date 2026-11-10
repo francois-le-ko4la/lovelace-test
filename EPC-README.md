@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD013 -->
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/epc-logo/epc-icon-dc8ccf.svg">
-  <img src="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/epc-logo/epc-icon-black-6f3254.svg" alt="Entity Progress Card logo" width="120" align="right" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/epc-logo/epc-icon-black-6f3254.svg">
+  <img src="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/epc-logo/epc-icon-dc8ccf.svg" alt="Entity Progress Card logo" width="120" align="right" />
 </picture>
 <!-- markdownlint-enable MD013 -->
 
