@@ -1,5 +1,9 @@
-<!-- markdownlint-disable-next-line MD013 -->
-<img src="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/epc-logo/epc-icon-dc8ccf.svg" alt="Entity Progress Card logo" width="120" align="right" />
+<!-- markdownlint-disable MD013 -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/epc-logo/epc-icon-dc8ccf.svg">
+  <img src="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/epc-logo/epc-icon-black-6f3254.svg" alt="Entity Progress Card logo" width="120" align="right" />
+</picture>
+<!-- markdownlint-enable MD013 -->
 
 # Lovelace Entity Progress Card
 
@@ -162,7 +166,7 @@ then declare it as a resource:
 
 ## 📝 Usage
 
-### 🖱️ Don't write YAML — just pick the entity
+### Don't write YAML — just pick the entity
 
 1. Open Home Assistant's native "Add Card" picker and search for your entity.
 
@@ -191,7 +195,7 @@ Assistant's own design tokens.
 
 </details>
 
-### 🚀 Or write it yourself
+### Or write it yourself
 
 Point it at an entity, and it works:
 
@@ -243,7 +247,7 @@ The card is designed to work well for everyone, out of the box.
 
 </details>
 
-## 🌍 Language & Number Support
+## 🌍 Language & numbers
 
 🌟 Our goal is to make this card a seamless and intuitive tool for users
 worldwide, eliminating language barriers and ensuring proper data formatting for
@@ -253,7 +257,7 @@ is translated into **41 languages**.
 <details>
 <summary><strong>Full language list & number formatting (click to expand)</strong></summary>
 
-### 📖 Text Display
+### Text Display
 
 We strive to make this card as inclusive as possible, with support for:
 
@@ -315,7 +319,7 @@ We strive to make this card as inclusive as possible, with support for:
 
 More languages may be added in the future to enhance accessibility!
 
-### 🔢 Intelligent Number Formatting
+### Intelligent Number Formatting
 
 Numbers are displayed based on your regional preferences, using:
 

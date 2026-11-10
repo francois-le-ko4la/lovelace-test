@@ -4397,7 +4397,7 @@ _This reference guide is adapted for entity-progress-card._
 [Card sizing]:
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/theme.md#card-sizing
 [Accessibility]:
-  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/README.md#accessibility
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/README.md#-accessibility
 [official HA core]:
   https://github.com/home-assistant/core/tree/dev/homeassistant/components
 [jkaberg/hass-byd-vehicle]: https://github.com/jkaberg/hass-byd-vehicle
