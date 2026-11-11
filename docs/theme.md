@@ -13,39 +13,52 @@ look now. This page shows every way to get there, from one line of YAML to a
 fully restyled card. Start at the top and stop as soon as you have what you
 need.
 
-- **[Pick a ready-made theme](#predefined-theme).** One line, `theme: <value>`,
-  and the bar changes color with the value: a battery, a CPU, a temperature...
+- **[Pick a ready-made theme](#predefined-theme).** One line, such as
+  `theme: battery_adaptive`, and the bar changes color with the value: a
+  battery, a CPU, a temperature...
 - **[Draw your own zones](#custom-theme).** Red under 20 %, green up to 80 %:
   `custom_theme` sets the limits you want. [`bar_color_mode`](#bar_color_mode)
   then chooses how the zones are painted: one solid color, blocks or a gradient.
 - **[Choose a color by name](#token-color).** No zones needed: `bar_color: red`
   paints the bar, `color: red` the icon. Any name like `red` or `teal` works,
   matched to your Home Assistant theme, or any CSS color.
-- **[Restyle the whole card](#css)** _(advanced)_. CSS variables change the
-  bar's background, the icon's shape, the markers... in a Home Assistant theme
-  or with card_mod / uix. The [card structure](#card-mod-and-card-structure)
-  gives the selectors.
+- **[Restyle the whole card](#css)** _(advanced, optional)_. CSS variables
+  change the bar's background, the icon's shape, the markers... in a Home
+  Assistant theme or with card_mod / uix (add-ons installed from HACS). The
+  [card structure](#card-mod-and-card-structure) gives the selectors.
 - **[Size the card](#card-sizing).** How the card picks its height in a
   Sections or Masonry view, a stack, a grid or a button-card, and how to
   change it.
-- **Something looks wrong?** Nothing is broken: remove the lines you added and
-  save, the card goes back to its default look. A bar in a single color is
-  normal without `theme` or `custom_theme`. For an error message on the card,
-  see [Troubleshooting](troubleshooting.md).
+- **Something looks wrong?** Nothing is broken: remove the lines you added,
+  save, then reload the page; the card goes back to its default look. A bar in
+  a single color is normal without `theme` or `custom_theme`.
 
-## Predefined theme
+**An error message on the card?** See [Troubleshooting](troubleshooting.md).
+This page is only about colors: to show a remaining time, such as a washing
+machine's, see the
+[cookbook](cookbook.md#the-laundry-mystery-decoding-washer-entities-across-brands).
 
-The card's built-in color-zone presets, set with one line, `theme: <value>`.
-They are not Home Assistant themes. They work on every kind of card: the card,
-the badge, the tile feature, the templates and each row of a multi-card.
+<a id="predefined-theme"></a>
 
-Under each picture, **Show ranges** gives the limits of each color and
-**Show YAML** the lines to copy: paste them in the card's code editor (**Show
-code editor** in the card editor), then replace the `entity:` value with your
-own. Want your own limits, e.g. red under 20 %? See
+## Predefined themes
+
+The card's built-in color-zone presets, set with one line, such as
+`theme: critical_when_low`.
+They are not Home Assistant themes. They work on the card, the badge, the tile
+feature and each row of a Multi-Card or Multi-Feature. The Template and Badge
+Template variants accept only the themes in % (not `temperature`, `voc`,
+`pm25`).
+
+Under each picture below, **Show ranges** gives the limits of each color and
+**Show YAML** the lines to copy. To paste them, edit your dashboard, open the
+card and choose **Show code editor**; then replace the `entity:` value with
+your own. Want your own limits, e.g. red under 20 %? See
 [Custom theme](#custom-theme).
 
-| Value                                                      | Use for                          | Red when                             | Unit  |
+Icons: `light`, `temperature`, `humidity`, `voc` and `pm25` set their own; the
+other themes keep the entity's icon. `icon:` overrides both.
+
+| Value                                                      | Use for                          | Bar turns red when                   | Unit  |
 | :--------------------------------------------------------- | :------------------------------- | :----------------------------------- | :---- |
 | [`battery_adaptive`](#battery-adaptive)                    | Phone or laptop battery          | under 10 %, over 90 % while charging | %     |
 | [`critical_when_low`](#critical-low)                       | Battery, stock                   | under 10 %                           | %     |
@@ -56,12 +69,14 @@ own. Want your own limits, e.g. red under 20 %? See
 | [`critical_when_extreme_center`](#critical-extreme-center) | Signed deviation (`center_zero`) | under -80 %, over 80 %               | %     |
 | [`light`](#light)                                          | Brightness                       | never                                | %     |
 | [`temperature`](#temperature)                              | Temperature                      | over 30 °C                           | °C    |
-| [`humidity`](#humidity)                                    | Humidity                         | under 20 %                           | %     |
-| [`voc`](#voc)                                              | Air quality (VOC)                | over 3000 ppb                        | ppb   |
-| [`pm25`](#pm25)                                            | Air quality (PM 2.5)             | over 55 µg/m³                        | µg/m³ |
+| [`humidity`](#humidity)                                    | Humidity                         | under 20 % (purple over 80 %)        | %     |
+| [`voc`](#voc)                                              | Air quality (VOC)                | over 3000 ppb (purple over 25,000)   | ppb   |
+| [`pm25`](#pm25)                                            | Air quality (PM 2.5)             | over 55 µg/m³ (purple over 150)      | µg/m³ |
 
-These limits are fixed. For other limits, e.g. red under 20 %, use
-[Custom theme](#custom-theme).
+Red only marks the zone to watch: it is not an error. These limits are fixed;
+for other limits, e.g. red under 20 %, use [Custom theme](#custom-theme). For
+blocks or a gradient instead of a solid bar, see
+[`bar_color_mode`](#bar_color_mode).
 
 > [!NOTE]
 >
@@ -85,14 +100,14 @@ These limits are fixed. For other limits, e.g. red under 20 %, use
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-battery-adaptive-dark-9509c1.png">
   <img src="images/theme-battery-adaptive-light-b70ee1.png"
-    alt="theme: battery_adaptive example"
+    alt="Battery bars: red when nearly empty, or nearly full while charging"
     width="750"/>
 </picture>
 
-Use this for a phone or laptop battery. While charging, the bar turns red when
-the battery is too full: it follows `critical_when_extreme`, since a battery
-ages faster when kept at 100 %, so 30–70 % is the safe zone. Unplugged, it
-follows `critical_when_low`: only a low battery is red.
+Use this for a phone or laptop battery. Unplugged, it uses the zones of
+[`critical_when_low`](#critical-low): red under 10 %. While charging, it uses
+the zones of [`critical_when_extreme`](#critical-extreme): green from 30 to
+70 %, red under 10 % and over 90 %, since a battery ages faster when kept full.
 
 The card detects charging the same way as
 `icon_animation: battery_charging`: from an attribute, the state, or another
@@ -111,11 +126,6 @@ theme: battery_adaptive
 </details>
 <br />
 
-> [!NOTE]
->
-> The icon is automatically retrieved from the entity but can be overridden
-> using the `icon` parameter.
-
 [🔼 Back to top]
 
 <a id="critical-low"></a>
@@ -130,11 +140,8 @@ theme: battery_adaptive
     width="750"/>
 </picture>
 
-The "Critical when Low" theme targets values that only become a problem near
-zero, and are otherwise fine across a wide range - a battery level, for
-instance. Unlike `optimal_when_high`, the bands are not evenly split: they
-narrow sharply near zero to give more warning as the value approaches critical,
-and stay broadly "green" everywhere else.
+Use for a value that is only a problem near zero, such as a battery or a stock.
+Red under 10 %, green from 30 %: the zones narrow near zero to warn early.
 
 <br />
 <details>
@@ -151,20 +158,15 @@ theme: critical_when_low
 <details>
 <summary>Show ranges</summary>
 
-| **Percentage Range** | **Color** | **Description** _(optional)_ |
-| :------------------- | :-------- | :--------------------------- |
-| 0% – 10%             | `red`     | Critical                     |
-| 10% – 20%            | `orange`  | Low                          |
-| 20% – 30%            | `yellow`  | Watch                        |
-| 30% – 100%           | `green`   | Fine                         |
+| Range (%)  | Color    | Description |
+| :--------- | :------- | :---------- |
+| 0% – 10%   | `red`    | Critical    |
+| 10% – 20%  | `orange` | Low         |
+| 20% – 30%  | `yellow` | Watch       |
+| 30% – 100% | `green`  | Fine        |
 
 </details>
 <br />
-
-> [!NOTE]
->
-> The icon is automatically retrieved from the entity but can be overridden
-> using the `icon` parameter.
 
 [🔼 Back to top]
 
@@ -180,10 +182,8 @@ theme: critical_when_low
     width="750"/>
 </picture>
 
-The "Optimal when Low" parameter is particularly valuable for monitoring systems
-or components that perform best when their values are at a lower level. For
-example, in the case of memory usage or CPU load, lower values often indicate
-that the system is running efficiently and not overburdened.
+Use for a value where low is good, such as a load or a usage. Green at the
+bottom, red over 80 %, in five even zones.
 
 <br />
 <details>
@@ -200,21 +200,16 @@ theme: optimal_when_low
 <details>
 <summary>Show ranges</summary>
 
-| **Percentage Range** | **Color**     | **Description** _(optional)_ |
-| :------------------- | :------------ | :--------------------------- |
-| 0% – 20%             | `green`       | Low level / Safe             |
-| 20% – 40%            | `light-green` | Good                         |
-| 40% – 60%            | `yellow`      | Moderate                     |
-| 60% – 80%            | `orange`      | Elevated                     |
-| 80% – 100%           | `red`         | High / Critical              |
+| Range (%)  | Color         | Description      |
+| :--------- | :------------ | :--------------- |
+| 0% – 20%   | `green`       | Low level / Safe |
+| 20% – 40%  | `light-green` | Good             |
+| 40% – 60%  | `yellow`      | Moderate         |
+| 60% – 80%  | `orange`      | Elevated         |
+| 80% – 100% | `red`         | High / Critical  |
 
 </details>
 <br />
-
-> [!NOTE]
->
-> The icon is automatically retrieved from the entity but can be overridden
-> using the `icon` parameter.
 
 [🔼 Back to top]
 
@@ -230,9 +225,8 @@ theme: optimal_when_low
     width="750"/>
 </picture>
 
-The mirror of `critical_when_low`: a metric that is fine across a wide low range
-and only becomes a problem near 100% - CPU load, RAM or disk usage, for
-instance. The bands narrow sharply near the top instead of the bottom.
+Use for a value that is only a problem near 100 %, such as CPU, RAM or disk
+usage. Red over 90 %: the mirror of `critical_when_low`.
 
 <br />
 <details>
@@ -249,20 +243,15 @@ theme: critical_when_high
 <details>
 <summary>Show ranges</summary>
 
-| **Percentage Range** | **Color** | **Description** _(optional)_ |
-| :------------------- | :-------- | :--------------------------- |
-| 0% – 70%             | `green`   | Fine                         |
-| 70% – 80%            | `yellow`  | Watch                        |
-| 80% – 90%            | `orange`  | High                         |
-| 90% – 100%           | `red`     | Critical                     |
+| Range (%)  | Color    | Description |
+| :--------- | :------- | :---------- |
+| 0% – 70%   | `green`  | Fine        |
+| 70% – 80%  | `yellow` | Watch       |
+| 80% – 90%  | `orange` | High        |
+| 90% – 100% | `red`    | Critical    |
 
 </details>
 <br />
-
-> [!NOTE]
->
-> The icon is automatically retrieved from the entity but can be overridden
-> using the `icon` parameter.
 
 [🔼 Back to top]
 
@@ -278,12 +267,8 @@ theme: critical_when_high
     width="750"/>
 </picture>
 
-The "Optimal when High" parameter is particularly useful in cases where the
-system or component in question performs best at higher values. For instance, in
-the case of battery charge, the device functions more efficiently and with
-better performance when the battery level is high. By using "Optimal when High,"
-you can set a theme that visually emphasizes and prioritizes states where the
-value is at its peak.
+Use for a value where high is good. Red under 20 %, green at the top, in five
+even zones: the mirror of `optimal_when_low`.
 
 <br />
 <details>
@@ -300,21 +285,16 @@ theme: optimal_when_high
 <details>
 <summary>Show ranges</summary>
 
-| **Percentage Range** | **Color**     | **Description** _(optional)_ |
-| :------------------- | :------------ | :--------------------------- |
-| 0% – 20%             | `red`         | Critical / Very low          |
-| 20% – 40%            | `orange`      | Low                          |
-| 40% – 60%            | `yellow`      | Moderate                     |
-| 60% – 80%            | `light-green` | Good                         |
-| 80% – 100%           | `green`       | Optimal / High               |
+| Range (%)  | Color         | Description         |
+| :--------- | :------------ | :------------------ |
+| 0% – 20%   | `red`         | Critical / Very low |
+| 20% – 40%  | `orange`      | Low                 |
+| 40% – 60%  | `yellow`      | Moderate            |
+| 60% – 80%  | `light-green` | Good                |
+| 80% – 100% | `green`       | Optimal / High      |
 
 </details>
 <br />
-
-> [!NOTE]
->
-> The icon is automatically retrieved from the entity but can be overridden
-> using the `icon` parameter.
 
 [🔼 Back to top]
 
@@ -330,10 +310,8 @@ theme: optimal_when_high
     width="750"/>
 </picture>
 
-The combination of `critical_when_low` and `critical_when_high`: both ends of
-the range are a problem, and the middle is a wide, comfortable "green" band - a
-tank level (too empty or too full), or a deviation from a target/setpoint (pairs
-well with `center_zero`), for instance.
+Use when both ends are a problem, such as a tank (too empty or too full). Red
+under 10 % and over 90 %, green from 30 to 70 %.
 
 <br />
 <details>
@@ -350,23 +328,18 @@ theme: critical_when_extreme
 <details>
 <summary>Show ranges</summary>
 
-| **Percentage Range** | **Color** | **Description** _(optional)_ |
-| :------------------- | :-------- | :--------------------------- |
-| 0% – 10%             | `red`     | Critical                     |
-| 10% – 20%            | `orange`  | Low                          |
-| 20% – 30%            | `yellow`  | Watch                        |
-| 30% – 70%            | `green`   | Fine                         |
-| 70% – 80%            | `yellow`  | Watch                        |
-| 80% – 90%            | `orange`  | High                         |
-| 90% – 100%           | `red`     | Critical                     |
+| Range (%)  | Color    | Description |
+| :--------- | :------- | :---------- |
+| 0% – 10%   | `red`    | Critical    |
+| 10% – 20%  | `orange` | Low         |
+| 20% – 30%  | `yellow` | Watch       |
+| 30% – 70%  | `green`  | Fine        |
+| 70% – 80%  | `yellow` | Watch       |
+| 80% – 90%  | `orange` | High        |
+| 90% – 100% | `red`    | Critical    |
 
 </details>
 <br />
-
-> [!NOTE]
->
-> The icon is automatically retrieved from the entity but can be overridden
-> using the `icon` parameter.
 
 [🔼 Back to top]
 
@@ -382,12 +355,9 @@ theme: critical_when_extreme
     width="750"/>
 </picture>
 
-`critical_when_extreme`'s own shape, but built for
-[`center_zero`](configuration.md#center_zero) specifically: one continuous scale
-from -100% to 100% instead of the same 0-100% zones mirrored onto each arm —
-safe (green) sits at the center (zero), danger (red) at both ends, whichever
-direction the value swings. A net power flow (charging/discharging), or a
-deviation from a target/setpoint that can go either way, for instance.
+Use with [`center_zero`](configuration.md#center_zero) for a value that swings
+both ways, such as a net power flow or a deviation from a setpoint. One scale
+from -100 % to 100 %: green around zero, red under -80 % and over 80 %.
 
 <br />
 <details>
@@ -405,26 +375,23 @@ theme: critical_when_extreme_center
 <details>
 <summary>Show ranges</summary>
 
-| **Percentage Range** | **Color** | **Description** _(optional)_ |
-| :------------------- | :-------- | :--------------------------- |
-| -100% – -80%         | `red`     | Critical                     |
-| -80% – -60%          | `orange`  | Low                          |
-| -60% – -40%          | `yellow`  | Watch                        |
-| -40% – 40%           | `green`   | Fine (centered on zero)      |
-| 40% – 60%            | `yellow`  | Watch                        |
-| 60% – 80%            | `orange`  | High                         |
-| 80% – 100%           | `red`     | Critical                     |
+| Range (%)    | Color    | Description             |
+| :----------- | :------- | :---------------------- |
+| -100% – -80% | `red`    | Critical                |
+| -80% – -60%  | `orange` | Low                     |
+| -60% – -40%  | `yellow` | Watch                   |
+| -40% – 40%   | `green`  | Fine (centered on zero) |
+| 40% – 60%    | `yellow` | Watch                   |
+| 60% – 80%    | `orange` | High                    |
+| 80% – 100%   | `red`    | Critical                |
 
 </details>
 <br />
 
 > [!NOTE]
 >
-> The icon is automatically retrieved from the entity but can be overridden
-> using the `icon` parameter. Outside `center_zero`, this theme still works but
-> only shows its own 0%–100% half (the same shape `critical_when_extreme`
-> already covers more fully) — pick the plain `critical_when_extreme` instead
-> for a non-`center_zero` card.
+> Outside `center_zero`, this theme only shows its 0–100 % half: use
+> `critical_when_extreme` instead on a card without `center_zero`.
 
 [🔼 Back to top]
 
@@ -440,14 +407,10 @@ theme: critical_when_extreme_center
     width="750"/>
 </picture>
 
-The `light` configuration, designed by
-[@harmonie-durrant](https://github.com/harmonie-durrant), defines how different
-brightness levels are visually represented using colors and icons. This system
-uses a **linear gradient**, meaning the color transitions smoothly across the
-brightness percentage range. The `mdi:lightbulb-outline` icon is used for lower
-brightness levels, while `mdi:lightbulb` is displayed when the light intensity
-increases - thanks to the **linear** approach, the brightness smoothly
-transitions between these levels.
+Use for a light's brightness. The color moves smoothly from dim grey to warm
+yellow, and the icon turns from `mdi:lightbulb-outline` to `mdi:lightbulb` as
+the light gets brighter. Never red. Designed by
+[@harmonie-durrant](https://github.com/harmonie-durrant).
 
 <br />
 <details>
@@ -467,13 +430,13 @@ icon_tap_action:
 <details>
 <summary>Show ranges</summary>
 
-| **Brightness Level** | **Color Code** | **Description**    | **Icon**                |
-| :------------------- | :------------- | :----------------- | :---------------------- |
-| < 25%                | `#4B4B4B`      | Dim light          | `mdi:lightbulb-outline` |
-| ≥ 25%                | `#877F67`      | Soft warm light    | `mdi:lightbulb-outline` |
-| ≥ 50%                | `#C3B382`      | Medium warm light  | `mdi:lightbulb`         |
-| ≥ 75%                | `#FFE79E`      | Bright warm light  | `mdi:lightbulb`         |
-| ≥ 100%               | `#FFE79E`      | Maximum brightness | `mdi:lightbulb`         |
+| Brightness Level | Color     | Description        | Icon                    |
+| :--------------- | :-------- | :----------------- | :---------------------- |
+| < 25%            | `#4B4B4B` | Dim light          | `mdi:lightbulb-outline` |
+| ≥ 25%            | `#877F67` | Soft warm light    | `mdi:lightbulb-outline` |
+| ≥ 50%            | `#C3B382` | Medium warm light  | `mdi:lightbulb`         |
+| ≥ 75%            | `#FFE79E` | Bright warm light  | `mdi:lightbulb`         |
+| ≥ 100%           | `#FFE79E` | Maximum brightness | `mdi:lightbulb`         |
 
 </details>
 <br />
@@ -516,17 +479,17 @@ icon_tap_action:
 <details>
 <summary>Show ranges</summary>
 
-| **Temperature Range (°C / °F)** | **Color Variable**        | **Description** |
-| :------------------------------ | :------------------------ | :-------------- |
-| -50°C – -20°C / -58°F – -4°F    | `var(--indigo-color)`     | Extremely cold  |
-| -20°C – -2°C / -4°F – 28.4°F    | `var(--blue-color)`       | Very cold       |
-| -2°C – 2°C / 28.4°F – 35.6°F    | `var(--light-blue-color)` | Cold            |
-| 2°C – 15°C / 35.6°F – 59°F      | `var(--cyan-color)`       | Cool            |
-| 15°C – 20°C / 59°F – 68°F       | `var(--teal-color)`       | Mild            |
-| 20°C – 25°C / 68°F – 77°F       | `var(--green-color)`      | Optimal         |
-| 25°C – 27°C / 77°F – 80.6°F     | `var(--yellow-color)`     | Warm            |
-| 27°C – 30°C / 80.6°F – 86°F     | `var(--amber-color)`      | Hot             |
-| 30°C – 100°C / 86°F – 212°F     | `var(--red-color)`        | Extremely hot   |
+| Temperature Range (°C / °F)  | Color        | Description    |
+| :--------------------------- | :----------- | :------------- |
+| -50°C – -20°C / -58°F – -4°F | `indigo`     | Extremely cold |
+| -20°C – -2°C / -4°F – 28.4°F | `blue`       | Very cold      |
+| -2°C – 2°C / 28.4°F – 35.6°F | `light-blue` | Cold           |
+| 2°C – 15°C / 35.6°F – 59°F   | `cyan`       | Cool           |
+| 15°C – 20°C / 59°F – 68°F    | `teal`       | Mild           |
+| 20°C – 25°C / 68°F – 77°F    | `green`      | Optimal        |
+| 25°C – 27°C / 77°F – 80.6°F  | `yellow`     | Warm           |
+| 27°C – 30°C / 80.6°F – 86°F  | `amber`      | Hot            |
+| 30°C – 100°C / 86°F – 212°F  | `red`        | Extremely hot  |
 
 </details>
 <br />
@@ -550,14 +513,8 @@ icon_tap_action:
     width="750"/>
 </picture>
 
-The `humidity` configuration defines how different humidity levels are
-represented with colors and icons. Unlike a linear gradient, this system uses
-predefined humidity ranges, each associated with a specific color and icon.
-Ranges are mirrored around the 40–60% comfort zone (10/10/10/20 on each side),
-so the same distance from optimal gets a comparably-weighted color on either the
-dry or humid end. Each range is visually represented using the
-`mdi:water-percent` icon, ensuring a clear and intuitive display of humidity
-levels.
+Use for indoor humidity. Green from 40 to 60 %, red under 20 % (too dry),
+purple over 80 % (too humid), with the `mdi:water-percent` icon.
 
 <br />
 <details>
@@ -576,15 +533,15 @@ icon_tap_action:
 <details>
 <summary>Show ranges</summary>
 
-| **Humidity Range** | **Color Variable**         | **Description**    |
-| :----------------- | :------------------------- | :----------------- |
-| 0% – 20%           | `var(--red-color)`         | Very dry air       |
-| 20% – 30%          | `var(--orange-color)`      | Dry air            |
-| 30% – 40%          | `var(--yellow-color)`      | Slightly dry air   |
-| 40% – 60%          | `var(--green-color)`       | Optimal humidity   |
-| 60% – 70%          | `var(--light-blue-color)`  | Slightly humid air |
-| 70% – 80%          | `var(--indigo-color)`      | Humid air          |
-| 80% – 100%         | `var(--deep-purple-color)` | Very humid air     |
+| Humidity Range | Color         | Description        |
+| :------------- | :------------ | :----------------- |
+| 0% – 20%       | `red`         | Very dry air       |
+| 20% – 30%      | `orange`      | Dry air            |
+| 30% – 40%      | `yellow`      | Slightly dry air   |
+| 40% – 60%      | `green`       | Optimal humidity   |
+| 60% – 70%      | `light-blue`  | Slightly humid air |
+| 70% – 80%      | `indigo`      | Humid air          |
+| 80% – 100%     | `deep-purple` | Very humid air     |
 
 </details>
 <br />
@@ -603,12 +560,8 @@ icon_tap_action:
     width="750"/>
 </picture>
 
-The `voc` configuration defines how different levels of volatile organic
-compounds (VOCs) are represented using colors and icons. Instead of a linear
-gradient, this system categorizes VOC levels into predefined ranges, each
-associated with a specific color for better visualization. Each range is
-visually represented using the `mdi:air-filter` icon, ensuring a clear and
-intuitive display of VOC levels.
+Use for volatile organic compounds (VOC), in ppb. Green up to 300, red over
+3000, purple over 25,000, with the `mdi:air-filter` icon.
 
 <br />
 <details>
@@ -619,7 +572,6 @@ type: custom:entity-progress-card
 entity: sensor.living_room_voc
 unit: ppb
 decimal: 0
-max_value: 300
 theme: voc
 icon_tap_action:
   action: more-info
@@ -630,13 +582,13 @@ icon_tap_action:
 <details>
 <summary>Show ranges</summary>
 
-| **TVOC Range (ppb)** | **Color Variable**         | **Description**        |
-| :------------------- | :------------------------- | :--------------------- |
-| 0 – 300              | `var(--green-color)`       | Good air quality       |
-| 300 – 500            | `var(--yellow-color)`      | Acceptable air quality |
-| 500 – 3000           | `var(--orange-color)`      | Moderate air quality   |
-| 3000 – 25,000        | `var(--red-color)`         | Poor air quality       |
-| 25,000 – 50,000      | `var(--deep-purple-color)` | Hazardous              |
+| TVOC Range (ppb) | Color         | Description            |
+| :--------------- | :------------ | :--------------------- |
+| 0 – 300          | `green`       | Good air quality       |
+| 300 – 500        | `yellow`      | Acceptable air quality |
+| 500 – 3000       | `orange`      | Moderate air quality   |
+| 3000 – 25,000    | `red`         | Poor air quality       |
+| 25,000 – 50,000  | `deep-purple` | Hazardous              |
 
 </details>
 <br />
@@ -668,12 +620,8 @@ icon_tap_action:
     width="750"/>
 </picture>
 
-The `pm25` configuration defines how different concentrations of fine
-particulate matter (PM2.5) are represented using colors and icons. Rather than a
-linear gradient, this system categorizes PM2.5 levels into predefined ranges,
-each mapped to a specific color for easy interpretation. Each range is visually
-represented using the `mdi:air-filter` icon, ensuring a clear and intuitive
-display of PM2.5 pollution levels.
+Use for fine particles (PM 2.5), in µg/m³. Green up to 12, red over 55, purple
+over 150, with the `mdi:air-filter` icon.
 
 <br />
 <details>
@@ -684,7 +632,6 @@ type: custom:entity-progress-card
 entity: sensor.living_room_pm25
 unit: µg/m³
 decimal: 0
-max_value: 50
 theme: pm25
 icon_tap_action:
   action: more-info
@@ -695,13 +642,13 @@ icon_tap_action:
 <details>
 <summary>Show ranges</summary>
 
-| **PM2.5 Range (µg/m³)** | **Color Variable**         | **Description**                |
-| :---------------------- | :------------------------- | :----------------------------- |
-| 0 – 12                  | `var(--green-color)`       | Good air quality               |
-| 12 – 35                 | `var(--yellow-color)`      | Moderate air quality           |
-| 35 – 55                 | `var(--orange-color)`      | Unhealthy for sensitive groups |
-| 55 – 150                | `var(--red-color)`         | Unhealthy air quality          |
-| 150 – 200               | `var(--deep-purple-color)` | Very unhealthy air quality     |
+| PM2.5 Range (µg/m³) | Color         | Description                    |
+| :------------------ | :------------ | :----------------------------- |
+| 0 – 12              | `green`       | Good air quality               |
+| 12 – 35             | `yellow`      | Moderate air quality           |
+| 35 – 55             | `orange`      | Unhealthy for sensitive groups |
+| 55 – 150            | `red`         | Unhealthy air quality          |
+| 150 – 200           | `deep-purple` | Very unhealthy air quality     |
 
 </details>
 <br />
@@ -723,9 +670,7 @@ icon_tap_action:
 
 <a id="custom-theme"></a>
 
-## Custom theme & `bar_color_mode`
-
-### Custom theme
+## Custom theme
 
 Works on the card, the badge, the tile feature and each row of a Multi-Card or
 Multi-Feature. The Template and Badge Template variants color with Jinja
@@ -749,6 +694,18 @@ custom_theme:
     max: 100
     color: orange
 ```
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"
+    srcset="images/theme-custom-example-dark-8a4d09.png">
+  <img src="images/theme-custom-example-light-f7994a.png"
+    alt="Battery cards: red at 15 %, green at 50 %, orange at 90 %"
+    width="750"/>
+</picture>
+
+Paste it in the card's code editor (**Show code editor** in the card editor)
+and replace `sensor.phone_battery_level` with your own sensor. A value on a
+limit takes the zone that starts there: at exactly 20 %, the bar is green.
 
 Each entry of [`custom_theme`](configuration.md#custom_theme) needs `min` and
 `max`; a color key (`color`, `bar_color`, `icon_color`) and `icon` are optional.
@@ -791,7 +748,9 @@ custom_theme:
 > - if your entity's real range is not `0`–`100`, set
 >   [`min_value`/`max_value`](configuration.md#max_value) to match your zones.
 
-### `bar_color_mode`
+<a id="bar_color_mode"></a>
+
+## `bar_color_mode`
 
 The `bar_color_mode` parameter controls how theme colors are rendered on the
 progress bar. It needs a theme: set `theme` or `custom_theme`. Without one, the
@@ -804,14 +763,16 @@ bar keeps a single color (this is normal).
 | `rainbow`      | A smooth gradient flows across all visible zone colors.                         |
 | `rainbow_full` | The track always shows the full gradient; a marker slides to the current value. |
 
-For a battery at 69% with `optimal_when_high`, `segment` shows each zone as a
-distinct solid block up to the current value:
+<picture>
+  <source media="(prefers-color-scheme: dark)"
+    srcset="images/theme-bar-color-modes-dark-469fc3.png">
+  <img src="images/theme-bar-color-modes-light-a69201.png"
+    alt="At 69 %: solid green, blocks, a gradient, a full gradient and a marker"
+    width="750"/>
+</picture>
 
-```text
-[████████████][████████████][████████████][█████
- red           orange        yellow        light green
-0%            20%           40%           60%   69%
-```
+For a battery at 69 % with `optimal_when_high`, `segment` shows each zone as a
+distinct solid block up to the current value:
 
 Each zone gets its own block: red to 20 %, orange to 40 %, yellow to 60 %, then
 light green up to the value, 69 %. The part above 69 % stays empty.
@@ -844,17 +805,20 @@ bar_color_mode: rainbow
 
 > [!NOTE]
 >
-> `bar_color_mode` also works with
-> [`center_zero`](configuration.md#center_zero): a signed theme like
-> `critical_when_extreme_center` reads as one continuous curve across both arms,
-> while a percentage theme reads each arm's own 0–100%: the positive arm shows
-> its zones as they are, the negative arm takes the first zone's color
-> throughout. A theme in raw units (e.g. `temperature`) is projected onto each
-> arm's half of the `min_value`/`max_value` scale. `rainbow_full` in particular
-> was built with `center_zero` in mind: each arm gets its own always-full
-> gradient, with the marker crossing the visual center at zero. For linear
-> themes (e.g. `light`), zone boundaries are derived automatically by splitting
-> 0–100% into equal segments (5 levels → 0–20%, 20–40%, …).
+> Only for [`center_zero`](configuration.md#center_zero) cards, where the bar
+> grows both ways from zero:
+>
+> - a signed theme (`critical_when_extreme_center`) is one curve across both
+>   arms;
+> - a theme in % reads 0–100 % on each arm: the positive arm shows its zones,
+>   the negative arm takes the first zone's color;
+> - a theme in real units (`temperature`) is spread over each arm's half of
+>   `min_value`–`max_value`;
+> - `rainbow_full` gives each arm its own full gradient, the marker crossing the
+>   center at zero.
+>
+> Linear themes (`light`) split 0–100 % into equal zones: 5 levels give 0–20 %,
+> 20–40 %...
 
 [🔼 Back to top]
 
@@ -862,80 +826,91 @@ bar_color_mode: rainbow
 
 ## Color names
 
-This card leverages Home Assistant’s default color system to seamlessly align
-with your active theme preferences.
+Use these names anywhere a color is expected: [`color`](configuration.md#color)
+(the icon), [`bar_color`](configuration.md#bar_color) (the bar), and the color
+keys of a [`custom_theme`](#custom-theme) zone.
 
-When defining a color by name, we utilize the standard CSS color palette, which
-has evolved over time to include extended color keywords, X11 colors, and SVG
-colors (updated in 2022: <https://www.w3.org/TR/css-color-3/#svg-color>).
+```yaml
+type: custom:entity-progress-card
+entity: sensor.phone_battery_level
+bar_color: teal
+color: teal
+```
 
-To maintain a consistent look & feel, we translate color names to Home
-Assistant's color definitions. We provide a list of these colors below. If a
-color is missing, please do not hesitate to let us know. If you choose a
-CSS-compatible color name that is not part of this list, the rendering will be
-as defined by the CSS standard.
+The names below follow your Home Assistant theme, so `red` matches the red of
+the rest of your dashboard. Any other CSS color also works (`salmon`,
+`#ff6600`, `rgb(255, 102, 0)`), drawn as the browser defines it. A color
+missing? [Open an issue](https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues).
 
-### Standard color
+<picture>
+  <source media="(prefers-color-scheme: dark)"
+    srcset="images/theme-color-names-dark-ed9c8b.png">
+  <img src="images/theme-color-names-light-763674.png"
+    alt="The 26 color names, each as a full bar in its color"
+    width="750"/>
+</picture>
 
-| **Color Name** | **Mapped CSS Variable**    |
-| :------------- | :------------------------- |
-| `primary`      | `var(--primary-color)`     |
-| `accent`       | `var(--accent-color)`      |
-| `red`          | `var(--red-color)`         |
-| `pink`         | `var(--pink-color)`        |
-| `purple`       | `var(--purple-color)`      |
-| `deep-purple`  | `var(--deep-purple-color)` |
-| `indigo`       | `var(--indigo-color)`      |
-| `blue`         | `var(--blue-color)`        |
-| `light-blue`   | `var(--light-blue-color)`  |
-| `cyan`         | `var(--cyan-color)`        |
-| `teal`         | `var(--teal-color)`        |
-| `green`        | `var(--green-color)`       |
-| `light-green`  | `var(--light-green-color)` |
-| `lime`         | `var(--lime-color)`        |
-| `yellow`       | `var(--yellow-color)`      |
-| `amber`        | `var(--amber-color)`       |
-| `orange`       | `var(--orange-color)`      |
-| `deep-orange`  | `var(--deep-orange-color)` |
-| `brown`        | `var(--brown-color)`       |
-| `light-grey`   | `var(--light-grey-color)`  |
-| `grey`         | `var(--grey-color)`        |
-| `dark-grey`    | `var(--dark-grey-color)`   |
-| `blue-grey`    | `var(--blue-grey-color)`   |
-| `black`        | `var(--black-color)`       |
-| `white`        | `var(--white-color)`       |
-| `disabled`     | `var(--disabled-color)`    |
+### Standard colors
+
+| Color name    | CSS variable               |
+| :------------ | :------------------------- |
+| `primary`     | `var(--primary-color)`     |
+| `accent`      | `var(--accent-color)`      |
+| `red`         | `var(--red-color)`         |
+| `pink`        | `var(--pink-color)`        |
+| `purple`      | `var(--purple-color)`      |
+| `deep-purple` | `var(--deep-purple-color)` |
+| `indigo`      | `var(--indigo-color)`      |
+| `blue`        | `var(--blue-color)`        |
+| `light-blue`  | `var(--light-blue-color)`  |
+| `cyan`        | `var(--cyan-color)`        |
+| `teal`        | `var(--teal-color)`        |
+| `green`       | `var(--green-color)`       |
+| `light-green` | `var(--light-green-color)` |
+| `lime`        | `var(--lime-color)`        |
+| `yellow`      | `var(--yellow-color)`      |
+| `amber`       | `var(--amber-color)`       |
+| `orange`      | `var(--orange-color)`      |
+| `deep-orange` | `var(--deep-orange-color)` |
+| `brown`       | `var(--brown-color)`       |
+| `light-grey`  | `var(--light-grey-color)`  |
+| `grey`        | `var(--grey-color)`        |
+| `dark-grey`   | `var(--dark-grey-color)`   |
+| `blue-grey`   | `var(--blue-grey-color)`   |
+| `black`       | `var(--black-color)`       |
+| `white`       | `var(--white-color)`       |
+| `disabled`    | `var(--disabled-color)`    |
 
 ### Text
 
-| **Color Name**     | **CSS Variable**                  |
-| ------------------ | --------------------------------- |
-| primary-text       | `var(--primary-text-color)`       |
-| secondary-text     | `var(--secondary-text-color)`     |
-| text-primary       | `var(--text-primary-color)`       |
-| text-light-primary | `var(--text-light-primary-color)` |
-| disabled-text      | `var(--disabled-text-color)`      |
+| Color name           | CSS variable                      |
+| :------------------- | :-------------------------------- |
+| `primary-text`       | `var(--primary-text-color)`       |
+| `secondary-text`     | `var(--secondary-text-color)`     |
+| `text-primary`       | `var(--text-primary-color)`       |
+| `text-light-primary` | `var(--text-light-primary-color)` |
+| `disabled-text`      | `var(--disabled-text-color)`      |
 
 ### Status
 
-| Color Name | CSS Variable           |
-| ---------- | ---------------------- |
-| success    | `var(--success-color)` |
-| warning    | `var(--warning-color)` |
-| error      | `var(--error-color)`   |
-| info       | `var(--info-color)`    |
+| Color name | CSS variable           |
+| :--------- | :--------------------- |
+| `success`  | `var(--success-color)` |
+| `warning`  | `var(--warning-color)` |
+| `error`    | `var(--error-color)`   |
+| `info`     | `var(--info-color)`    |
 
 ### Interface/UI
 
-| Color Name     | CSS Variable                  |
-| -------------- | ----------------------------- |
-| dark-primary   | `var(--dark-primary-color)`   |
-| darker-primary | `var(--darker-primary-color)` |
-| light-primary  | `var(--light-primary-color)`  |
-| divider        | `var(--divider-color)`        |
-| outline        | `var(--outline-color)`        |
-| outline-hover  | `var(--outline-hover-color)`  |
-| shadow         | `var(--shadow-color)`         |
+| Color name       | CSS variable                  |
+| :--------------- | :---------------------------- |
+| `dark-primary`   | `var(--dark-primary-color)`   |
+| `darker-primary` | `var(--darker-primary-color)` |
+| `light-primary`  | `var(--light-primary-color)`  |
+| `divider`        | `var(--divider-color)`        |
+| `outline`        | `var(--outline-color)`        |
+| `outline-hover`  | `var(--outline-hover-color)`  |
+| `shadow`         | `var(--shadow-color)`         |
 
 ### HA State
 
@@ -1035,9 +1010,9 @@ Each name maps to Home Assistant's `--<name>-color` variable.
 
 [🔼 Back to top]
 
-## Style the card with CSS variables (advanced)
-
 <a id="css"></a>
+
+## Restyle with CSS variables (advanced)
 
 The `--epb-*` variables below restyle the card. Set them in a Home Assistant
 theme (all cards using it) or with card_mod / uix (one card).
@@ -1045,8 +1020,8 @@ theme (all cards using it) or with card_mod / uix (one card).
 > [!NOTE]
 >
 > Nothing here can damage Home Assistant. If a card looks wrong after a change,
-> remove the lines you added and reload the page: the card returns to its
-> default look.
+> remove the lines you added, save, then reload the page: the card returns to
+> its default look.
 
 ### Usage
 
@@ -1073,6 +1048,10 @@ my_custom_theme:
 This applies to all cards using that theme.
 
 #### card_mod / uix
+
+Needs the [card_mod](https://github.com/thomasloven/lovelace-card-mod) or
+[UIX](https://github.com/Lint-Free-Technology/uix) add-on, installed from HACS:
+without it, these lines do nothing.
 
 All public CSS hooks can also be scoped to a single card using
 [card_mod](https://github.com/thomasloven/lovelace-card-mod) - or
@@ -1121,6 +1100,14 @@ card_mod: # or: uix:
       --epb-detail-letter-spacing: 1px;
     }
 ```
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"
+    srcset="images/theme-card-mod-example-dark-4eb745.png">
+  <img src="images/theme-card-mod-example-light-6b32c4.png"
+    alt="Card with a dashed orange border, an orange bar and monospace text"
+    width="450"/>
+</picture>
 
 ### CSS hooks
 
@@ -1315,42 +1302,10 @@ card_mod: # or: uix:
 
 <a id="card-mod-and-card-structure"></a>
 
-## card_mod / uix and card structure
+## card_mod / uix and card structure (advanced)
 
-<a id="class-name-migration"></a>
-
-### Class Name Updates & Migration Guide (v1.6.0+)
-
-This project has evolved with new use cases, which means that the original class
-names needed to be revisited. The goal of this update is to simplify the
-identification of elements within the cards, making it easier to understand and
-maintain.
-
-These changes also prepare the codebase for future releases, ensuring
-consistency and flexibility for upcoming features.
-
-To help you transition to this new class naming scheme, you will find the table
-below, which shows the mapping between the old and new class names. This should
-guide you in updating your custom card modifications.
-
-| **Old Class**                    | **New Class**            | **Notes / Usage**                                                                               |
-| -------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------- |
-| `name-group`                     | `name`                   | Main container for the name block                                                               |
-| `name-combined`                  | `name-value`             | Displays the combined main and extra name                                                       |
-| `name`                           | `name-main`              | Main name text                                                                                  |
-| `name-custom-info`               | `name-extra`             | Extra name info, appended after main name                                                       |
-| `secondary-info-detail-group`    | `secondary-info-wrapper` | Container for secondary info (state/progress/custom)                                            |
-| `secondary-info-detail-combined` | `secondary-info-value`   | Displays main + extra secondary info — now a `<div>`, was a `<span>`                            |
-| `state-and-progress-info`        | `secondary-info-main`    | Main secondary info (was progress/state)                                                        |
-| `secondary-info-custom-info`     | `secondary-info-extra-1` | Extra secondary info, line 1 (was custom info)                                                  |
-| —                                | `secondary-info-extra-2` | Extra secondary info, line 2 — only exists with [`multiline: true`](configuration.md#multiline) |
-| `progress-bar-container`         | `bar-container`          | Progress bar wrapper                                                                            |
-| `progress-bar-inner`             | `inner`                  | Single inner bar element (positive/negative unified)                                            |
-| `progress-bar-low-zero`          | `zero`                   | Zero mark for center-zero bars                                                                  |
-| `progress-bar-low-wm`            | `low`                    | Low watermark marker                                                                            |
-| `progress-bar-high-wm`           | `high`                   | High watermark marker                                                                           |
-
-[🔼 Back to top]
+Selectors for card_mod / uix. Prefer the [`--epb-*` variables](#css) when one
+exists: class names can change between versions.
 
 ### DOM
 
@@ -1446,6 +1401,9 @@ div.content-section
 
 #### Template
 
+<details>
+<summary>Show the tree</summary>
+
 ```text
 ha-card...
  ├─ ha-ripple
@@ -1482,6 +1440,8 @@ ha-card...
              └─ div.zero.mark (if center-zero)
 ```
 
+</details>
+
 With [`multiline: true`](configuration.md#multiline),
 `div.secondary-info-wrapper` looks like this instead. Template cards never have
 a `secondary-info-main` span (their value comes through
@@ -1499,6 +1459,9 @@ div.secondary-info-wrapper
 ```
 
 #### Badge
+
+<details>
+<summary>Show the tree</summary>
 
 ```text
 ha-card...
@@ -1523,10 +1486,15 @@ ha-card...
 
 ```
 
+</details>
+
 `multiline` is not available on badges — the row is too small for a second line
 (see [`multiline`](configuration.md#multiline)).
 
 #### Center-Zero / Vertical Bars (Additional Variants)
+
+<details>
+<summary>Show the tree</summary>
 
 ```text
 ha-card...
@@ -1551,18 +1519,44 @@ ha-card...
          └─ div.zero.mark
 ```
 
+</details>
+
+<a id="class-name-migration"></a>
+
+### Old class names (before v1.6.0)
+
+Classes were renamed in 1.6.0. If a card_mod style stopped working after that
+version, replace the old names with the new ones:
+
+| **Old Class**                    | **New Class**            | **Notes / Usage**                                                                               |
+| -------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------- |
+| `name-group`                     | `name`                   | Main container for the name block                                                               |
+| `name-combined`                  | `name-value`             | Displays the combined main and extra name                                                       |
+| `name`                           | `name-main`              | Main name text                                                                                  |
+| `name-custom-info`               | `name-extra`             | Extra name info, appended after main name                                                       |
+| `secondary-info-detail-group`    | `secondary-info-wrapper` | Container for secondary info (state/progress/custom)                                            |
+| `secondary-info-detail-combined` | `secondary-info-value`   | Displays main + extra secondary info — now a `<div>`, was a `<span>`                            |
+| `state-and-progress-info`        | `secondary-info-main`    | Main secondary info (was progress/state)                                                        |
+| `secondary-info-custom-info`     | `secondary-info-extra-1` | Extra secondary info, line 1 (was custom info)                                                  |
+| —                                | `secondary-info-extra-2` | Extra secondary info, line 2 — only exists with [`multiline: true`](configuration.md#multiline) |
+| `progress-bar-container`         | `bar-container`          | Progress bar wrapper                                                                            |
+| `progress-bar-inner`             | `inner`                  | Single inner bar element (positive/negative unified)                                            |
+| `progress-bar-low-zero`          | `zero`                   | Zero mark for center-zero bars                                                                  |
+| `progress-bar-low-wm`            | `low`                    | Low watermark marker                                                                            |
+| `progress-bar-high-wm`           | `high`                   | High watermark marker                                                                           |
+
 [🔼 Back to top]
 
-## Card sizing
-
 <a id="card-sizing"></a>
+
+## Card sizing
 
 In most dashboards there is nothing to do: the card sizes itself. Read on only
 if it looks too tall or too short; the [last section](#embedded) has a recipe
 that shrinks it to its content.
 
 <details>
-<summary>How the card picks its height</summary>
+<summary>How the card picks its height (technical)</summary>
 
 The card adapts to whatever height (or lack of one) its parent gives it. Three
 CSS layers work together:
@@ -1594,12 +1588,25 @@ layout.
 
 ### In a Sections view
 
+Nothing to do: the card takes exactly the height the section reserves for it.
+
+<details>
+<summary>How (technical)</summary>
+
 `getGridOptions()` reserves the right number of rows; the card's own
 `min-height` (see [`height`](configuration.md#height)) reads HA's own
 `--row-size` first, so it lands on the exact same pixel height Sections reserved
-for it. This is the default, "just works" case - nothing to configure.
+for it.
+
+</details>
 
 ### In a Masonry view
+
+Nothing to do in most cases: the card takes its minimum height, and grows if
+its content needs more room (wrapped text, larger text size).
+
+<details>
+<summary>How (technical)</summary>
 
 Masonry doesn't call `getGridOptions()` at all, and its cards have no explicit
 parent height. The card falls back to its `min-height` floor (the same row-based
@@ -1608,6 +1615,8 @@ calculation above, expressed in real pixels via
 genuinely needs more room than that floor (wrapped text, a larger accessibility
 text-size setting), the card grows past it - `min-height` is a floor, not a
 fixed size, precisely so that can happen instead of clipping.
+
+</details>
 
 ### Inside another Lovelace card
 
@@ -1620,21 +1629,18 @@ drop the card's own frame/background for you (see
 [`frameless`](configuration.md#frameless)) - or you have to set
 `frameless: true` yourself.
 
-✅ handled for you · ➖ partly, see the cell · ⚠️ with limits · ❌ not
-detected.
-
-| Card                                                                                                  | Default sizing (no `height` set) | Frameless auto-detected          | Notes                                                                       |
-| :---------------------------------------------------------------------------------------------------- | :------------------------------- | :------------------------------- | :-------------------------------------------------------------------------- |
-| `entities`                                                                                            | ✅ Content-sized                  | ✅ Yes                            | No config needed.                                                           |
-| `picture-elements`                                                                                    | ➖ Width only                     | ❌ No - set `frameless: true`     | `min_width` defaults to 200px; height is not special-cased.                 |
-| `vertical-stack-in-card`                                                                              | ➖ Masonry-style floor            | ✅ Yes                            | Frame dropped as in `entities`.                                             |
-| `vertical-stack`                                                                                      | ➖ Masonry-style floor            | ❌ No - set `frameless: true`     | One card per row.                                                           |
-| `horizontal-stack`                                                                                    | ⚠️ Reliable in Masonry only      | ❌ No - set `frameless: true`     | In Sections it can look shorter than a card placed directly in the section. |
-| `grid`                                                                                                | ⚠️ Depends on `square`           | ❌ No - set `frameless: true`     | `square: true` (default) forces square cells, even over `height`.           |
-| `custom:combined-card` ([catdad-experiments](https://github.com/catdad-experiments/ha-utility-cards)) | ➖ Masonry-style floor            | ❌ No - set `frameless: true`     | Behaves like the native stacks it uses inside.                              |
-| `custom:button-card` (custom field)                                                                   | ✅ Content-sized                  | ❌ No - set `frameless: true`     | See the recipe [below](#embedded) (issue #129).                             |
-| `custom:auto-entities`                                                                                | ➖ Depends on the outer container | ➖ Depends on the outer container | Each generated card follows the outer container's rules.                    |
-| `custom:layout-card` (thomasloven)                                                                    | ➖ Masonry-style floor            | ❌ No - set `frameless: true`     | Natural height in every layout mode.                                        |
+| Card                                | Default sizing (no `height` set) | Frameless auto-detected        | Notes                                                                                                                         |
+| :---------------------------------- | :------------------------------- | :----------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
+| `entities`                          | Content-sized                    | Yes                            | No config needed.                                                                                                             |
+| `picture-elements`                  | Width only                       | No: set `frameless: true`      | `min_width` defaults to 200px; height is not special-cased.                                                                   |
+| `vertical-stack-in-card`            | Masonry-style floor              | Yes                            | Frame dropped as in `entities`.                                                                                               |
+| `vertical-stack`                    | Masonry-style floor              | No: set `frameless: true`      | One card per row.                                                                                                             |
+| `horizontal-stack`                  | Reliable in Masonry only         | No: set `frameless: true`      | In Sections it can look shorter than a card placed directly in the section.                                                   |
+| `grid`                              | Depends on `square`              | No: set `frameless: true`      | `square: true` (default) forces square cells, even over `height`.                                                             |
+| `custom:combined-card`              | Masonry-style floor              | No: set `frameless: true`      | Behaves like the native stacks it uses inside ([catdad-experiments](https://github.com/catdad-experiments/ha-utility-cards)). |
+| `custom:button-card` (custom field) | Content-sized                    | No: set `frameless: true`      | See the recipe [below](#embedded) (issue #129).                                                                               |
+| `custom:auto-entities`              | Depends on the outer container   | Depends on the outer container | Each generated card follows the outer container's rules.                                                                      |
+| `custom:layout-card` (thomasloven)  | Masonry-style floor              | No: set `frameless: true`      | Natural height in every layout mode.                                                                                          |
 
 In `grid`, `square: false` behaves like everywhere else: Masonry-style
 floor without `height`, exact size with it. `custom:combined-card` gets no
@@ -1643,7 +1649,7 @@ frame is never dropped for you.
 
 <a id="embedded"></a>
 
-### Embedded in another card (`custom:button-card`, a custom field, ...)
+### Recipe: shrink the card to its content
 
 Same mechanics as Masonry - the card's `min-height` floor is the effective size
 unless the wrapper stretches its children to some ambient height (common with
@@ -1667,6 +1673,9 @@ frameless: true
   entirely (`unset`) and removes the card's own padding/margin.
 - [`frameless: true`](configuration.md#frameless) - drops the border/
   background, useful when the wrapper already provides its own frame.
+
+Still stuck? Ask on [Discord](https://discord.gg/tyMQ2SfyNG) or
+[open an issue](https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues).
 
 [issue #133]:
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues/133
