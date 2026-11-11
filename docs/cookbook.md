@@ -1,3 +1,5 @@
+<a id="top"></a>
+
 # 🍳 Cookbook
 
 <!-- dev-banner -->
@@ -44,6 +46,8 @@ template versions), providing clear guidance.
 Each component is suited for different use cases, depending on display needs,
 complexity, and UI layout.
 
+[🔼 Back to top]
+
 <a id="purpose"></a>
 
 #### Purpose & Use Cases
@@ -66,6 +70,8 @@ _Examples_:
 - Display remaining battery percentage for a device.
 - Monitor the progress of a running script or automation.
 
+[🔼 Back to top]
+
 <a id="purpose-template"></a>
 
 ##### When to Use the Template Version?
@@ -85,6 +91,8 @@ _Examples_:
 - Dynamically adjust color or shape based on a formula.
 - Show remaining laundry time based on a template sensor.
 
+[🔼 Back to top]
+
 <a id="purpose-badge"></a>
 
 ##### Badge vs. Card – Which One?
@@ -94,6 +102,8 @@ _Examples_:
 | You want rich layout and interactivity       | Space is limited (e.g., header views)      |
 | You need to show actions, icons, and text    | You just need quick-glance visuals         |
 | You rely on theme integration and animations | You want to embed progress in compact form |
+
+[🔼 Back to top]
 
 ---
 
@@ -189,6 +199,8 @@ the timer (no `attribute`). Counter/Number entities use the entity's own
 value/min/max (`max_value` can still override). Any other numeric entity is
 treated as the current value, with min/max from `0`/`100`, config, or an
 external entity via `max_value`.
+
+[🔼 Back to top]
 
 <a id="card-getting-started"></a>
 
@@ -617,6 +629,8 @@ cards:
 </details>
 <br />
 
+[🔼 Back to top]
+
 <a id="card-power-features"></a>
 
 #### Power Features
@@ -631,6 +645,8 @@ certificate expiry countdown:
   [Washing Machine Progress: Three Brands, Three Approaches](#washing-machine-three-brands)
 - 🧮 [Cracking a Complex Case with a Simple Helper](#simple-helper)
 - 🔒 [Don't Let It Expire! (SSL Certificate Countdown)](#ssl-expiry)
+
+[🔼 Back to top]
 
 ---
 
@@ -712,6 +728,8 @@ fixed min/max.
 
 See [Full Configuration Reference][FCR].
 
+[🔼 Back to top]
+
 <a id="card-template-getting-started"></a>
 
 #### Getting Started
@@ -779,6 +797,8 @@ tap_action:
 </details>
 <br />
 
+[🔼 Back to top]
+
 <a id="card-template-power-features"></a>
 
 #### Power Features
@@ -787,6 +807,8 @@ A dynamic sun-tracking bar — progress toward the next sunrise/sunset, live
 countdown, color that flips with the horizon — entirely computed in Jinja:
 
 - 🌅 [Follow the Sun](#follow-the-sun)
+
+[🔼 Back to top]
 
 ---
 
@@ -858,6 +880,8 @@ view's other badges, not as the dashboard's main focus.
 
 See [Full Configuration Reference][FCR]. We use the same syntax as the card.
 
+[🔼 Back to top]
+
 <a id="badge-getting-started"></a>
 
 #### Getting Started
@@ -908,6 +932,8 @@ bar_effect: shimmer
 
 </details>
 <br />
+
+[🔼 Back to top]
 
 ---
 
@@ -971,6 +997,8 @@ already exposes directly.
 <br />
 
 See [Full Configuration Reference][FCR].
+
+[🔼 Back to top]
 
 <a id="badge-template-getting-started"></a>
 
@@ -1045,6 +1073,8 @@ color: |-
 </details>
 <br />
 
+[🔼 Back to top]
+
 ---
 
 <a id="tile-feature"></a>
@@ -1097,6 +1127,8 @@ bolted on, not a replacement.
 <br />
 
 See [Full Configuration Reference][FCR].
+
+[🔼 Back to top]
 
 <a id="tile-feature-getting-started"></a>
 
@@ -1163,6 +1195,8 @@ features:
 </details>
 <br />
 
+[🔼 Back to top]
+
 ---
 
 <a id="multi"></a>
@@ -1222,6 +1256,8 @@ instead, and the text takes what is left. `bar_aligned: false` lets each row
 size its own text.
 
 See [Full Configuration Reference][FCR].
+
+[🔼 Back to top]
 
 <a id="multi-getting-started"></a>
 
@@ -1304,6 +1340,8 @@ grid_options:
 </details>
 <br />
 
+[🔼 Back to top]
+
 ---
 
 <a id="effects-formatting"></a>
@@ -1377,6 +1415,8 @@ bar_effect:
 
 See [`bar_effect`](configuration.md#bar_effect) for the full list.
 
+[🔼 Back to top]
+
 <a id="effect-bar-segments"></a>
 
 #### `bar_segments`: discrete blocks instead of a continuous fill
@@ -1403,6 +1443,8 @@ bar_segments: 10
 </details>
 
 Works with any orientation, size, or color mode/effect.
+
+[🔼 Back to top]
 
 <a id="effect-bar-ring"></a>
 
@@ -1445,6 +1487,8 @@ bar_ring:
 [`bar_segments`](#effect-bar-segments) cuts the ring into blocks too.
 `--epb-ring-softness` sets the softness for a whole theme.
 
+[🔼 Back to top]
+
 <a id="effect-interpolate"></a>
 
 #### `interpolate`: smooth color transitions between zones
@@ -1477,6 +1521,8 @@ custom_theme:
 
 </details>
 
+[🔼 Back to top]
+
 <a id="effect-force-circular-background"></a>
 
 #### `force_circular_background`: the icon's circle, always on
@@ -1502,6 +1548,8 @@ force_circular_background: true
 ```
 
 </details>
+
+[🔼 Back to top]
 
 <a id="effect-icon-animation"></a>
 
@@ -1594,6 +1642,8 @@ icon_animation: battery_charging
 
 </details>
 <br />
+
+[🔼 Back to top]
 
 <a id="effect-alert-when"></a>
 
@@ -1722,6 +1772,8 @@ See [`alert_when`](configuration.md#alert_when) for every
 `highlight`/`animation` combination, and `watermark`/`min_value`/`max_value` for
 the same entity-or-Jinja pattern applied to thresholds that don't alert.
 
+[🔼 Back to top]
+
 <a id="effect-watermark"></a>
 
 #### `watermark`: markers without leaving the bar
@@ -1769,6 +1821,8 @@ watermark:
 That's `type: striped` - see [`watermark`](configuration.md#watermark) for what
 the other five (`blended`, `area`, `triangle`, `round`, `line`) each look like.
 
+[🔼 Back to top]
+
 <a id="effect-segment"></a>
 
 #### `bar_color_mode: segment`: theme zones as distinct blocks
@@ -1798,6 +1852,8 @@ bar_color_mode: segment
 
 </details>
 <br />
+
+[🔼 Back to top]
 
 <a id="effect-rainbow"></a>
 
@@ -1831,6 +1887,8 @@ bar_color_mode: rainbow_full
 
 See [`bar_color_mode`](configuration.md#bar_color_mode) for `segment` and plain
 `rainbow`.
+
+[🔼 Back to top]
 
 <a id="effect-status-label"></a>
 
@@ -1877,6 +1935,8 @@ status_label:
 See [`status_label`](configuration.md#status_label) for the `{label, color}`
 object form and `color_source`.
 
+[🔼 Back to top]
+
 <a id="effect-trend-indicator"></a>
 
 #### `trend_indicator`: which way the value is moving
@@ -1901,6 +1961,8 @@ trend_indicator: true
 ```
 
 </details>
+
+[🔼 Back to top]
 
 <a id="effect-peak-marker"></a>
 
@@ -1934,6 +1996,8 @@ peak_marker:
 ```
 
 </details>
+
+[🔼 Back to top]
 
 <a id="effect-custom-theme"></a>
 
@@ -1971,6 +2035,8 @@ custom_theme:
 ```
 
 </details>
+
+[🔼 Back to top]
 
 <a id="effect-bar-stack"></a>
 
@@ -2045,6 +2111,8 @@ Three modes, three different questions answered:
 See [`bar_stack`](configuration.md#bar_stack) for `subtract`, ordering, and
 auto-shaded colors.
 
+[🔼 Back to top]
+
 <a id="effect-center-zero"></a>
 
 #### `center_zero`: bidirectional bars
@@ -2076,6 +2144,8 @@ See [`center_zero`](configuration.md#center_zero) for a custom center point
 (e.g. a nominal voltage) and [`bar_stack`](configuration.md#bar_stack)'s `net`
 mode, which combines naturally with it.
 
+[🔼 Back to top]
+
 <a id="effect-hide-shape"></a>
 
 #### `hide: [shape]`: drop the icon's circular background
@@ -2103,6 +2173,8 @@ hide:
 
 Same result, via CSS instead of YAML: the
 [`--epb-icon-shape-opacity`](theme.md#css) hook.
+
+[🔼 Back to top]
 
 <a id="effect-density-compact"></a>
 
@@ -2142,6 +2214,8 @@ See [`density`](configuration.md#density) for exactly what it sets under the
 hood (`bar_position`, `hide`, `multiline`) and how it interacts with a Sections
 view's own grid sizing.
 
+[🔼 Back to top]
+
 ---
 
 ### Display Formatting
@@ -2178,6 +2252,8 @@ unit_spacing: no-space
 
 `$100` instead of `100$`. Has no effect once `unit` is empty or hidden.
 
+[🔼 Back to top]
+
 <a id="format-value-compact"></a>
 
 #### `value_compact`: abbreviate large numbers
@@ -2206,6 +2282,8 @@ unit_spacing: no-space
 
 `1200` becomes `1.2k`, `1500000` becomes `1.5M` — locale-aware, trailing zeros
 trimmed (`1.2k`, not `1.20k`).
+
+[🔼 Back to top]
 
 <a id="format-value-sign"></a>
 
@@ -2237,6 +2315,8 @@ value_sign: true
 
 `42` becomes `+42`, zero stays unsigned. Clarifies the direction of a delta at a
 glance — most useful on `center_zero`/`bar_stack: { mode: net }` cards.
+
+[🔼 Back to top]
 
 ---
 
@@ -2291,6 +2371,8 @@ whole gradient with a sliding marker instead of a partial fill,
 [`status_label`](configuration.md#status_label) adds the pill — no Jinja
 condition needed for a fixed label.
 
+[🔼 Back to top]
+
 <a id="showcase-garage"></a>
 
 #### Garage — a pulsing alert on a vertical thermometer
@@ -2331,6 +2413,8 @@ Same `rainbow_full` idea as Living room, this time
 [`layout: vertical`](configuration.md#layout) and an
 [`alert_when`](configuration.md#alert_when) label that only appears — and pings
 — once the value actually crosses 30.
+
+[🔼 Back to top]
 
 <a id="showcase-energy"></a>
 
@@ -2393,6 +2477,8 @@ Each Multi row prints its own value, and the Multi holds those values in one
 column ([`bar_aligned`](configuration.md#bar_aligned), on by default) so the two
 bars start at the same x whatever the reading — `900 W` and `1600 W` are not the
 same width.
+
+[🔼 Back to top]
 
 <a id="showcase-printer"></a>
 
@@ -2469,6 +2555,8 @@ an [`entity-progress-multi-feature`](#multi) under its content
 (`features_position: bottom`), one bar per cartridge. The badge is the
 template's own — it turns orange under 10 % ink or on a paper fault, and shows
 the tile's orange exclamation mark when a sensor is unavailable.
+
+[🔼 Back to top]
 
 ---
 
@@ -2561,6 +2649,8 @@ flexibility for adapting the card to the specifics of each washing machine. With
 this approach, you can create a single card that works with different
 integrations while displaying relevant information in a clear and consistent
 manner.
+
+[🔼 Back to top]
 
 ---
 
@@ -2673,6 +2763,8 @@ icon: mdi:washing-machine
 icon_animation: washing_machine
 ```
 
+[🔼 Back to top]
+
 ---
 
 <a id="simple-helper"></a>
@@ -2760,6 +2852,8 @@ dynamic and intuitive way to monitor progress, ensuring that the displayed
 percentage accurately reflects the time remaining regardless of the task's total
 duration. This solution effectively extends our card usage vision, and enhances
 the user experience.
+
+[🔼 Back to top]
 
 ---
 
@@ -2942,6 +3036,8 @@ Let's Encrypt certificate, it's recommended to:
 
 These topics are beyond the scope of this guide.
 
+[🔼 Back to top]
+
 ---
 
 ### Follow the Sun
@@ -3081,8 +3177,11 @@ visual (progress bar + color) and textual (countdown + time) information. It
 adapts based on current time and sun data, making it a smart and engaging way to
 track solar cycles from your dashboard.
 
+[🔼 Back to top]
+
 <!-- Links -->
 
+[🔼 Back to top]: #top
 [FCR]:
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/configuration.md
 [config-entity]:

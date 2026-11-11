@@ -1,3 +1,5 @@
+<a id="top"></a>
+
 # 🎨 Theme Guide
 
 <!-- dev-banner -->
@@ -172,6 +174,8 @@ as defined by the CSS standard.
 | state-weather-windy                           | `var(--state-weather-windy-color)`                           |
 | state-weather-windy_variant                   | `var(--state-weather-windy_variant-color)`                   |
 
+[🔼 Back to top]
+
 ## Predefined theme
 
 Predefined themes (Card and Badge) are built-in Lovelace themes provided by
@@ -233,6 +237,8 @@ theme: battery_adaptive
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
 
+[🔼 Back to top]
+
 <a id="critical-low"></a>
 
 ### Critical when low (Battery...)
@@ -280,6 +286,8 @@ theme: critical_when_low
 >
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
+
+[🔼 Back to top]
 
 <a id="optimal-low"></a>
 
@@ -329,6 +337,8 @@ theme: optimal_when_low
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
 
+[🔼 Back to top]
+
 <a id="critical-high"></a>
 
 ### Critical when high (CPU, RAM, disk usage...)
@@ -374,6 +384,8 @@ theme: critical_when_high
 >
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
+
+[🔼 Back to top]
 
 <a id="optimal-high"></a>
 
@@ -425,6 +437,8 @@ theme: optimal_when_high
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
 
+[🔼 Back to top]
+
 <a id="critical-extreme"></a>
 
 ### Critical when extreme (Tank level, deviation...)
@@ -474,6 +488,8 @@ theme: critical_when_extreme
 >
 > The icon is automatically retrieved from the entity but can be overridden
 > using the `icon` parameter.
+
+[🔼 Back to top]
 
 <a id="critical-extreme-center"></a>
 
@@ -531,6 +547,8 @@ theme: critical_when_extreme_center
 > already covers more fully) — pick the plain `critical_when_extreme` instead
 > for a non-`center_zero` card.
 
+[🔼 Back to top]
+
 ### Light
 
 <picture>
@@ -578,6 +596,8 @@ icon_tap_action:
 
 </details>
 <br />
+[🔼 Back to top]
+
 
 ### Temperature
 
@@ -634,6 +654,8 @@ icon_tap_action:
 > Fahrenheit values are converted to apply the correct color. Make sure to set
 > your unit to `°F` correctly in order to see the accurate color representation.
 
+[🔼 Back to top]
+
 ### Humidity
 
 <picture>
@@ -683,6 +705,8 @@ icon_tap_action:
 
 </details>
 <br />
+[🔼 Back to top]
+
 
 ### VOC
 
@@ -744,6 +768,8 @@ icon_tap_action:
 > provided here and the device's documentation or current standards, the latter
 > shall prevail. The lower the value, the better it is generally considered to
 > be. With this card you can use `custom_theme` to define your own ranges.
+
+[🔼 Back to top]
 
 <a id="pm25"></a>
 
@@ -807,6 +833,8 @@ icon_tap_action:
 > provided here and the device's documentation or current standards, the latter
 > shall prevail. The lower the value, the better it is generally considered to
 > be. With this card you can use `custom_theme` to define your own ranges.
+
+[🔼 Back to top]
 
 <a id="custom-theme"></a>
 
@@ -937,6 +965,8 @@ bar_color_mode: rainbow
 > gradient, with the marker crossing the visual center at zero. For linear
 > themes (e.g. `light`), zone boundaries are derived automatically by splitting
 > 0–100% into equal segments (5 levels → 0–20%, 20–40%, …).
+
+[🔼 Back to top]
 
 ## Adapt to HA custom theme
 
@@ -1141,6 +1171,8 @@ card_mod: # or: uix:
 > [Class Name Updates & Migration Guide](#class-name-migration) if it's ever
 > renamed in a future release.
 
+[🔼 Back to top]
+
 <a id="card-mod-and-card-structure"></a>
 
 ## card_mod / uix and card structure
@@ -1177,6 +1209,8 @@ guide you in updating your custom card modifications.
 | `progress-bar-low-zero`          | `zero`                   | Zero mark for center-zero bars                                                                  |
 | `progress-bar-low-wm`            | `low`                    | Low watermark marker                                                                            |
 | `progress-bar-high-wm`           | `high`                   | High watermark marker                                                                           |
+
+[🔼 Back to top]
 
 ### DOM
 
@@ -1377,6 +1411,8 @@ ha-card...
          └─ div.zero.mark
 ```
 
+[🔼 Back to top]
+
 ## Card sizing
 
 <a id="card-sizing"></a>
@@ -1477,4 +1513,8 @@ frameless: true
 [issue #133]:
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues/133
 [card_mod]: https://github.com/thomasloven/lovelace-card-mod
+
+[🔼 Back to top]
+
+[🔼 Back to top]: #top
 

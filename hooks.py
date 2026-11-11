@@ -32,6 +32,14 @@ def _details(match: re.Match) -> str:
 DEV_BANNER = re.compile(r"<!-- dev-banner -->.*?<!-- /dev-banner -->\n?", re.S)
 
 
+# "Back to top" links serve GitHub readers; the site has Material's own button.
+BACK_TO_TOP = re.compile(r'^(?:\[🔼 Back to top\](?:: #top)?|<a id="top"></a>)\n\n?', re.M)
+
+
+# A lone <br /> spaces blocks out on GitHub; the site's blocks have margins.
+LONE_BR = re.compile(r"^[ \t]*<br\s*/?>[ \t]*\n", re.M)
+
+
 # <picture> follows the OS scheme, Material's toggle only hides #only-light/dark.
 PICTURE = re.compile(
     r'<picture>\s*<source media="\(prefers-color-scheme: dark\)"\s+srcset="([^"]+)"\s*/?>\s*'
@@ -47,7 +55,7 @@ def _local(markdown: str, repo_url: str, site_url: str) -> str:
     markdown = markdown.replace(f"{raw}/main/docs/", "")
     # The README links to the site (HACS shows it): back to the source pages.
     markdown = re.sub(re.escape(site_url) + r"([\w-]+)/", r"\1.md", markdown)
-    return DETAILS.sub(_details, markdown)
+    return DETAILS.sub(_details, LONE_BR.sub("", markdown))
 
 
 def on_files(files, config):
@@ -58,7 +66,7 @@ def on_files(files, config):
 
 
 def on_page_markdown(markdown, page, config, files):
-    markdown = DEV_BANNER.sub("", markdown)
+    markdown = BACK_TO_TOP.sub("", DEV_BANNER.sub("", markdown))
     markdown = _local(markdown, config.repo_url, config.site_url).replace("../README.md", "index.md")
     markdown = PICTURE.sub(r'<img src="\2#only-light"\3/><img src="\1#only-dark"\3/>', markdown)
     # Raw HTML paths are not rewritten by MkDocs: a page is served one folder down.

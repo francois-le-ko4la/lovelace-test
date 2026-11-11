@@ -1,3 +1,5 @@
+<a id="top"></a>
+
 # ⚙️ Full Configuration Reference
 
 <!-- dev-banner -->
@@ -33,6 +35,8 @@ Example:
 option: 'xyz'
 ```
 
+[🔼 Back to top]
+
 #### Float
 
 A number that may include a decimal point (e.g., 3.14). Can also represent
@@ -43,6 +47,8 @@ _Example_:
 ```yaml
 option: -1.3
 ```
+
+[🔼 Back to top]
 
 #### Integer
 
@@ -55,6 +61,8 @@ _Example_:
 option: 1
 ```
 
+[🔼 Back to top]
+
 #### Boolean
 
 A value that can be either `true` or `false`. It is typically used for toggling
@@ -65,6 +73,8 @@ _Example_:
 ```yaml
 option: true
 ```
+
+[🔼 Back to top]
 
 #### List (Array)
 
@@ -81,6 +91,8 @@ option:
   - item3
 ```
 
+[🔼 Back to top]
+
 #### Map (Object)
 
 A set of key-value pairs, also called a dictionary or map. Each key is
@@ -93,6 +105,8 @@ object:
   key1: value1
   key2: value2
 ```
+
+[🔼 Back to top]
 
 #### JINJA
 
@@ -198,6 +212,8 @@ directly instead of following the progress bar's own color.
 [`badge_icon`](#badge_icon) is a third - it can return a `{icon, color}` object
 to drive both the badge's icon and color from one condition instead of two.
 
+[🔼 Back to top]
+
 ### Value shapes & shortcuts
 
 Several unrelated options share the same underlying shape, or the same overall
@@ -244,6 +260,8 @@ being a Map underneath: a plain string is shorthand for `{ jinja: '...' }`,
 covering most cases, and the full Map form is there whenever
 `position`/`color_source` are actually needed.
 
+[🔼 Back to top]
+
 ### Option description
 
 #### Structure
@@ -274,6 +292,8 @@ to ensure clarity and ease of use:
 - **Notes** _(optional)_  
   Any additional details, edge cases, limitations, or version compatibility
   notes that may help advanced users or clarify uncommon behavior.
+
+[🔼 Back to top]
 
 #### Badges
 
@@ -309,6 +329,8 @@ The following badge is used throughout this documentation:
 These options are not available in the visual card editor and must be configured
 manually in YAML mode.
 
+[🔼 Back to top]
+
 #### Parameter specification
 
 This syntax provides an instant overview of configuration options, making it
@@ -334,6 +356,8 @@ _Example_:
 
 > **`name`** [JINJA] ➡️ string
 
+[🔼 Back to top]
+
 #### Typical description
 
 **`title`**
@@ -353,6 +377,8 @@ option: sensor.hp_envy_6400_series_tri_color_cartridge
 > [!NOTE]
 >
 > the most important note!
+
+[🔼 Back to top]
 
 <a id="standard"></a>
 
@@ -394,6 +420,8 @@ entity: sensor.hp_envy_6400_series_tri_color_cartridge
 >
 > Timers are supported (1.0.43). `attribute`, `min`, `max` parameters are not
 > considered.
+
+[🔼 Back to top]
 
 #### `attribute`
 
@@ -442,6 +470,8 @@ _default attribute:_
 `brightness` (0-255) and `volume_level` (0-1) are rescaled to 0-100 by the card,
 so their `max_value` stays on the usual percentage scale - setting
 `max_value: 255` divides the bar a second time.
+
+[🔼 Back to top]
 
 #### `name`
 
@@ -493,6 +523,8 @@ _Accepted types_:
 | area   | Displays the name of the Area associated with the entity.          |
 | device | Displays the name of the Device associated with the entity.        |
 | floor  | Displays the name of the Floor where the entity's area is located. |
+
+[🔼 Back to top]
 
 #### `unit`
 
@@ -561,6 +593,8 @@ unit: ABC
 > Disabling the Unit: To completely hide the unit from display, use
 > `hide: ['unit']` (see [`hide`](#hide)).
 
+[🔼 Back to top]
+
 #### `decimal`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -609,6 +643,8 @@ decimal: 1
 > Before version 1.0.20, the default values were different (2 for percentages
 > and 0 for other units). When updating, you will need to adjust the parameter
 > according to your needs.
+
+[🔼 Back to top]
 
 #### `min_value`
 
@@ -705,6 +741,8 @@ type: custom:entity-progress-card
 min_value:
   jinja: "{{ states('input_number.floor') | float }}"
 ```
+
+[🔼 Back to top]
 
 #### `max_value`
 
@@ -873,6 +911,8 @@ max_value:
        + (states('sensor.washing_machine_remaining_time') | float(0)) }}
 ```
 
+[🔼 Back to top]
+
 #### `reverse`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -897,6 +937,8 @@ unit: flextimer
 name: Remaining Time reverse
 reverse: true
 ```
+
+[🔼 Back to top]
 
 #### `state_content`
 
@@ -950,6 +992,8 @@ state_content:
 > - This feature is useful for adding additional context (e.g., position,
 >   status...) to the main progress value.
 
+[🔼 Back to top]
+
 #### `custom_info`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -997,6 +1041,8 @@ custom_info: >-
 >   [Supported HTML](#supported-html) for the allowed tags and styles.
 > - If the template evaluates to an empty string, nothing will be displayed.
 
+[🔼 Back to top]
+
 #### `multiline`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -1032,6 +1078,8 @@ custom_info: >-
     <span style="color: blue;">{{ states('sensor.temperature') }} °C</span><br>– Cool
   {% endif %}
 ```
+
+[🔼 Back to top]
 
 #### `name_info`
 
@@ -1070,6 +1118,8 @@ name_info: >-
 > - This field supports HTML for advanced formatting — see
 >   [Supported HTML](#supported-html) for the allowed tags and styles.
 > - If the template evaluates to an empty string, nothing will be displayed.
+
+[🔼 Back to top]
 
 #### `bar_stack`
 
@@ -1253,6 +1303,8 @@ instead of only seeing their difference.
 
 Customize the look and feel: icons, layout, colors, sizes, and visual themes.
 
+[🔼 Back to top]
+
 #### `icon`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -1276,6 +1328,8 @@ _Order of Priority for the Icon:_
 - Icon Parameter: A custom icon specifically defined for the item.
 - Entity icon.
 
+[🔼 Back to top]
+
 #### `color`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -1295,6 +1349,8 @@ type: custom:entity-progress-card
 ····
 color: rgb(110, 65, 171)
 ```
+
+[🔼 Back to top]
 
 #### `icon_animation`
 
@@ -1450,6 +1506,8 @@ icon_animation:
   jinja: "{{ states('sensor.robot_piscine_heures_de_filtrage_recommandees')|float(0) > 3 }}"
 ```
 
+[🔼 Back to top]
+
 #### `badge_icon`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -1507,6 +1565,8 @@ badge_icon: >-
 > badge_icon: "{{ {'color': '#ff0000'} if is_state('binary_sensor.door', 'on') else {} }}"
 > ```
 
+[🔼 Back to top]
+
 #### `badge_color`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -1533,6 +1593,8 @@ badge_color: >-
   {% endif %}
 ```
 
+[🔼 Back to top]
+
 #### `bar_color`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -1552,6 +1614,8 @@ type: custom:entity-progress-card
 ····
 bar_color: rgb(110, 65, 171)
 ```
+
+[🔼 Back to top]
 
 #### `bar_size`
 
@@ -1593,6 +1657,8 @@ type: custom:entity-progress-card
 ····
 bar_size: medium
 ```
+
+[🔼 Back to top]
 
 #### `bar_position`
 
@@ -1697,6 +1763,8 @@ _Default value_:
 
 - `default`
 
+[🔼 Back to top]
+
 #### `bar_single_line`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -1726,6 +1794,8 @@ _Options_:
 _Default value_:
 
 - `false`
+
+[🔼 Back to top]
 
 #### `bar_segments`
 
@@ -1759,6 +1829,8 @@ exposes this as a numeric field.
 > always shown, with a moving marker instead) or [`bar_stack`](#bar_stack) (one
 > fill fraction per entity, not one for the whole bar) — either one clears
 > `bar_segments` automatically.
+
+[🔼 Back to top]
 
 #### `bar_ring`
 
@@ -1794,6 +1866,8 @@ bar_ring:
   start: 225
   gap: 90
 ```
+
+[🔼 Back to top]
 
 #### `bar_effect`
 
@@ -1873,6 +1947,8 @@ _Effect incompatibilities_ — some effects cannot be combined:
 
 The visual editor enforces these rules automatically by hiding incompatible
 chips when a conflicting effect is active.
+
+[🔼 Back to top]
 
 #### `bar_color_mode`
 
@@ -1988,6 +2064,8 @@ max_value: 40
 bar_color_mode: rainbow_full
 ```
 
+[🔼 Back to top]
+
 #### `bar_scale`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -2024,6 +2102,8 @@ max_value: 100000
 bar_scale: log
 ```
 
+[🔼 Back to top]
+
 #### `bar_max_width`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -2058,6 +2138,8 @@ type: custom:entity-progress-card
 entity: timer.testtimer
 bar_max_width: 100px
 ```
+
+[🔼 Back to top]
 
 #### `bar_orientation`
 
@@ -2115,6 +2197,8 @@ reverse: true
 > `down` at all ({`rtl`|`ltr`} only): none of them have a `layout` option, and
 > their `bar_position` values never include `overlay` or `background`.
 
+[🔼 Back to top]
+
 #### `force_circular_background`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -2147,6 +2231,8 @@ type: custom:entity-progress-card
 entity: timer.living_room
 force_circular_background: true
 ```
+
+[🔼 Back to top]
 
 #### `trend_indicator`
 
@@ -2247,6 +2333,8 @@ _Icons_:
 _Default value_:
 
 - `false`
+
+[🔼 Back to top]
 
 #### `peak_marker`
 
@@ -2357,6 +2445,8 @@ _Default value_:
 
 - Not configured (no marks)
 
+[🔼 Back to top]
+
 #### `status_label`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -2448,6 +2538,8 @@ status_label:
 > — it follows whatever `status_label.position` (or the default `right`) is
 > already set to.
 
+[🔼 Back to top]
+
 #### `text_effect`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -2491,6 +2583,8 @@ _Default value_:
 
 - `none`
 
+[🔼 Back to top]
+
 #### `text_shadow`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -2504,6 +2598,8 @@ _Default value_:
 > [`text_effect: shadow`](#text_effect) instead. `text_shadow: true` is
 > automatically migrated for the session, `false` is dropped. See [Deprecated >
 > Options].
+
+[🔼 Back to top]
 
 #### `density`
 
@@ -2634,6 +2730,8 @@ entity: sensor.cpu_usage
 density: single_column
 ```
 
+[🔼 Back to top]
+
 #### `layout`
 
 [![Card OK][Card-OK]](#compatibility)
@@ -2663,6 +2761,8 @@ type: custom:entity-progress-card
 ····
 layout: vertical
 ```
+
+[🔼 Back to top]
 
 #### `content_order`
 
@@ -2740,6 +2840,8 @@ content_order:
   - [info, bar]
 ```
 
+[🔼 Back to top]
+
 #### `frameless`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -2764,6 +2866,8 @@ entity: timer.living_room
 frameless: true
 ```
 
+[🔼 Back to top]
+
 #### `marginless`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -2781,6 +2885,8 @@ type: custom:entity-progress-card
 entity: sensor.cpu_usage
 marginless: true
 ```
+
+[🔼 Back to top]
 
 #### `height`
 
@@ -2823,6 +2929,8 @@ entity: sensor.temperature
 height: 140px
 ```
 
+[🔼 Back to top]
+
 #### `min_width`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -2853,6 +2961,8 @@ type: custom:entity-progress-card
 entity: sensor.temperature
 min_width: 140px
 ```
+
+[🔼 Back to top]
 
 #### `reverse_secondary_info_row`
 
@@ -2890,6 +3000,8 @@ entity: timer.living_room
 reverse_secondary_info_row: true
 ```
 
+[🔼 Back to top]
+
 #### `unit_spacing`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -2915,6 +3027,8 @@ own convention or overriding it.
 > Assistant, would write `45 min`. A bar has less room than a sentence, and
 > `1h23min` reads better on one.
 
+[🔼 Back to top]
+
 #### `unit_position`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -2932,6 +3046,8 @@ unit: $
 unit_position: before
 unit_spacing: no-space
 ```
+
+[🔼 Back to top]
 
 #### `value_compact`
 
@@ -2983,6 +3099,8 @@ value_compact: true
 > the better answer for a meter that always reads in kilowatts. `value_compact`
 > is for the ones that move.
 
+[🔼 Back to top]
+
 #### `value_sign`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -3002,6 +3120,8 @@ min_value: -3000
 max_value: 3000
 value_sign: true
 ```
+
+[🔼 Back to top]
 
 #### `center_zero`
 
@@ -3065,6 +3185,8 @@ With `value: 60` and `growth_percent: true`, a cover at `66%` will display
 `+10%` (i.e. `(66 - 60) / 60 * 100`), representing how far the current value has
 grown relative to the center point — rather than the bar's raw fill ratio.
 
+[🔼 Back to top]
+
 #### `theme`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -3111,6 +3233,8 @@ theme: light
 > set, `theme` wins over `color`/`bar_color` and also enables
 > [`bar_color_mode`](#bar_color_mode) (`interpolate` isn't available there,
 > unlike Card/Feature).
+
+[🔼 Back to top]
 
 #### `custom_theme`
 
@@ -3223,6 +3347,8 @@ custom_theme:
     icon: mdi:abacus
 ```
 
+[🔼 Back to top]
+
 #### `interpolate`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -3258,6 +3384,8 @@ custom_theme:
     color: "#f44336"
 interpolate: true
 ```
+
+[🔼 Back to top]
 
 #### `hide`
 
@@ -3333,6 +3461,8 @@ The template must return either form, both are equivalent:
 
 Any combination of the supported element names, in either form.
 
+[🔼 Back to top]
+
 #### `disable_unit`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -3356,6 +3486,8 @@ type: custom:entity-progress-card
 ····
 disable_unit: true
 ```
+
+[🔼 Back to top]
 
 #### `watermark`
 
@@ -3533,6 +3665,8 @@ watermark:
     color: yellow # 🎨 Color to indicate the low watermark zone
 ```
 
+[🔼 Back to top]
+
 #### `alert_when`
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
@@ -3702,9 +3836,13 @@ alert_when:
     {% else %}false{% endif %}
 ```
 
+[🔼 Back to top]
+
 ### Behavior And Actions
 
 Define interactions on tap, double tap, or hold gestures.
+
+[🔼 Back to top]
 
 #### `xyz_action`
 
@@ -3875,6 +4013,8 @@ available for Templates as well:
 | **Behavior And Actions**     |                           |              |                                      |                                            |
 | `xyz_action`                 | map (optional)            | see defaults | Tap/double/hold actions              | [Config Ref.](#xyz_action)                 |
 
+[🔼 Back to top]
+
 ### Specific options
 
 #### `fast_refresh`
@@ -3919,6 +4059,8 @@ secondary: >-
   {{ '%02d:%02d:%02d' % (remaining.seconds // 3600, (remaining.seconds % 3600) // 60, remaining.seconds % 60) }}
 ```
 
+[🔼 Back to top]
+
 #### `name` (Jinja)
 
 [![Template OK][Template-OK]](#compatibility)
@@ -3938,6 +4080,8 @@ name:
   "{{ state_attr('sensor.battery_level', 'friendly_name') }} ({{
   states('sensor.battery_level') }}%)"
 ```
+
+[🔼 Back to top]
 
 #### `icon` (Jinja)
 
@@ -3967,6 +4111,8 @@ icon: >-
   {% endif %}
 ```
 
+[🔼 Back to top]
+
 #### `secondary` (Jinja)
 
 [![Template OK][Template-OK]](#compatibility)
@@ -3984,6 +4130,8 @@ secondary: >-
   Last updated: {{ relative_time(states.sensor.temperature.last_changed) }} ago
   ({{ states('sensor.temperature') }}°C)
 ```
+
+[🔼 Back to top]
 
 #### `percent` (Jinja)
 
@@ -4014,6 +4162,8 @@ percent: >-
   | round(1) if temp_state not in ['unknown', 'unavailable', 'none'] else 0 }}
 ```
 
+[🔼 Back to top]
+
 #### `color` (Jinja)
 
 [![Template OK][Template-OK]](#compatibility)
@@ -4039,6 +4189,8 @@ color: >-
   {% endif %}
 ```
 
+[🔼 Back to top]
+
 #### `bar_color` (Jinja)
 
 [![Template OK][Template-OK]](#compatibility)
@@ -4063,6 +4215,8 @@ bar_color: >-
     linear-gradient(90deg, orange, red)
   {% endif %}
 ```
+
+[🔼 Back to top]
 
 <a id="multi"></a>
 
@@ -4182,6 +4336,8 @@ features:
 > shorter rather than overflowing, and the text gives way before the bar does;
 > switch to `xsmall` to comfortably fit more.
 
+[🔼 Back to top]
+
 <a id="multi-value"></a> <a id="multi-show_value"></a>
 
 ### The value, and which side it sits on
@@ -4251,6 +4407,8 @@ entities:
 > A config that never mentioned `show_value` has nothing to migrate from and
 > gets the full row — icon and name included.
 
+[🔼 Back to top]
+
 <a id="multi-rows"></a>
 
 ### `rows`
@@ -4275,6 +4433,8 @@ entities:
   - entity: sensor.printer_magenta_cartridge
   - entity: sensor.printer_yellow_cartridge
 ```
+
+[🔼 Back to top]
 
 <a id="multi-layout"></a>
 
@@ -4310,6 +4470,8 @@ entities:
   - entity: sensor.printer_magenta_cartridge
   - entity: sensor.printer_yellow_cartridge
 ```
+
+[🔼 Back to top]
 
 ### `bar_aligned`
 
@@ -4374,10 +4536,13 @@ card:
   type: custom:vertical-stack-in-card
 ```
 
+[🔼 Back to top]
+
 ---
 
 _This reference guide is adapted for entity-progress-card._
 
+[🔼 Back to top]: #top
 [yaml-only]: https://img.shields.io/badge/YAML-Only-orange.svg?style=flat
 [Card-OK]: https://img.shields.io/badge/Card-OK-green.svg?style=flat
 [Badge-OK]: https://img.shields.io/badge/Badge-OK-green.svg?style=flat
