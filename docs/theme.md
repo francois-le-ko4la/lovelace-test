@@ -23,8 +23,8 @@ need.
   matched to your Home Assistant theme, or any CSS color.
 - **[Restyle the whole card](#css)** _(advanced)_. CSS variables change the
   bar's background, the icon's shape, the markers... in a Home Assistant theme
-  or with card_mod. The [card structure](#card-mod-and-card-structure) gives
-  the selectors.
+  or with card_mod / uix. The [card structure](#card-mod-and-card-structure)
+  gives the selectors.
 - **[Size the card](#card-sizing).** How the card picks its height in a
   Sections or Masonry view, a stack, a grid or a button-card, and how to
   change it.
@@ -45,20 +45,23 @@ code editor** in the card editor), then replace the `entity:` value with your
 own. Want your own limits, e.g. red under 20 %? See
 [Custom theme](#custom-theme).
 
-| Value                                                      | Use for                          | Unit  |
-| :--------------------------------------------------------- | :------------------------------- | :---- |
-| [`battery_adaptive`](#battery-adaptive)                    | Phone or laptop battery          | %     |
-| [`critical_when_low`](#critical-low)                       | Battery, stock                   | %     |
-| [`optimal_when_low`](#optimal-low)                         | Lower is better                  | %     |
-| [`critical_when_high`](#critical-high)                     | CPU, RAM, disk usage             | %     |
-| [`optimal_when_high`](#optimal-high)                       | Higher is better                 | %     |
-| [`critical_when_extreme`](#critical-extreme)               | Tank level, deviation            | %     |
-| [`critical_when_extreme_center`](#critical-extreme-center) | Signed deviation (`center_zero`) | %     |
-| [`light`](#light)                                          | Brightness                       | %     |
-| [`temperature`](#temperature)                              | Temperature                      | °C    |
-| [`humidity`](#humidity)                                    | Humidity                         | %     |
-| [`voc`](#voc)                                              | Air quality (VOC)                | ppb   |
-| [`pm25`](#pm25)                                            | Air quality (PM 2.5)             | µg/m³ |
+| Value                                                      | Use for                          | Red when                             | Unit  |
+| :--------------------------------------------------------- | :------------------------------- | :----------------------------------- | :---- |
+| [`battery_adaptive`](#battery-adaptive)                    | Phone or laptop battery          | under 10 %, over 90 % while charging | %     |
+| [`critical_when_low`](#critical-low)                       | Battery, stock                   | under 10 %                           | %     |
+| [`optimal_when_low`](#optimal-low)                         | A low value is good              | over 80 %                            | %     |
+| [`critical_when_high`](#critical-high)                     | CPU, RAM, disk usage             | over 90 %                            | %     |
+| [`optimal_when_high`](#optimal-high)                       | A high value is good             | under 20 %                           | %     |
+| [`critical_when_extreme`](#critical-extreme)               | Tank level, deviation            | under 10 %, over 90 %                | %     |
+| [`critical_when_extreme_center`](#critical-extreme-center) | Signed deviation (`center_zero`) | under -80 %, over 80 %               | %     |
+| [`light`](#light)                                          | Brightness                       | never                                | %     |
+| [`temperature`](#temperature)                              | Temperature                      | over 30 °C                           | °C    |
+| [`humidity`](#humidity)                                    | Humidity                         | under 20 %                           | %     |
+| [`voc`](#voc)                                              | Air quality (VOC)                | over 3000 ppb                        | ppb   |
+| [`pm25`](#pm25)                                            | Air quality (PM 2.5)             | over 55 µg/m³                        | µg/m³ |
+
+These limits are fixed. For other limits, e.g. red under 20 %, use
+[Custom theme](#custom-theme).
 
 > [!NOTE]
 >
@@ -489,8 +492,9 @@ icon_tap_action:
     width="750"/>
 </picture>
 
-`min_value` and `max_value` are optional: here they narrow the bar to
--20–45 °C instead of the theme's whole range.
+`min_value` and `max_value` are optional. Without them the bar runs from `0` to
+`100` °C; here they narrow it to -20–45 °C, which also shows readings below
+zero.
 
 <br />
 <details>
@@ -723,6 +727,11 @@ icon_tap_action:
 
 ### Custom theme
 
+Works on the card, the badge, the tile feature and each row of a Multi-Card or
+Multi-Feature. The Template and Badge Template variants color with Jinja
+instead: [`color`](configuration.md#color-jinja) and
+[`bar_color`](configuration.md#bar_color-jinja).
+
 Your own color zones, e.g. a battery red under 20 %, green up to 80 %, orange
 above:
 
@@ -799,9 +808,13 @@ For a battery at 69% with `optimal_when_high`, `segment` shows each zone as a
 distinct solid block up to the current value:
 
 ```text
-[██ red ██][████ orange ████][██████ yellow ██████][████ light-green ▓▓▓]
- 0%       20%               40%                   60%                 69%
+[████████████][████████████][████████████][█████
+ red           orange        yellow        light green
+0%            20%           40%           60%   69%
 ```
+
+Each zone gets its own block: red to 20 %, orange to 40 %, yellow to 60 %, then
+light green up to the value, 69 %. The part above 69 % stays empty.
 
 `rainbow` renders the same sensor as a smooth gradient flowing across all
 visible zone colors instead.
@@ -1174,14 +1187,23 @@ card_mod: # or: uix:
 | `--epb-name-font-weight`    | Name font weight    | `700`     |
 | `--epb-name-letter-spacing` | Name letter spacing | `2px`     |
 
+#### Text effect
+
+| Variable                  | Description                                                                        | Example   |
+| :------------------------ | :--------------------------------------------------------------------------------- | :-------- |
+| `--epb-text-effect-color` | [`text_effect`](configuration.md#text_effect) color (default: the card background) | `#000000` |
+| `--epb-text-effect-size`  | `text_effect` thickness                                                            | `1px`     |
+| `--epb-text-effect-blur`  | `text_effect` blur                                                                 | `2px`     |
+
 #### Detail
 
-| Variable                      | Description           | Example   |
-| :---------------------------- | :-------------------- | :-------- |
-| `--epb-detail-color`          | Detail color          | `#aaaaaa` |
-| `--epb-detail-font-size`      | Detail font size      | `12px`    |
-| `--epb-detail-font-weight`    | Detail font weight    | `300`     |
-| `--epb-detail-letter-spacing` | Detail letter spacing | `1px`     |
+| Variable                      | Description                                                                         | Example   |
+| :---------------------------- | :---------------------------------------------------------------------------------- | :-------- |
+| `--epb-detail-color`          | Detail color                                                                        | `#aaaaaa` |
+| `--epb-detail-font-size`      | Detail font size                                                                    | `12px`    |
+| `--epb-detail-font-weight`    | Detail font weight                                                                  | `300`     |
+| `--epb-detail-letter-spacing` | Detail letter spacing                                                               | `1px`     |
+| `--epb-multi-value-width`     | Width of the value column of a [Multi-Card / Multi-Feature](configuration.md#multi) | `120px`   |
 
 #### Trend
 
@@ -1202,14 +1224,17 @@ card_mod: # or: uix:
 
 #### Peak Marker
 
-| Variable                     | Description                        | Example   |
-| :--------------------------- | :--------------------------------- | :-------- |
-| `--epb-peak-min-color`       | `peak_marker` minimum mark color   | `#00ffff` |
-| `--epb-peak-min-opacity`     | `peak_marker` minimum mark opacity | `0.8`     |
-| `--epb-peak-max-color`       | `peak_marker` maximum mark color   | `#ff00ff` |
-| `--epb-peak-max-opacity`     | `peak_marker` maximum mark opacity | `0.8`     |
-| `--epb-peak-average-color`   | `peak_marker` average mark color   | `#ffff00` |
-| `--epb-peak-average-opacity` | `peak_marker` average mark opacity | `0.8`     |
+| Variable                      | Description                         | Example   |
+| :---------------------------- | :---------------------------------- | :-------- |
+| `--epb-peak-min-color`        | `peak_marker` minimum mark color    | `#00ffff` |
+| `--epb-peak-min-opacity`      | `peak_marker` minimum mark opacity  | `0.8`     |
+| `--epb-peak-max-color`        | `peak_marker` maximum mark color    | `#ff00ff` |
+| `--epb-peak-max-opacity`      | `peak_marker` maximum mark opacity  | `0.8`     |
+| `--epb-peak-average-color`    | `peak_marker` average mark color    | `#ffff00` |
+| `--epb-peak-average-opacity`  | `peak_marker` average mark opacity  | `0.8`     |
+| `--epb-peak-marker-line-size` | `peak_marker` mark line thickness   | `2px`     |
+| `--epb-peak-range-color`      | `peak_marker` min–max range color   | `#00ffff` |
+| `--epb-peak-range-opacity`    | `peak_marker` min–max range opacity | `0.8`     |
 
 #### Alert
 
