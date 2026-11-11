@@ -1336,7 +1336,7 @@ _Order of Priority for the Icon:_
 
 > **`color`** [String] _(optional)_
 
-The color of the icon. Accepts [Token color][token-color], color names, RGB
+The color of the icon. Accepts [color names][token-color], CSS color names, RGB
 values, or HEX codes. By default, the color is the one Home Assistant's theme
 gives the entity, by domain, device_class and state (31 domains, plus battery
 levels), as on its tiles. Other entities use `var(--state-icon-color)`.
@@ -1602,8 +1602,8 @@ badge_color: >-
 
 > **`bar_color`** [String] _(optional, default: the entity's state color)_
 
-The color of the progress bar. Accepts [Token color][token-color], color names,
-RGB values, or HEX codes. By default, it follows the same state color as
+The color of the progress bar. Accepts [color names][token-color], CSS color
+names, RGB values, or HEX codes. By default, it follows the same state color as
 [`color`](#color).
 
 _Examples:_ `"blue"`, `"rgb(68, 115, 158)"`, `"#FF5733"`,

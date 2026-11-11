@@ -8,20 +8,22 @@
 > options not released yet. For the latest release, see the [documentation site](https://francois-le-ko4la.github.io/lovelace-test/).
 <!-- /dev-banner -->
 
-Color is what turns a bar into an answer: green means all is well, red means
-look now. This page shows every way to get there, from one line of YAML to a
-fully restyled card. Start at the top and stop as soon as you have what you
-need.
+Color shows the state at a glance: green is fine, red needs attention. This
+page goes from the simplest option, one line of YAML, to a fully restyled card:
+stop as soon as you have what you need. New here? Install the card first: see
+[Installation](../README.md#prerequisites).
 
 - **[Pick a ready-made theme](#predefined-theme).** One line, such as
   `theme: battery_adaptive`, and the bar changes color with the value: a
-  battery, a CPU, a temperature...
-- **[Draw your own zones](#custom-theme).** Red under 20 %, green up to 80 %:
-  `custom_theme` sets the limits you want. [`bar_color_mode`](#bar_color_mode)
+  battery, a CPU, a temperature... The limits are fixed: a battery turns red
+  under 10 %.
+- **[Draw your own zones](#custom-theme)** (value ranges, each with its
+  color). Red under 20 %, green up to 80 %: `custom_theme` sets the limits you
+  want. [`bar_color_mode`](#bar_color_mode)
   then chooses how the zones are painted: one solid color, blocks or a gradient.
 - **[Choose a color by name](#token-color).** No zones needed: `bar_color: red`
-  paints the bar, `color: red` the icon. Any name like `red` or `teal` works,
-  matched to your Home Assistant theme, or any CSS color.
+  paints the bar, `color: red` the icon. A name such as `red` or `teal`
+  follows the colors of your Home Assistant theme; any CSS color works too.
 - **[Restyle the whole card](#css)** _(advanced, optional)_. CSS variables
   change the bar's background, the icon's shape, the markers... in a Home
   Assistant theme or with card_mod / uix (add-ons installed from HACS). The
@@ -30,13 +32,12 @@ need.
   Sections or Masonry view, a stack, a grid or a button-card, and how to
   change it.
 - **Something looks wrong?** Nothing is broken: remove the lines you added,
-  save, then reload the page; the card goes back to its default look. A bar in
-  a single color is normal without `theme` or `custom_theme`.
-
-**An error message on the card?** See [Troubleshooting](troubleshooting.md).
-This page is only about colors: to show a remaining time, such as a washing
-machine's, see the
-[cookbook](cookbook.md#the-laundry-mystery-decoding-washer-entities-across-brands).
+  press **Save**, then refresh the page; the card goes back to its default
+  look. A bar in a single color is normal without `theme` or `custom_theme`;
+  with one, compare your YAML's indentation with the example.
+- **An error message on the card?** See [Troubleshooting](troubleshooting.md).
+- **Time left on a dishwasher or washing machine?** This page is only about
+  colors: see [Show a remaining time](cookbook.md#laundry-mystery).
 
 <a id="predefined-theme"></a>
 
@@ -49,14 +50,20 @@ feature and each row of a Multi-Card or Multi-Feature. The Template and Badge
 Template variants accept only the themes in % (not `temperature`, `voc`,
 `pm25`).
 
-Under each picture below, **Show ranges** gives the limits of each color and
-**Show YAML** the lines to copy. To paste them, edit your dashboard, open the
-card and choose **Show code editor**; then replace the `entity:` value with
-your own. Want your own limits, e.g. red under 20 %? See
+Under most pictures below, **Show ranges** gives the limits of each color and
+**Show YAML** the lines to copy (tap to open). To paste them, edit your
+dashboard, open the card and choose **Show code editor**; then replace the
+`entity:` value with the name of your own sensor, shown in the card editor's
+Entity field. Want your own limits, e.g. red under 20 %? See
 [Custom theme](#custom-theme).
 
 Icons: `light`, `temperature`, `humidity`, `voc` and `pm25` set their own; the
-other themes keep the entity's icon. `icon:` overrides both.
+other themes keep the entity's icon. `icon:` overrides both. Most pictures
+show the theme at several values, between a bar in blocks (top) and a gradient
+(bottom).
+
+Red only marks the zone to watch: it is not an error. Purple, on `humidity`,
+`voc` and `pm25`, marks an even worse zone.
 
 | Value                                                      | Use for                          | Bar turns red when                   | Unit  |
 | :--------------------------------------------------------- | :------------------------------- | :----------------------------------- | :---- |
@@ -73,10 +80,9 @@ other themes keep the entity's icon. `icon:` overrides both.
 | [`voc`](#voc)                                              | Air quality (VOC)                | over 3000 ppb (purple over 25,000)   | ppb   |
 | [`pm25`](#pm25)                                            | Air quality (PM 2.5)             | over 55 µg/m³ (purple over 150)      | µg/m³ |
 
-Red only marks the zone to watch: it is not an error. These limits are fixed;
-for other limits, e.g. red under 20 %, use [Custom theme](#custom-theme). For
-blocks or a gradient instead of a solid bar, see
-[`bar_color_mode`](#bar_color_mode).
+These limits are fixed; for other limits, e.g. red under 20 %, use
+[Custom theme](#custom-theme). For blocks or a gradient instead of a solid bar,
+see [`bar_color_mode`](#bar_color_mode).
 
 > [!NOTE]
 >
@@ -136,7 +142,7 @@ theme: battery_adaptive
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-critical-low-dark-dbf8b1.png">
   <img src="images/theme-critical-low-light-6df2e8.png"
-    alt="theme: critical_when_low example"
+    alt="Bars at 25, 50, 75 and 95 %: yellow, green, green, green"
     width="750"/>
 </picture>
 
@@ -178,7 +184,7 @@ theme: critical_when_low
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-optimal-low-dark-c676a3.png">
   <img src="images/theme-optimal-low-light-7b1203.png"
-    alt="theme: optimal_when_low example"
+    alt="Bars at 25, 50, 75 and 95 %: light green, yellow, orange, red"
     width="750"/>
 </picture>
 
@@ -221,7 +227,7 @@ theme: optimal_when_low
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-critical-high-dark-a473f3.png">
   <img src="images/theme-critical-high-light-d40664.png"
-    alt="theme: critical_when_high example"
+    alt="Bars at 25, 50, 75 and 95 %: green, green, yellow, red"
     width="750"/>
 </picture>
 
@@ -263,7 +269,7 @@ theme: critical_when_high
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-optimal-high-dark-95f174.png">
   <img src="images/theme-optimal-high-light-ea6d23.png"
-    alt="theme: optimal_when_high example"
+    alt="Bars at 25, 50, 75 and 95 %: orange, yellow, light green, green"
     width="750"/>
 </picture>
 
@@ -306,7 +312,7 @@ theme: optimal_when_high
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-critical-extreme-dark-c8644b.png">
   <img src="images/theme-critical-extreme-light-d2d29f.png"
-    alt="theme: critical_when_extreme example"
+    alt="Bars at 25, 50, 75 and 95 %: yellow, green, yellow, red"
     width="750"/>
 </picture>
 
@@ -351,7 +357,7 @@ theme: critical_when_extreme
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-critical-extreme-center-dark-466609.png">
   <img src="images/theme-critical-extreme-center-light-0c848a.png"
-    alt="theme: critical_when_extreme_center example"
+    alt="A bar at -750 W: green near zero, red at both ends"
     width="750"/>
 </picture>
 
@@ -403,7 +409,7 @@ theme: critical_when_extreme_center
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-light-dark-d902d7.png">
   <img src="images/theme-light-light-347fff.png"
-    alt="theme: light example"
+    alt="Bars at 25, 50, 75 and 95 %: dim grey to warm yellow"
     width="750"/>
 </picture>
 
@@ -411,6 +417,10 @@ Use for a light's brightness. The color moves smoothly from dim grey to warm
 yellow, and the icon turns from `mdi:lightbulb-outline` to `mdi:lightbulb` as
 the light gets brighter. Never red. Designed by
 [@harmonie-durrant](https://github.com/harmonie-durrant).
+
+Colors blend between the stops of **Show ranges**, and the icon switches at
+50 %. With [`bar_color_mode`](#bar_color_mode), the 5 stops become equal zones
+instead: 0–20 %, 20–40 %, and so on.
 
 <br />
 <details>
@@ -430,18 +440,18 @@ icon_tap_action:
 <details>
 <summary>Show ranges</summary>
 
-| Brightness Level | Color     | Description        | Icon                    |
-| :--------------- | :-------- | :----------------- | :---------------------- |
-| < 25%            | `#4B4B4B` | Dim light          | `mdi:lightbulb-outline` |
-| ≥ 25%            | `#877F67` | Soft warm light    | `mdi:lightbulb-outline` |
-| ≥ 50%            | `#C3B382` | Medium warm light  | `mdi:lightbulb`         |
-| ≥ 75%            | `#FFE79E` | Bright warm light  | `mdi:lightbulb`         |
-| ≥ 100%           | `#FFE79E` | Maximum brightness | `mdi:lightbulb`         |
+| Stop  | Color     | Description        | Icon                    |
+| :---- | :-------- | :----------------- | :---------------------- |
+| 0 %   | `#4B4B4B` | Dim light          | `mdi:lightbulb-outline` |
+| 25 %  | `#877F67` | Soft warm light    | `mdi:lightbulb-outline` |
+| 50 %  | `#C3B382` | Medium warm light  | `mdi:lightbulb`         |
+| 75 %  | `#FFE79E` | Bright warm light  | `mdi:lightbulb`         |
+| 100 % | `#FFE79E` | Maximum brightness | `mdi:lightbulb`         |
 
 </details>
 <br />
-[🔼 Back to top]
 
+[🔼 Back to top]
 
 <a id="temperature"></a>
 
@@ -451,13 +461,13 @@ icon_tap_action:
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-temperature-dark-6d4d36.png">
   <img src="images/theme-temperature-light-8e7bfe.png"
-    alt="theme: temperature example"
+    alt="Bars at -10, 10, 22 and 35 °C: blue, cyan, green, red"
     width="750"/>
 </picture>
 
 `min_value` and `max_value` are optional. Without them the bar runs from `0` to
-`100` °C; here they narrow it to -20–45 °C, which also shows readings below
-zero.
+`100` °C, so readings below zero don't show; here they narrow it to
+-20–45 °C.
 
 <br />
 <details>
@@ -509,7 +519,7 @@ icon_tap_action:
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-humidity-dark-40868c.png">
   <img src="images/theme-humidity-light-1d9e3b.png"
-    alt="theme: humidity example"
+    alt="Bars at 25, 50, 75 and 95 %: orange, green, indigo, purple"
     width="750"/>
 </picture>
 
@@ -556,7 +566,7 @@ icon_tap_action:
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-voc-dark-a31be6.png">
   <img src="images/theme-voc-light-3eb117.png"
-    alt="theme: voc example"
+    alt="Bars at 150, 400, 10000 and 35000 ppb: green, yellow, red, purple"
     width="750"/>
 </picture>
 
@@ -616,7 +626,7 @@ icon_tap_action:
   <source media="(prefers-color-scheme: dark)"
     srcset="images/theme-pm-dark-2e34bc.png">
   <img src="images/theme-pm-light-cbd961.png"
-    alt="theme: pm25 example"
+    alt="Bars at 6, 20, 100 and 180 µg/m³: green, yellow, red, purple"
     width="750"/>
 </picture>
 
@@ -675,10 +685,20 @@ icon_tap_action:
 Works on the card, the badge, the tile feature and each row of a Multi-Card or
 Multi-Feature. The Template and Badge Template variants color with Jinja
 instead: [`color`](configuration.md#color-jinja) and
-[`bar_color`](configuration.md#bar_color-jinja).
+[`bar_color`](configuration.md#bar_color-jinja). A Multi-Card or Multi-Feature
+row has no Jinja color: use `custom_theme` there, or a Template card for a color
+that depends on a condition.
 
 Your own color zones, e.g. a battery red under 20 %, green up to 80 %, orange
 above:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"
+    srcset="images/theme-custom-example-dark-8a4d09.png">
+  <img src="images/theme-custom-example-light-f7994a.png"
+    alt="Battery cards: red at 15 %, green at 50 %, orange at 90 %"
+    width="750"/>
+</picture>
 
 ```yaml
 type: custom:entity-progress-card
@@ -695,17 +715,11 @@ custom_theme:
     color: orange
 ```
 
-<picture>
-  <source media="(prefers-color-scheme: dark)"
-    srcset="images/theme-custom-example-dark-8a4d09.png">
-  <img src="images/theme-custom-example-light-f7994a.png"
-    alt="Battery cards: red at 15 %, green at 50 %, orange at 90 %"
-    width="750"/>
-</picture>
-
 Paste it in the card's code editor (**Show code editor** in the card editor)
 and replace `sensor.phone_battery_level` with your own sensor. A value on a
-limit takes the zone that starts there: at exactly 20 %, the bar is green.
+limit takes the zone that starts there: at exactly 20 %, the bar is green. A
+value in a gap between two zones keeps the card's default color; below the
+first zone or above the last, it takes that zone's color.
 
 Each entry of [`custom_theme`](configuration.md#custom_theme) needs `min` and
 `max`; a color key (`color`, `bar_color`, `icon_color`) and `icon` are optional.
@@ -733,6 +747,7 @@ custom_theme:
 
 > [!NOTE]
 >
+> `min`/`max` set one zone; `min_value`/`max_value` set the whole bar's scale.
 > The `min`/`max` values are in the entity's native unit. For a sensor whose
 > values naturally match the percentage scale (e.g. a battery at 0–100 %), the
 > zone boundaries are also 0–100.
@@ -771,14 +786,11 @@ bar keeps a single color (this is normal).
     width="750"/>
 </picture>
 
-For a battery at 69 % with `optimal_when_high`, `segment` shows each zone as a
-distinct solid block up to the current value:
-
-Each zone gets its own block: red to 20 %, orange to 40 %, yellow to 60 %, then
-light green up to the value, 69 %. The part above 69 % stays empty.
-
-`rainbow` renders the same sensor as a smooth gradient flowing across all
-visible zone colors instead.
+A battery at 69 % with `optimal_when_high`, top to bottom: `auto` paints one
+solid color, the current zone's; `segment` draws one block per zone, red to
+20 %, orange to 40 %, yellow to 60 %, then light green up to 69 %; `rainbow`
+blends the same colors up to the value; `rainbow_full` always shows the whole
+gradient, with a marker at the value.
 
 <br />
 <details>
@@ -805,8 +817,8 @@ bar_color_mode: rainbow
 
 > [!NOTE]
 >
-> Only for [`center_zero`](configuration.md#center_zero) cards, where the bar
-> grows both ways from zero:
+> `bar_color_mode` with [`center_zero`](configuration.md#center_zero), where
+> the bar grows both ways from zero:
 >
 > - a signed theme (`critical_when_extreme_center`) is one curve across both
 >   arms;
@@ -816,9 +828,6 @@ bar_color_mode: rainbow
 >   `min_value`–`max_value`;
 > - `rainbow_full` gives each arm its own full gradient, the marker crossing the
 >   center at zero.
->
-> Linear themes (`light`) split 0–100 % into equal zones: 5 levels give 0–20 %,
-> 20–40 %...
 
 [🔼 Back to top]
 
@@ -849,6 +858,9 @@ missing? [Open an issue](https://github.com/francois-le-ko4la/lovelace-entity-pr
     alt="The 26 color names, each next to a dot of its color"
     width="750"/>
 </picture>
+
+The Text, Status, Interface and Home Assistant state names below have no
+picture: they follow your theme too.
 
 ### Standard colors
 
@@ -917,7 +929,9 @@ missing? [Open an issue](https://github.com/francois-le-ko4la/lovelace-entity-pr
 <details>
 <summary>Show all Home Assistant state colors</summary>
 
-Each name maps to Home Assistant's `--<name>-color` variable.
+Each name maps to Home Assistant's `--<name>-color` variable. Example:
+`color: state-climate-heat` gives the color Home Assistant uses for a heating
+thermostat.
 
 | Color name                                      |
 | :---------------------------------------------- |
@@ -1014,14 +1028,15 @@ Each name maps to Home Assistant's `--<name>-color` variable.
 
 ## Restyle with CSS variables (advanced)
 
-The `--epb-*` variables below restyle the card. Set them in a Home Assistant
-theme (all cards using it) or with card_mod / uix (one card).
+You do not need this section for a ready-made theme. The `--epb-*` variables
+below restyle the card. Set them in a Home Assistant theme (all cards using it)
+or with card_mod / uix (one card).
 
 > [!NOTE]
 >
 > Nothing here can damage Home Assistant. If a card looks wrong after a change,
 > remove the lines you added, save, then reload the page: the card returns to
-> its default look.
+> its default look. For a Home Assistant theme file, remove the line there too.
 
 ### Usage
 
@@ -1060,6 +1075,17 @@ replacement built on the same heritage. Same configuration, same result: only
 the top-level key changes, `card_mod:` → `uix:` (theme-level keys become
 `uix-<thing>(-yaml):` too, if you use those). Everything below works identically
 under either key.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"
+    srcset="images/theme-card-mod-example-dark-4eb745.png">
+  <img src="images/theme-card-mod-example-light-6b32c4.png"
+    alt="Card with a dashed orange border, an orange bar and monospace text"
+    width="450"/>
+</picture>
+
+<details>
+<summary>Show YAML</summary>
 
 ```yaml
 type: custom:entity-progress-card
@@ -1101,13 +1127,7 @@ card_mod: # or: uix:
     }
 ```
 
-<picture>
-  <source media="(prefers-color-scheme: dark)"
-    srcset="images/theme-card-mod-example-dark-4eb745.png">
-  <img src="images/theme-card-mod-example-light-6b32c4.png"
-    alt="Card with a dashed orange border, an orange bar and monospace text"
-    width="450"/>
-</picture>
+</details>
 
 ### CSS hooks
 
@@ -1302,9 +1322,10 @@ card_mod: # or: uix:
 
 <a id="card-mod-and-card-structure"></a>
 
-## card_mod / uix and card structure (advanced)
+## Card structure for card_mod / uix (advanced)
 
-Selectors for card_mod / uix. Prefer the [`--epb-*` variables](#css) when one
+You do not need this section for a ready-made theme. Selectors for card_mod /
+uix. Prefer the [`--epb-*` variables](#css) when one
 exists: class names can change between versions.
 
 ### DOM
@@ -1573,16 +1594,16 @@ CSS layers work together:
   it.
 
 Both the grid row count and the min-height floor come from the same calculation
-(`ViewCore.minGridRows` if you're reading the source): 1 row by default
-(horizontal) or 2 (vertical), +1 more for `bar_size: xlarge` or
-`bar_position: below`, and capped to 1 row entirely when the icon is hidden
-(hiding it only ever changes the base row count, never whether a large bar still
-needs its own extra row on top - see [issue #133]). Also capped to 1 row for
-`layout: vertical` + `bar_position: top`/`bottom`/`background` once `name` and
-`secondary_info` are both hidden - the bar overlays the icon row there instead
-of needing one of its own, same as
-[`density: compact`](configuration.md#density) always resolves to on that
-layout.
+(`ViewCore.minGridRows` in the source):
+
+- 1 row by default (horizontal), 2 for `layout: vertical`;
+- +1 row for `bar_size: xlarge` or `bar_position: below`;
+- a hidden icon changes the base count only, never the extra row of a large
+  bar (see [issue #133]);
+- 1 row for `layout: vertical` with `bar_position: top`/`bottom`/`background`
+  once `name` and `secondary_info` are both hidden: the bar overlays the icon
+  row, as [`density: compact`](configuration.md#density) does on that
+  layout.
 
 </details>
 
