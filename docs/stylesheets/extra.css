@@ -96,3 +96,18 @@
 .md-typeset blockquote {
   color: var(--md-default-fg-color);
 }
+
+/* Page titles at body color and weight: Material's light grey 300 fades on a
+   phone. 400 is the heaviest regular weight the theme loads below bold. */
+.md-typeset h1 {
+  color: var(--md-default-fg-color);
+  font-weight: 400;
+}
+
+/* The README's badge row, quieter on a phone. */
+@media screen and (max-width: 44.984375em) {
+  .md-typeset img[src*="img.shields.io"] {
+    /* Material's rem is 20px, a badge's own height. */
+    height: 0.8rem;
+  }
+}

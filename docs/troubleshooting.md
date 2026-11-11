@@ -6,36 +6,52 @@
 > options not released yet. For the latest release, see the [documentation site](https://francois-le-ko4la.github.io/lovelace-test/).
 <!-- /dev-banner -->
 
-Not all errors are the same — and not every issue means something is broken.
+> [!IMPORTANT]
+>
+> **Don't panic! And above all, do not delete your dashboards!**
+>
+> This card **does not alter** your existing configuration. It only displays
+> entities — nothing is modified, removed, or broken in your actual setup.
 
-This card is designed to gracefully handle common errors in your Lovelace
-configuration or entity state. These are usually minor and expected, and the
-card will notify you directly in the UI when they occur (for example, a missing
-entity or invalid value).
+Start with what you see:
 
-However, you might encounter a real bug — something unexpected that breaks
-functionality and requires further investigation. That’s where troubleshooting
-comes in.
+- **The card shows a message**: find it under
+  [What you see, and what to do](#what-you-see-and-what-to-do).
+- **A card changed after an update**, or the editor shows **Migrate config**:
+  see [Deprecated Options](#deprecated-options).
+- **Something else looks wrong**: see [Troubleshooting](#troubleshooting).
 
 ## Error handling
 
-This card includes error handling to prevent visual issues and ensure the UI
-stays clean and stable. We handle two main categories of errors in the card:
+Not every message means something is broken: the card handles common errors in
+your configuration or in an entity's state, and says so on the card itself.
 
-1. **Configuration Errors** These occur when the card is incorrectly set up in
-   the Lovelace config. Examples:
-   - Missing entity ID
-   - Invalid or unsupported attributes
-   - Incorrect min/max values
+### What you see, and what to do
 
-2. **Runtime Errors (Entity State Issues)** These happen while the card is
-   running and are related to the entity’s current state. Examples:
-   - Entity is not found, unavailable or offline
-   <details>
-   <summary><strong>Show the screenshot (click to expand)</strong></summary>
-   <!-- markdownlint-disable-next-line MD013 -->
-   <img src="images/errors-f73970.png" alt="errors" width="1000px"/>
-   </details>
+<!-- markdownlint-disable MD013 -->
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/error-missing-entity-dark-8abb8f.png"><img src="images/error-missing-entity-light-9964f1.png" alt="entity: Required property is missing." width="500"/></picture>  
+The card has no entity. Pick one in the editor, or add `entity:` to the YAML.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/error-invalid-value-dark-ba82c3.png"><img src="images/error-invalid-value-light-121be3.png" alt="decimal: Expected type: positive integer." width="500"/></picture>  
+An option has a value it can't use (here, a negative `decimal`). Fix the option named before the colon.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/error-not-found-dark-32a40f.png"><img src="images/error-not-found-light-501298.png" alt="Not found in HA: entity." width="500"/></picture>  
+No entity has this ID: a typo, or a removed entity. Check the ID in **Settings** > **Devices & services** > **Entities**.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/error-unavailable-dark-4c2fc0.png"><img src="images/error-unavailable-light-43c131.png" alt="Unavailable" width="500"/></picture>  
+The device or integration behind the entity is offline. Fix it there: the card is right.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/error-unknown-dark-362114.png"><img src="images/error-unknown-light-84c894.png" alt="Unknown" width="500"/></picture>  
+The entity exists but has no value yet. Wait for its first value, or check the integration.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="images/error-max-entity-dark-792d61.png"><img src="images/error-max-entity-light-ca8306.png" alt="Battery, EPB Demo unavailable · Unavailable" width="500"/></picture>  
+An entity in `min_value` or `max_value` is down: the line names it. Fix that entity, or use a fixed value.
+
+<!-- markdownlint-enable MD013 -->
+
+A Jinja `min_value` or `max_value` that fails reads `max_value · JINJA
+unavailable`: see [Jinja templates](#jinja-templates).
 
 <a id="unavailable-entities"></a>
 
@@ -110,7 +126,8 @@ it goes away as soon as the template renders a number.
 
 #### Find the cause
 
-`EPB.doctor.cards()` lists the cards on the page. Its `entity state` column
+For advanced users: in the browser console (F12), `EPB.doctor.cards()` lists
+the cards on the page. Its `entity state` column
 gives the state and, when it is not the card's own entity, the field at fault:
 `⏳ unavailable (max_value)`, or `⏳ unavailable (max_value, Jinja)` for a
 template. See [Run the built-in diagnostic](#run-the-built-in-diagnostic).
@@ -214,29 +231,17 @@ displays match what you expect, before saving the dashboard.
 Despite all efforts to provide a stable and bug-free card, you might still
 encounter an issue.
 
-> [!IMPORTANT]
->
-> **Don't panic! And above all, do not delete your dashboards!**
->
-> This card **does not alter** your existing configuration. It only displays
-> entities — nothing is modified, removed, or broken in your actual setup.
-
 ### Browser Compatibility
 
 Some issues aren't a bug — the browser is simply below the supported version.
 
-|      Platform       |        Browsers        |                    |                          |                        |                      |
-| :-----------------: | :--------------------: | :----------------: | :----------------------: | :--------------------: | :------------------: |
-|   ![HA][ha-logo]    | ![Chrome][chrome-logo] | ![Edge][edge-logo] | ![Firefox][firefox-logo] | ![Safari][safari-logo] | ![Opera][opera-logo] |
-| **Home Assistant**  |       **Chrome**       |      **Edge**      |       **Firefox**        |       **Safari**       |      **Opera**       |
-|      `2024.0+`      |         `98+`          |       `98+`        |          `94+`           |        `15.4+`         |        `84+`         |
-| Full visual effects |         `111+`         |       `111+`       |          `113+`          |        `16.2+`         |        `97+`         |
+The card needs Home Assistant 2024.0 or newer, and Chrome or Edge 98+, Firefox
+94+, Safari 15.4+ or Opera 84+. A few decorative touches (icon tint, alert/ping
+pulse, bar gradient sheen) need newer versions; below that they degrade
+gracefully, same information, less vivid. Is your browser too old? See the
+[compatibility table](../README.md#prerequisites) and the [graphic effects
+compatibility overview].
 
-- **First row** — functional minimum: the card loads and works.
-- **Second row** — a few purely decorative touches (icon tint, alert/ping pulse,
-  bar gradient sheen) need these newer versions; below that they just degrade
-  gracefully, same information, less vivid. See the [graphic effects
-  compatibility overview] for exactly what's affected on which browser.
 - **Older Chromium (e.g. Chrome 92, common on embedded/kiosk panels)** — best
   effort only: the card itself loads and works (see [issue #128]), but matching
   this version isn't a guarantee, just a courtesy where it's cheap.
@@ -502,14 +507,3 @@ _This troubleshooting guide is inspired by open source best practices._
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/issues/128
 [graphic effects compatibility overview]:
   https://htmlpreview.github.io/?https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/graphic-effects-compatibility.html
-[ha-logo]: https://avatars.githubusercontent.com/u/13844975?s=64&v=4
-[chrome-logo]:
-  https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_64x64.png
-[edge-logo]:
-  https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_64x64.png
-[firefox-logo]:
-  https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_64x64.png
-[safari-logo]:
-  https://raw.githubusercontent.com/alrra/browser-logos/main/src/safari/safari_64x64.png
-[opera-logo]:
-  https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_64x64.png

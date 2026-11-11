@@ -1178,13 +1178,14 @@ pressures, or any small cluster of bars that only makes sense read side by side.
 
 > [!NOTE]
 >
-> New in 1.6.1. YAML only for now — no visual editor yet.
+> New in 1.6.1; visual editor since 1.6.3.
 
 `entity-progress-multi-card` and `entity-progress-multi-feature` stack several
 progress bars into a single card or a single Tile feature, instead of one bar
-per entity/feature. Each bar is a real `entity-progress-feature` under the hood,
-so it keeps its own more-info tap, its own colors, and its own state — the
-aggregator only stacks them and divides the available height.
+per entity/feature. Each bar is a real `entity-progress-card` in
+`density: single_line` under the hood, so it keeps its own more-info tap, its
+own colors, and its own state — the aggregator only stacks them and divides
+the available height.
 
 <a id="multi-options"></a>
 
@@ -1193,12 +1194,13 @@ aggregator only stacks them and divides the available height.
 <details>
 <summary>Show options</summary>
 
-| **Option**                   | **Type**                  | **Default**        | **Description**                                            | **Link**                                         |
-| :--------------------------- | :------------------------ | :----------------- | :--------------------------------------------------------- | :----------------------------------------------- |
-| `entities`                   | list (required)           | —                  | List of row configs, at minimum an `entity` each           | [Config Ref.][config-entities]                   |
-| `reverse_secondary_info_row` | boolean (optional)        | `false`            | Puts the bar before the text instead of after it           | [Config Ref.][config-reverse_secondary_info_row] |
-| `bar_aligned`                | boolean/string (optional) | `true`             | Every row's bar starts at the same x                       | [Config Ref.][config-bar_aligned]                |
-| `rows`                       | integer (optional)        | one row per entity | `entity-progress-multi-card` only — Sections grid row span | [Config Ref.][config-rows]                       |
+| **Option**                   | **Type**                  | **Default**              | **Description**                                                          | **Link**                                         |
+| :--------------------------- | :------------------------ | :----------------------- | :----------------------------------------------------------------------- | :----------------------------------------------- |
+| `entities`                   | list (required)           | —                        | List of row configs, at minimum an `entity` each                         | [Config Ref.][config-entities]                   |
+| `reverse_secondary_info_row` | boolean (optional)        | `false`                  | Puts the bar before the text instead of after it                         | [Config Ref.][config-reverse_secondary_info_row] |
+| `bar_aligned`                | boolean/string (optional) | `true`                   | Every row's bar starts at the same x                                     | [Config Ref.][config-bar_aligned]                |
+| `rows`                       | integer (optional)        | one row per entity       | `entity-progress-multi-card` only — Sections grid row span               | [Config Ref.][config-rows]                       |
+| `layout` / `bar_position`    | string (optional)         | `horizontal` / `default` | `entity-progress-multi-card` only — rows as columns, bar behind the text | [Config Ref.][config-multi-layout]               |
 
 </details>
 <br />
@@ -3199,6 +3201,8 @@ track solar cycles from your dashboard.
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/configuration.md#multi-entities
 [config-rows]:
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/configuration.md#multi-rows
+[config-multi-layout]:
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/configuration.md#multi-layout
 [name-jinja]:
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/configuration.md#name-jinja
 [icon-jinja]:
