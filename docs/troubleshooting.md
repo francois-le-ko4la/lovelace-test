@@ -149,9 +149,9 @@ template. See [Run the built-in diagnostic](#run-the-built-in-diagnostic).
 
 Then, in Home Assistant:
 
-1. **Developer tools → States**: look the entity up. If it is missing, check the
+1. **Tools → States**: look the entity up. If it is missing, check the
    ID in the card's YAML.
-2. **Developer tools → Template**: paste the Jinja template. The error shown
+2. **Tools → Template**: paste the Jinja template. The error shown
    there is the one the card receives.
 3. If the entity is `unavailable` or `unknown`, the card shows what Home
    Assistant reports: fix the integration or the device, not the card.
@@ -265,7 +265,8 @@ simply not shown, and the values stay the same. Is your browser too old? See the
 compatibility overview].
 
 - **Older Chromium (e.g. Chrome 92, common on wall-mounted tablets)**: the card
-  loads and works (see [issue #128]), but this version is not guaranteed.
+  loads and works (see [issue #128]). We do our best to keep it compatible,
+  though a few details may look slightly different.
 
 ### Quick checks and reporting
 
@@ -492,11 +493,10 @@ or an advanced user, your feedback is valuable!
 
 #### Roll back
 
-If you recently **updated** the card and the issue started afterward:
-
-- restore a backup (the Marketplace advises it);
-- or open the card in the Marketplace, **⋮ → Install another version**, and
-  pick the previous one.
+If you recently **updated** the card and the issue started afterward, first
+[open an issue on GitHub](#open-an-issue-on-github) so the problem gets fixed
+in the next release. Meanwhile, open the card in the Marketplace,
+**⋮ → Install another version**, and pick the previous one.
 
 Your dashboards stay intact.
 

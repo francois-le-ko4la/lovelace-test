@@ -2581,7 +2581,7 @@ flexibility to adapt to entity variations based on the integration used.
 
 Before configuring your card, it's essential to research the specific entities
 for your washing machine integration. To do this, you will need to explore Home
-Assistant's developer tools to pinpoint the necessary information. Let's take
+Assistant's **Tools** page to pinpoint the necessary information. Let's take
 this personal integration as an example:
 
 - **`sensor.washing_machine_operation_state`**: This entity is very specific to
