@@ -24,6 +24,11 @@ A single color goes in `color`, `bar_color` or `icon_color`: any
 The card's built-in color-zone presets (Card and Badge), set with one line,
 `theme: <value>`. They are not Home Assistant themes.
 
+Under each picture, **Show YAML** opens the lines to copy: paste them in the
+card's code editor (**Show code editor** in the card editor), then replace the
+`entity:` value with your own. Want your own limits, e.g. red under 20 %? See
+[Custom theme](#custom-theme).
+
 | Value                                                      | Use for                          | Unit  |
 | :--------------------------------------------------------- | :------------------------------- | :---- |
 | [`battery_adaptive`](#battery-adaptive)                    | Phone or laptop battery          | %     |
@@ -41,18 +46,17 @@ The card's built-in color-zone presets (Card and Badge), set with one line,
 
 > [!NOTE]
 >
-> Most themes below (optimal/critical when low/high, battery-adaptive, light)
-> work in `%`, matching the card's own `0-100` default range. A few
-> (`temperature`, `voc`, `pm25`) define their zones in real-world units instead
-> — see each one's own table. For these, `max_value` automatically defaults to
-> that theme's own highest zone bound instead of `100` whenever it's left unset,
-> so `theme: voc` with no other config already fills and colors correctly -
-> `min_value` stays `0` by default (the theme's positive branch), unless
-> `center_zero` is enabled, in which case its negative branch defaults to the
-> theme's own lowest zone bound instead. See
-> [`max_value`](configuration.md#max_value) for the full explanation (including
-> the `[min_value, max_value]` "scope" `segment`/`rainbow` colors get projected
-> across) and how to override it.
+> Most themes work in `%`. Three use real units: `temperature`, `voc` and
+> `pm25`. For these, `theme: voc` alone is enough: the card picks the scale from
+> the theme's zones. Defaults when `min_value`/`max_value` are not set:
+>
+> | Theme                          | `min_value`             | `max_value`              |
+> | :----------------------------- | :---------------------- | :----------------------- |
+> | In `%`                         | `0`                     | `100`                    |
+> | `temperature`, `voc`, `pm25`   | `0`                     | the highest zone bound   |
+> | Same, with `center_zero`       | the lowest zone bound   | the highest zone bound   |
+>
+> See [`max_value`](configuration.md#max_value) to override them.
 
 <a id="battery-adaptive"></a>
 
@@ -66,13 +70,14 @@ The card's built-in color-zone presets (Card and Badge), set with one line,
     width="750"/>
 </picture>
 
-A virtual theme, not a fixed set of zones: it checks whether the entity is
-currently charging - the same signal `icon_animation: battery_charging` already
-relies on (attribute, state, or a same-device sibling entity) - and switches
-between two of the themes below accordingly. While charging, it uses
-`critical_when_extreme`: li-ion batteries age faster from being held at 100%, so
-the "safe" zone is the 30–70% middle rather than the top. Once unplugged, it
-switches to `critical_when_low`, where only running out matters.
+Use this for a phone or laptop battery. While charging, the bar turns red when
+the battery is too full: it follows `critical_when_extreme`, since a battery
+ages faster when kept at 100 %, so 30–70 % is the safe zone. Unplugged, it
+follows `critical_when_low`: only a low battery is red.
+
+The card detects charging the same way as
+`icon_animation: battery_charging`: from an attribute, the state, or another
+entity of the same device.
 
 <br />
 <details>
@@ -118,7 +123,7 @@ and stay broadly "green" everywhere else.
 
 ```yaml
 type: custom:entity-progress-card
-entity: sensor.in2013_battery_level
+entity: sensor.phone_battery_level
 theme: critical_when_low
 ```
 
@@ -267,7 +272,7 @@ value is at its peak.
 
 ```yaml
 type: custom:entity-progress-card
-entity: sensor.in2013_battery_level
+entity: sensor.phone_battery_level
 theme: optimal_when_high
 ```
 
@@ -464,9 +469,8 @@ icon_tap_action:
     width="750"/>
 </picture>
 
-We can use `min_value` and `max_value` to define the range of values we want to
-represent with our color gradient. We use predefined intervals, each associated
-with a specific color.
+`min_value` and `max_value` are optional: here they narrow the bar to
+-20–45 °C instead of the theme's whole range.
 
 <br />
 <details>
@@ -474,8 +478,7 @@ with a specific color.
 
 ```yaml
 type: custom:entity-progress-card
-entity: sensor.xxx
-attribute: temperature
+entity: sensor.living_room_temperature
 unit: °C
 min_value: -20
 max_value: 45
@@ -536,8 +539,7 @@ levels.
 
 ```yaml
 type: custom:entity-progress-card
-entity: sensor.xxx
-attribute: humidity
+entity: sensor.living_room_humidity
 theme: humidity
 icon_tap_action:
   action: more-info
@@ -586,7 +588,7 @@ intuitive display of VOC levels.
 
 ```yaml
 type: custom:entity-progress-card
-entity: sensor.xxx_voc
+entity: sensor.living_room_voc
 unit: ppb
 decimal: 0
 max_value: 300
@@ -651,7 +653,7 @@ display of PM2.5 pollution levels.
 
 ```yaml
 type: custom:entity-progress-card
-entity: sensor.xxx_pm25
+entity: sensor.living_room_pm25
 unit: µg/m³
 decimal: 0
 max_value: 50
@@ -697,19 +699,12 @@ icon_tap_action:
 
 ### Custom theme
 
-In addition to predefined themes, you can define your own color zones using
-[`custom_theme`](configuration.md#custom_theme) as an array. Each entry needs
-`min` and `max`; a color key (`color`, `bar_color`, `icon_color`) and `icon` are
-optional. You can also use separate colors for the bar and the icon instead of
-one shared `color`.
-
-<br />
-<details>
-<summary>Show YAML</summary>
+Your own color zones, e.g. a battery red under 20 %, green up to 80 %, orange
+above:
 
 ```yaml
 type: custom:entity-progress-card
-entity: sensor.battery_level
+entity: sensor.phone_battery_level
 custom_theme:
   - min: 0
     max: 20
@@ -722,7 +717,16 @@ custom_theme:
     color: orange
 ```
 
+Each entry of [`custom_theme`](configuration.md#custom_theme) needs `min` and
+`max`; a color key (`color`, `bar_color`, `icon_color`) and `icon` are optional.
+The bar and the icon can take separate colors instead of one shared `color`:
+
+<details>
+<summary>Show YAML</summary>
+
 ```yaml
+type: custom:entity-progress-card
+entity: sensor.phone_battery_level
 custom_theme:
   - min: 0
     max: 50
@@ -747,22 +751,20 @@ custom_theme:
 > [`custom_theme`](configuration.md#custom_theme) in the configuration reference
 > for exactly how gaps, overlaps, and incomplete zones behave.
 >
-> Unlike the built-in real-world-unit themes above, `custom_theme` never changes
-> [`max_value`](configuration.md#max_value)'s default — even if a zone's `max`
-> goes past it (e.g. a top zone up to `120` as a color safety-margin on a `%`
-> sensor). `min_value`/`max_value` (`0`/`100` unless you set them) still control
-> the fill percentage on their own, and `segment`/`rainbow` colors are projected
-> onto that same `[min_value, max_value]` scope, same as any theme - if your
-> zones' own scale doesn't match it, the parts of your zones outside that scope
-> are clipped or omitted, not stretched to fit. Set `min_value`/`max_value`
-> yourself to match your zones' scale if your entity's real range isn't
-> `0`-`100`.
+> `custom_theme` never changes the default range, `0`–`100`:
+>
+> - a zone past it (e.g. up to `120` on a `%` sensor) is cut at `100`, not
+>   stretched to fit;
+> - if your entity's real range is not `0`–`100`, set
+>   [`min_value`/`max_value`](configuration.md#max_value) to match your zones.
 
 ### `bar_color_mode`
 
 The `bar_color_mode` parameter controls how theme colors are rendered on the
 progress bar: `auto`, `segment`, `rainbow` or `rainbow_full`. It works with both
-predefined and custom themes. For a battery at 69% with `optimal_when_high`,
+predefined and custom themes, and only with one of them: without `theme` or
+`custom_theme`, the bar keeps a single color, and nothing is wrong. For a
+battery at 69% with `optimal_when_high`,
 `segment` shows each zone as a distinct solid block up to the current value:
 
 ```text
@@ -908,166 +910,111 @@ as defined by the CSS standard.
 <details>
 <summary>Show all Home Assistant state colors</summary>
 
-| **Color Name**                                | **CSS Variable**                                             |
-| --------------------------------------------- | ------------------------------------------------------------ |
-| state-active                                  | `var(--state-active-color)`                                  |
-| state-inactive                                | `var(--state-inactive-color)`                                |
-| state-unavailable                             | `var(--state-unavailable-color)`                             |
-| state-alarm_control_panel-armed_away          | `var(--state-alarm_control_panel-armed_away-color)`          |
-| state-alarm_control_panel-armed_custom_bypass | `var(--state-alarm_control_panel-armed_custom_bypass-color)` |
-| state-alarm_control_panel-armed_home          | `var(--state-alarm_control_panel-armed_home-color)`          |
-| state-alarm_control_panel-armed_night         | `var(--state-alarm_control_panel-armed_night-color)`         |
-| state-alarm_control_panel-armed_vacation      | `var(--state-alarm_control_panel-armed_vacation-color)`      |
-| state-alarm_control_panel-arming              | `var(--state-alarm_control_panel-arming-color)`              |
-| state-alarm_control_panel-disarming           | `var(--state-alarm_control_panel-disarming-color)`           |
-| state-alarm_control_panel-pending             | `var(--state-alarm_control_panel-pending-color)`             |
-| state-alarm_control_panel-triggered           | `var(--state-alarm_control_panel-triggered-color)`           |
-| state-alert-off                               | `var(--state-alert-off-color)`                               |
-| state-alert-on                                | `var(--state-alert-on-color)`                                |
-| state-binary_sensor-active                    | `var(--state-binary_sensor-active-color)`                    |
-| state-binary_sensor-battery-on                | `var(--state-binary_sensor-battery-on-color)`                |
-| state-binary_sensor-carbon_monoxide-on        | `var(--state-binary_sensor-carbon_monoxide-on-color)`        |
-| state-binary_sensor-gas-on                    | `var(--state-binary_sensor-gas-on-color)`                    |
-| state-binary_sensor-glass_break-on            | `var(--state-binary_sensor-glass_break-on-color)`            |
-| state-binary_sensor-heat-on                   | `var(--state-binary_sensor-heat-on-color)`                   |
-| state-binary_sensor-lock-on                   | `var(--state-binary_sensor-lock-on-color)`                   |
-| state-binary_sensor-moisture-on               | `var(--state-binary_sensor-moisture-on-color)`               |
-| state-binary_sensor-problem-on                | `var(--state-binary_sensor-problem-on-color)`                |
-| state-binary_sensor-safety-on                 | `var(--state-binary_sensor-safety-on-color)`                 |
-| state-binary_sensor-smoke-on                  | `var(--state-binary_sensor-smoke-on-color)`                  |
-| state-binary_sensor-sound-on                  | `var(--state-binary_sensor-sound-on-color)`                  |
-| state-binary_sensor-tamper-on                 | `var(--state-binary_sensor-tamper-on-color)`                 |
-| state-climate-auto                            | `var(--state-climate-auto-color)`                            |
-| state-climate-cool                            | `var(--state-climate-cool-color)`                            |
-| state-climate-dry                             | `var(--state-climate-dry-color)`                             |
-| state-climate-fan_only                        | `var(--state-climate-fan_only-color)`                        |
-| state-climate-heat                            | `var(--state-climate-heat-color)`                            |
-| state-climate-heat-cool                       | `var(--state-climate-heat-cool-color)`                       |
-| state-cover-active                            | `var(--state-cover-active-color)`                            |
-| state-device_tracker-active                   | `var(--state-device_tracker-active-color)`                   |
-| state-device_tracker-home                     | `var(--state-device_tracker-home-color)`                     |
-| state-fan-active                              | `var(--state-fan-active-color)`                              |
-| state-humidifier-on                           | `var(--state-humidifier-on-color)`                           |
-| state-lawn_mower-active                       | `var(--state-lawn_mower-active-color)`                       |
-| state-lawn_mower-error                        | `var(--state-lawn_mower-error-color)`                        |
-| state-light-active                            | `var(--state-light-active-color)`                            |
-| state-lock-jammed                             | `var(--state-lock-jammed-color)`                             |
-| state-lock-locked                             | `var(--state-lock-locked-color)`                             |
-| state-lock-locking                            | `var(--state-lock-locking-color)`                            |
-| state-lock-open                               | `var(--state-lock-open-color)`                               |
-| state-lock-opening                            | `var(--state-lock-opening-color)`                            |
-| state-lock-unlocked                           | `var(--state-lock-unlocked-color)`                           |
-| state-lock-unlocking                          | `var(--state-lock-unlocking-color)`                          |
-| state-media_player-active                     | `var(--state-media_player-active-color)`                     |
-| state-person-active                           | `var(--state-person-active-color)`                           |
-| state-person-home                             | `var(--state-person-home-color)`                             |
-| state-plant-active                            | `var(--state-plant-active-color)`                            |
-| state-sensor-battery-high                     | `var(--state-sensor-battery-high-color)`                     |
-| state-sensor-battery-low                      | `var(--state-sensor-battery-low-color)`                      |
-| state-sensor-battery-medium                   | `var(--state-sensor-battery-medium-color)`                   |
-| state-siren-active                            | `var(--state-siren-active-color)`                            |
-| state-sun-above_horizon                       | `var(--state-sun-above_horizon-color)`                       |
-| state-sun-below_horizon                       | `var(--state-sun-below_horizon-color)`                       |
-| state-switch-active                           | `var(--state-switch-active-color)`                           |
-| state-update-active                           | `var(--state-update-active-color)`                           |
-| state-vacuum-active                           | `var(--state-vacuum-active-color)`                           |
-| state-vacuum-error                            | `var(--state-vacuum-error-color)`                            |
-| state-valve-active                            | `var(--state-valve-active-color)`                            |
-| state-water_heater-eco                        | `var(--state-water_heater-eco-color)`                        |
-| state-water_heater-electric                   | `var(--state-water_heater-electric-color)`                   |
-| state-water_heater-gas                        | `var(--state-water_heater-gas-color)`                        |
-| state-water_heater-heat_pump                  | `var(--state-water_heater-heat_pump-color)`                  |
-| state-water_heater-high_demand                | `var(--state-water_heater-high_demand-color)`                |
-| state-water_heater-performance                | `var(--state-water_heater-performance-color)`                |
-| state-weather-clear_night                     | `var(--state-weather-clear_night-color)`                     |
-| state-weather-cloudy                          | `var(--state-weather-cloudy-color)`                          |
-| state-weather-exceptional                     | `var(--state-weather-exceptional-color)`                     |
-| state-weather-fog                             | `var(--state-weather-fog-color)`                             |
-| state-weather-hail                            | `var(--state-weather-hail-color)`                            |
-| state-weather-lightning                       | `var(--state-weather-lightning-color)`                       |
-| state-weather-lightning_rainy                 | `var(--state-weather-lightning_rainy-color)`                 |
-| state-weather-partlycloudy                    | `var(--state-weather-partlycloudy-color)`                    |
-| state-weather-pouring                         | `var(--state-weather-pouring-color)`                         |
-| state-weather-rainy                           | `var(--state-weather-rainy-color)`                           |
-| state-weather-snowy                           | `var(--state-weather-snowy-color)`                           |
-| state-weather-snowy_rainy                     | `var(--state-weather-snowy_rainy-color)`                     |
-| state-weather-sunny                           | `var(--state-weather-sunny-color)`                           |
-| state-weather-windy                           | `var(--state-weather-windy-color)`                           |
-| state-weather-windy_variant                   | `var(--state-weather-windy_variant-color)`                   |
+Each name maps to Home Assistant's `--<name>-color` variable.
+
+| Color name                                      |
+| :---------------------------------------------- |
+| `state-active`                                  |
+| `state-inactive`                                |
+| `state-unavailable`                             |
+| `state-alarm_control_panel-armed_away`          |
+| `state-alarm_control_panel-armed_custom_bypass` |
+| `state-alarm_control_panel-armed_home`          |
+| `state-alarm_control_panel-armed_night`         |
+| `state-alarm_control_panel-armed_vacation`      |
+| `state-alarm_control_panel-arming`              |
+| `state-alarm_control_panel-disarming`           |
+| `state-alarm_control_panel-pending`             |
+| `state-alarm_control_panel-triggered`           |
+| `state-alert-off`                               |
+| `state-alert-on`                                |
+| `state-binary_sensor-active`                    |
+| `state-binary_sensor-battery-on`                |
+| `state-binary_sensor-carbon_monoxide-on`        |
+| `state-binary_sensor-gas-on`                    |
+| `state-binary_sensor-glass_break-on`            |
+| `state-binary_sensor-heat-on`                   |
+| `state-binary_sensor-lock-on`                   |
+| `state-binary_sensor-moisture-on`               |
+| `state-binary_sensor-problem-on`                |
+| `state-binary_sensor-safety-on`                 |
+| `state-binary_sensor-smoke-on`                  |
+| `state-binary_sensor-sound-on`                  |
+| `state-binary_sensor-tamper-on`                 |
+| `state-climate-auto`                            |
+| `state-climate-cool`                            |
+| `state-climate-dry`                             |
+| `state-climate-fan_only`                        |
+| `state-climate-heat`                            |
+| `state-climate-heat-cool`                       |
+| `state-cover-active`                            |
+| `state-device_tracker-active`                   |
+| `state-device_tracker-home`                     |
+| `state-fan-active`                              |
+| `state-humidifier-on`                           |
+| `state-lawn_mower-active`                       |
+| `state-lawn_mower-error`                        |
+| `state-light-active`                            |
+| `state-lock-jammed`                             |
+| `state-lock-locked`                             |
+| `state-lock-locking`                            |
+| `state-lock-open`                               |
+| `state-lock-opening`                            |
+| `state-lock-unlocked`                           |
+| `state-lock-unlocking`                          |
+| `state-media_player-active`                     |
+| `state-person-active`                           |
+| `state-person-home`                             |
+| `state-plant-active`                            |
+| `state-sensor-battery-high`                     |
+| `state-sensor-battery-low`                      |
+| `state-sensor-battery-medium`                   |
+| `state-siren-active`                            |
+| `state-sun-above_horizon`                       |
+| `state-sun-below_horizon`                       |
+| `state-switch-active`                           |
+| `state-update-active`                           |
+| `state-vacuum-active`                           |
+| `state-vacuum-error`                            |
+| `state-valve-active`                            |
+| `state-water_heater-eco`                        |
+| `state-water_heater-electric`                   |
+| `state-water_heater-gas`                        |
+| `state-water_heater-heat_pump`                  |
+| `state-water_heater-high_demand`                |
+| `state-water_heater-performance`                |
+| `state-weather-clear_night`                     |
+| `state-weather-cloudy`                          |
+| `state-weather-exceptional`                     |
+| `state-weather-fog`                             |
+| `state-weather-hail`                            |
+| `state-weather-lightning`                       |
+| `state-weather-lightning_rainy`                 |
+| `state-weather-partlycloudy`                    |
+| `state-weather-pouring`                         |
+| `state-weather-rainy`                           |
+| `state-weather-snowy`                           |
+| `state-weather-snowy_rainy`                     |
+| `state-weather-sunny`                           |
+| `state-weather-windy`                           |
+| `state-weather-windy_variant`                   |
 
 </details>
 
 [🔼 Back to top]
 
-## Adapt to HA custom theme
+## Style the card with CSS variables (advanced)
 
 <a id="css"></a>
 
-### CSS hooks
+The `--epb-*` variables below restyle the card. Set them in a Home Assistant
+theme (all cards using it) or with card_mod / uix (one card).
 
-| Variable                              | Target       | Category   | Description                                                                                                                                           | Example       |
-| ------------------------------------- | ------------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| `--epb-card-height`                   | Card         | Dimension  | Card height                                                                                                                                           | `80px`        |
-| `--epb-card-width`                    | Card         | Dimension  | Card width                                                                                                                                            | `300px`       |
-| `--epb-card-border-width`             | Card         | Border     | Border thickness                                                                                                                                      | `2px`         |
-| `--epb-card-border-color`             | Card         | Border     | Border color                                                                                                                                          | `#ff6600`     |
-| `--epb-card-border-radius`            | Card         | Border     | Card corner radius                                                                                                                                    | `20px`        |
-| `--epb-card-border-style`             | Card         | Border     | Border style                                                                                                                                          | `dashed`      |
-| `--epb-card-font-family`              | Card         | Typography | Card font family                                                                                                                                      | `monospace`   |
-| `--epb-spacing`                       | Card         | Dimension  | Global density: paddings and gaps of the whole card                                                                                                   | `6px`         |
-| `--epb-icon-size`                     | Icon         | Dimension  | Icon size (standard card layout)                                                                                                                      | `28px`        |
-| `--epb-shape-size`                    | Icon         | Dimension  | Circular shape size behind the icon                                                                                                                   | `42px`        |
-| `--epb-progress-transition`           | Progress Bar | Animation  | Bar fill transition (duration/easing, `none` to disable)                                                                                              | `0.2s linear` |
-| `--epb-progress-bar-color`            | Progress Bar | Color      | Progress bar fill color                                                                                                                               | `#ff6600`     |
-| `--epb-progress-bar-background-color` | Progress Bar | Color      | Progress bar background color                                                                                                                         | `#333333`     |
-| `--epb-progress-bar-size`             | Progress Bar | Dimension  | Forces the bar fill size (overrides computed value)                                                                                                   | `60%`         |
-| `--epb-progress-bar-radius`           | Progress Bar | Border     | Progress bar container border radius                                                                                                                  | `4px`         |
-| `--epb-progress-inner-radius`         | Progress Bar | Border     | Progress bar inner fill border radius                                                                                                                 | `4px`         |
-| `--epb-progress-bar-min-width`        | Progress Bar | Dimension  | Minimum bar width before it stops shrinking further                                                                                                   | `30px`        |
-| `--epb-bar-segment-gap`               | Progress Bar | Dimension  | `bar_segments` gap between cells (overrides computed value)                                                                                           | `2px`         |
-| `--epb-ring-softness`                 | Progress Bar | Dimension  | Inner edge softness of the `bar_position: icon` ring (`bar_ring.softness` wins); default `1px`                                                        | `0px`         |
-| `--epb-rainbow-marker-color`          | Marker       | Color      | `bar_color_mode: rainbow_full` marker color                                                                                                           | `#ffffff`     |
-| `--epb-rainbow-marker-opacity`        | Marker       | Opacity    | `bar_color_mode: rainbow_full` marker opacity                                                                                                         | `1`           |
-| `--epb-rainbow-marker-size`           | Marker       | Dimension  | `bar_color_mode: rainbow_full` marker width                                                                                                           | `5px`         |
-| `--epb-rainbow-marker-border-color`   | Marker       | Border     | `bar_color_mode: rainbow_full` marker border color                                                                                                    | `#ffffff`     |
-| `--epb-rainbow-marker-border-width`   | Marker       | Border     | `bar_color_mode: rainbow_full` marker border thickness                                                                                                | `1px`         |
-| `--epb-icon-and-shape-color`          | Icon         | Color      | Icon and shape background color, both at once                                                                                                         | `#ff6600`     |
-| `--epb-icon-color`                    | Icon         | Color      | Icon color only, overrides `--epb-icon-and-shape-color` for just the icon (new in 1.6.2)                                                              | `#ff6600`     |
-| `--epb-icon-shape-color`              | Icon         | Color      | Shape background color only, overrides `--epb-icon-and-shape-color` for just the shape (new in 1.6.2)                                                 | `#ff6600`     |
-| `--epb-icon-shape-hover-color`        | Icon         | Color      | Shape background color on hover, for a clickable icon — settable from a theme, no `card_mod` needed (new in 1.6.2)                                    | `#ff6600`     |
-| `--epb-icon-shape-opacity`            | Icon         | Opacity    | Circular shape opacity behind the icon (`0` removes it entirely, new in 1.6.2)                                                                        | `0`           |
-| `--epb-charge-x1`                     | Icon         | Dimension  | `icon_animation: battery_charging` bolt left edge                                                                                                     | `34%`         |
-| `--epb-charge-x2`                     | Icon         | Dimension  | `icon_animation: battery_charging` bolt right edge                                                                                                    | `67%`         |
-| `--epb-charge-y1`                     | Icon         | Dimension  | `icon_animation: battery_charging` bolt top edge                                                                                                      | `29%`         |
-| `--epb-name-color`                    | Name         | Color      | Name color                                                                                                                                            | `#ffffff`     |
-| `--epb-name-font-size`                | Name         | Typography | Name font size                                                                                                                                        | `16px`        |
-| `--epb-name-font-weight`              | Name         | Typography | Name font weight                                                                                                                                      | `700`         |
-| `--epb-name-letter-spacing`           | Name         | Typography | Name letter spacing                                                                                                                                   | `2px`         |
-| `--epb-detail-color`                  | Detail       | Color      | Detail color                                                                                                                                          | `#aaaaaa`     |
-| `--epb-detail-font-size`              | Detail       | Typography | Detail font size                                                                                                                                      | `12px`        |
-| `--epb-detail-font-weight`            | Detail       | Typography | Detail font weight                                                                                                                                    | `300`         |
-| `--epb-detail-letter-spacing`         | Detail       | Typography | Detail letter spacing                                                                                                                                 | `1px`         |
-| `--epb-trend-icon-color`              | Trend        | Color      | `trend_indicator` arrow color, overrides the direction's own computed color                                                                           | `#ff6600`     |
-| `--epb-watermark-line-size`           | Watermark    | Dimension  | Line watermark thickness                                                                                                                              | `3px`         |
-| `--epb-watermark-opacity`             | Watermark    | Opacity    | Watermark opacity, both sides (overridden per side by the two below)                                                                                  | `0.5`         |
-| `--epb-low-watermark-opacity`         | Watermark    | Opacity    | Low watermark opacity only                                                                                                                            | `0.5`         |
-| `--epb-high-watermark-opacity`        | Watermark    | Opacity    | High watermark opacity only                                                                                                                           | `0.5`         |
-| `--epb-low-watermark-color`           | Watermark    | Color      | Low watermark color                                                                                                                                   | `#ff0000`     |
-| `--epb-high-watermark-color`          | Watermark    | Color      | High watermark color                                                                                                                                  | `#00ff00`     |
-| `--epb-peak-min-color`                | Peak Marker  | Color      | `peak_marker` minimum mark color                                                                                                                      | `#00ffff`     |
-| `--epb-peak-min-opacity`              | Peak Marker  | Opacity    | `peak_marker` minimum mark opacity                                                                                                                    | `0.8`         |
-| `--epb-peak-max-color`                | Peak Marker  | Color      | `peak_marker` maximum mark color                                                                                                                      | `#ff00ff`     |
-| `--epb-peak-max-opacity`              | Peak Marker  | Opacity    | `peak_marker` maximum mark opacity                                                                                                                    | `0.8`         |
-| `--epb-peak-average-color`            | Peak Marker  | Color      | `peak_marker` average mark color                                                                                                                      | `#ffff00`     |
-| `--epb-peak-average-opacity`          | Peak Marker  | Opacity    | `peak_marker` average mark opacity                                                                                                                    | `0.8`         |
-| `--epb-zero-mark-width`               | Marker       | Dimension  | Zero marker thickness                                                                                                                                 | `2px`         |
-| `--epb-zero-mark-color`               | Marker       | Color      | Zero marker color                                                                                                                                     | `#ff0000`     |
-| `--epb-alert-background-opacity`      | Alert        | Opacity    | `alert_when.highlight: background` tint opacity, browsers below the "Full visual effects" tier only (see [Prerequisites](../README.md#prerequisites)) | `0.3`         |
-| `--epb-ping-color`                    | Alert        | Color      | `ping` ring burst color, shared by `alert_when` (border and label) and `icon_animation: ping` (new in 1.6.2)                                          | `#ff6600`     |
-| `--epb-ping-spread`                   | Alert        | Dimension  | `ping` ring burst reach at the end of the animation (new in 1.6.2)                                                                                    | `20px`        |
-| `--epb-label-color`                   | Status Label | Color      | `status_label` pill text color                                                                                                                        | `#ffffff`     |
-| `--epb-label-background-color`        | Status Label | Color      | `status_label` pill background color                                                                                                                  | `#333333`     |
-| `--epb-label-border-color`            | Status Label | Border     | `status_label` pill border color                                                                                                                      | `#ff6600`     |
+> [!NOTE]
+>
+> Nothing here can damage Home Assistant. If a card looks wrong after a change,
+> remove the lines you added and reload the page: the card returns to its
+> default look.
 
 ### Usage
 
@@ -1142,6 +1089,124 @@ card_mod: # or: uix:
       --epb-detail-letter-spacing: 1px;
     }
 ```
+
+### CSS hooks
+
+#### Card
+
+| Variable                   | Description                                         | Example     |
+| :------------------------- | :-------------------------------------------------- | :---------- |
+| `--epb-card-height`        | Card height                                         | `80px`      |
+| `--epb-card-width`         | Card width                                          | `300px`     |
+| `--epb-card-border-width`  | Border thickness                                    | `2px`       |
+| `--epb-card-border-color`  | Border color                                        | `#ff6600`   |
+| `--epb-card-border-radius` | Card corner radius                                  | `20px`      |
+| `--epb-card-border-style`  | Border style                                        | `dashed`    |
+| `--epb-card-font-family`   | Card font family                                    | `monospace` |
+| `--epb-spacing`            | Global density: paddings and gaps of the whole card | `6px`       |
+
+#### Icon
+
+| Variable                       | Description                                                                                         | Example   |
+| :----------------------------- | :-------------------------------------------------------------------------------------------------- | :-------- |
+| `--epb-icon-size`              | Icon size (standard card layout)                                                                    | `28px`    |
+| `--epb-shape-size`             | Circular shape size behind the icon                                                                 | `42px`    |
+| `--epb-icon-and-shape-color`   | Icon and shape background color, both at once                                                       | `#ff6600` |
+| `--epb-icon-color`             | Icon color only, overrides `--epb-icon-and-shape-color` for just the icon                           | `#ff6600` |
+| `--epb-icon-shape-color`       | Shape background color only, overrides `--epb-icon-and-shape-color` for just the shape              | `#ff6600` |
+| `--epb-icon-shape-hover-color` | Shape background color on hover, for a clickable icon — settable from a theme, no `card_mod` needed | `#ff6600` |
+| `--epb-icon-shape-opacity`     | Circular shape opacity behind the icon (`0` removes it entirely, new in 1.6.2)                      | `0`       |
+| `--epb-charge-x1`              | `icon_animation: battery_charging` bolt left edge                                                   | `34%`     |
+| `--epb-charge-x2`              | `icon_animation: battery_charging` bolt right edge                                                  | `67%`     |
+| `--epb-charge-y1`              | `icon_animation: battery_charging` bolt top edge                                                    | `29%`     |
+
+#### Progress Bar
+
+| Variable                              | Description                                                                                    | Example       |
+| :------------------------------------ | :--------------------------------------------------------------------------------------------- | :------------ |
+| `--epb-progress-transition`           | Bar fill transition (duration/easing, `none` to disable)                                       | `0.2s linear` |
+| `--epb-progress-bar-color`            | Progress bar fill color                                                                        | `#ff6600`     |
+| `--epb-progress-bar-background-color` | Progress bar background color                                                                  | `#333333`     |
+| `--epb-progress-bar-size`             | Forces the bar fill size (overrides computed value)                                            | `60%`         |
+| `--epb-progress-bar-radius`           | Progress bar container border radius                                                           | `4px`         |
+| `--epb-progress-inner-radius`         | Progress bar inner fill border radius                                                          | `4px`         |
+| `--epb-progress-bar-min-width`        | Minimum bar width before it stops shrinking further                                            | `30px`        |
+| `--epb-bar-segment-gap`               | `bar_segments` gap between cells (overrides computed value)                                    | `2px`         |
+| `--epb-ring-softness`                 | Inner edge softness of the `bar_position: icon` ring (`bar_ring.softness` wins); default `1px` | `0px`         |
+
+#### Marker
+
+| Variable                            | Description                                            | Example   |
+| :---------------------------------- | :----------------------------------------------------- | :-------- |
+| `--epb-rainbow-marker-color`        | `bar_color_mode: rainbow_full` marker color            | `#ffffff` |
+| `--epb-rainbow-marker-opacity`      | `bar_color_mode: rainbow_full` marker opacity          | `1`       |
+| `--epb-rainbow-marker-size`         | `bar_color_mode: rainbow_full` marker width            | `5px`     |
+| `--epb-rainbow-marker-border-color` | `bar_color_mode: rainbow_full` marker border color     | `#ffffff` |
+| `--epb-rainbow-marker-border-width` | `bar_color_mode: rainbow_full` marker border thickness | `1px`     |
+| `--epb-zero-mark-width`             | Zero marker thickness                                  | `2px`     |
+| `--epb-zero-mark-color`             | Zero marker color                                      | `#ff0000` |
+
+#### Name
+
+| Variable                    | Description         | Example   |
+| :-------------------------- | :------------------ | :-------- |
+| `--epb-name-color`          | Name color          | `#ffffff` |
+| `--epb-name-font-size`      | Name font size      | `16px`    |
+| `--epb-name-font-weight`    | Name font weight    | `700`     |
+| `--epb-name-letter-spacing` | Name letter spacing | `2px`     |
+
+#### Detail
+
+| Variable                      | Description           | Example   |
+| :---------------------------- | :-------------------- | :-------- |
+| `--epb-detail-color`          | Detail color          | `#aaaaaa` |
+| `--epb-detail-font-size`      | Detail font size      | `12px`    |
+| `--epb-detail-font-weight`    | Detail font weight    | `300`     |
+| `--epb-detail-letter-spacing` | Detail letter spacing | `1px`     |
+
+#### Trend
+
+| Variable                 | Description                                                                 | Example   |
+| :----------------------- | :-------------------------------------------------------------------------- | :-------- |
+| `--epb-trend-icon-color` | `trend_indicator` arrow color, overrides the direction's own computed color | `#ff6600` |
+
+#### Watermark
+
+| Variable                       | Description                                                          | Example   |
+| :----------------------------- | :------------------------------------------------------------------- | :-------- |
+| `--epb-watermark-line-size`    | Line watermark thickness                                             | `3px`     |
+| `--epb-watermark-opacity`      | Watermark opacity, both sides (overridden per side by the two below) | `0.5`     |
+| `--epb-low-watermark-opacity`  | Low watermark opacity only                                           | `0.5`     |
+| `--epb-high-watermark-opacity` | High watermark opacity only                                          | `0.5`     |
+| `--epb-low-watermark-color`    | Low watermark color                                                  | `#ff0000` |
+| `--epb-high-watermark-color`   | High watermark color                                                 | `#00ff00` |
+
+#### Peak Marker
+
+| Variable                     | Description                        | Example   |
+| :--------------------------- | :--------------------------------- | :-------- |
+| `--epb-peak-min-color`       | `peak_marker` minimum mark color   | `#00ffff` |
+| `--epb-peak-min-opacity`     | `peak_marker` minimum mark opacity | `0.8`     |
+| `--epb-peak-max-color`       | `peak_marker` maximum mark color   | `#ff00ff` |
+| `--epb-peak-max-opacity`     | `peak_marker` maximum mark opacity | `0.8`     |
+| `--epb-peak-average-color`   | `peak_marker` average mark color   | `#ffff00` |
+| `--epb-peak-average-opacity` | `peak_marker` average mark opacity | `0.8`     |
+
+#### Alert
+
+| Variable                         | Description                                                                                                                                           | Example   |
+| :------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- | :-------- |
+| `--epb-alert-background-opacity` | `alert_when.highlight: background` tint opacity, browsers below the "Full visual effects" tier only (see [Prerequisites](../README.md#prerequisites)) | `0.3`     |
+| `--epb-ping-color`               | `ping` ring burst color, shared by `alert_when` (border and label) and `icon_animation: ping`                                                         | `#ff6600` |
+| `--epb-ping-spread`              | `ping` ring burst reach at the end of the animation                                                                                                   | `20px`    |
+
+#### Status Label
+
+| Variable                       | Description                          | Example   |
+| :----------------------------- | :----------------------------------- | :-------- |
+| `--epb-label-color`            | `status_label` pill text color       | `#ffffff` |
+| `--epb-label-background-color` | `status_label` pill background color | `#333333` |
+| `--epb-label-border-color`     | `status_label` pill border color     | `#ff6600` |
 
 #### Icon and shape color
 
@@ -1448,9 +1513,15 @@ ha-card...
 
 <a id="card-sizing"></a>
 
-How tall the card actually renders depends on where it's placed, since the card
-doesn't control its own container - it adapts to whatever height (or lack of
-one) its parent gives it. Three CSS layers work together:
+In most dashboards there is nothing to do: the card sizes itself. Read on only
+if it looks too tall or too short; the [last section](#embedded) has a recipe
+that shrinks it to its content.
+
+<details>
+<summary>How the card picks its height</summary>
+
+The card adapts to whatever height (or lack of one) its parent gives it. Three
+CSS layers work together:
 
 - **`getGridOptions()`** (Card/Template only, not Badge) tells Home Assistant's
   own Sections grid how many rows to reserve - a plain integer count, not a
@@ -1474,6 +1545,8 @@ needs its own extra row on top - see [issue #133]). Also capped to 1 row for
 of needing one of its own, same as
 [`density: compact`](configuration.md#density) always resolves to on that
 layout.
+
+</details>
 
 ### In a Sections view
 
@@ -1503,18 +1576,28 @@ drop the card's own frame/background for you (see
 [`frameless`](configuration.md#frameless)) - or you have to set
 `frameless: true` yourself.
 
-| **Card**                                                                                              | **Default sizing (no `height` set)**                | **Frameless auto-detected**                         | **Notes**                                                                                                                                                                                                                                                                                                                                                                                                            |
-| :---------------------------------------------------------------------------------------------------- | :-------------------------------------------------- | :-------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `entities`                                                                                            | ✅ Content-sized                                    | ✅ Yes                                              | Both keyed off a `type-entities` class the entities card adds to its rows - no config needed either way.                                                                                                                                                                                                                                                                                                             |
-| `picture-elements`                                                                                    | ➖ Width only                                       | ❌ No - set `frameless: true` yourself if desired   | Auto-detected only for `min_width` (defaults to 200px in this context, off a `type-picture-elements` class) - height isn't otherwise special-cased.                                                                                                                                                                                                                                                                  |
-| `vertical-stack-in-card`                                                                              | ➖ Masonry-style floor                              | ✅ Yes                                              | Frame/background auto-dropped the same way as `entities` (a `type-custom-vertical-stack-in-card` class).                                                                                                                                                                                                                                                                                                             |
-| `vertical-stack`                                                                                      | ➖ Masonry-style floor                              | ❌ No - set `frameless: true` yourself if desired   | One card per row.                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `horizontal-stack`                                                                                    | ⚠️ Reliable in Masonry only                         | ❌ No - set `frameless: true` yourself if desired   | In a Sections view, a `horizontal-stack`'s children don't get `getGridOptions()` consulted the way a direct Sections card would, so sizing falls back to the CSS `min-height` floor - can look shorter than a sibling tile placed directly in the section.                                                                                                                                                           |
-| `grid`                                                                                                | ⚠️ Depends on `square`                              | ❌ No - set `frameless: true` yourself if desired   | `square: true` (the default) forces every cell to a 1:1 aspect ratio via CSS, following the cell's own width regardless of the card's content or an explicit `height` - the one exception to "height always wins" above, since the grid never lets the card be any other size in this mode. `square: false` drops that forcing (Masonry-style floor without `height` set, exact size with it, like everywhere else). |
-| `custom:combined-card` ([catdad-experiments](https://github.com/catdad-experiments/ha-utility-cards)) | ➖ Masonry-style floor                              | ❌ No - set `frameless: true` yourself if desired   | Renders its children through an internal native `vertical-stack`/`horizontal-stack` card - no `type-*` class ever reaches it (that class-injection is a [card_mod] feature scoped to a handful of specific container types, stack cards aren't among them), so no frame/background auto-drop either.                                                                                                                 |
-| `custom:button-card` (custom field)                                                                   | ✅ Content-sized                                    | ❌ No - set `frameless: true` yourself if desired   | Auto-detected for sizing (a `type-custom-button-card` class). Frame/background aren't auto-dropped - use `frameless: true` if you want that too; see the Embedded-in-another-card section below for the full recipe (issue #129).                                                                                                                                                                                    |
-| `custom:auto-entities`                                                                                | ➖ Depends on the container it generates cards into | ➖ Depends on the container it generates cards into | Just generates a list of cards - sizing/frameless behavior is whatever the _outer_ container (Sections, Masonry, `entities`, ...) gives each generated card, nothing specific to `auto-entities` itself.                                                                                                                                                                                                             |
-| `custom:layout-card` (thomasloven)                                                                    | ➖ Masonry-style floor                              | ❌ No - set `frameless: true` yourself if desired   | No `getGridOptions()`/`getCardSize()`-based height forcing in any layout mode (`masonry`, `horizontal`, `vertical`, `grid`) - cards render at their natural/intrinsic height, same as native Masonry. No `type-X` auto-styling class either.                                                                                                                                                                         |
+✅ handled for you · ➖ partly, see the cell · ⚠️ with limits · ❌ not
+detected.
+
+| Card                                                                                                  | Default sizing (no `height` set) | Frameless auto-detected          | Notes                                                                       |
+| :---------------------------------------------------------------------------------------------------- | :------------------------------- | :------------------------------- | :-------------------------------------------------------------------------- |
+| `entities`                                                                                            | ✅ Content-sized                  | ✅ Yes                            | No config needed.                                                           |
+| `picture-elements`                                                                                    | ➖ Width only                     | ❌ No - set `frameless: true`     | `min_width` defaults to 200px; height is not special-cased.                 |
+| `vertical-stack-in-card`                                                                              | ➖ Masonry-style floor            | ✅ Yes                            | Frame dropped as in `entities`.                                             |
+| `vertical-stack`                                                                                      | ➖ Masonry-style floor            | ❌ No - set `frameless: true`     | One card per row.                                                           |
+| `horizontal-stack`                                                                                    | ⚠️ Reliable in Masonry only      | ❌ No - set `frameless: true`     | In Sections it can look shorter than a card placed directly in the section. |
+| `grid`                                                                                                | ⚠️ Depends on `square`           | ❌ No - set `frameless: true`     | `square: true` (default) forces square cells, even over `height`.           |
+| `custom:combined-card` ([catdad-experiments](https://github.com/catdad-experiments/ha-utility-cards)) | ➖ Masonry-style floor            | ❌ No - set `frameless: true`     | Behaves like the native stacks it uses inside.                              |
+| `custom:button-card` (custom field)                                                                   | ✅ Content-sized                  | ❌ No - set `frameless: true`     | See the recipe [below](#embedded) (issue #129).                             |
+| `custom:auto-entities`                                                                                | ➖ Depends on the outer container | ➖ Depends on the outer container | Each generated card follows the outer container's rules.                    |
+| `custom:layout-card` (thomasloven)                                                                    | ➖ Masonry-style floor            | ❌ No - set `frameless: true`     | Natural height in every layout mode.                                        |
+
+In `grid`, `square: false` behaves like everywhere else: Masonry-style
+floor without `height`, exact size with it. `custom:combined-card` gets no
+`type-*` class (only [card_mod] adds them, and not to stack cards), so its
+frame is never dropped for you.
+
+<a id="embedded"></a>
 
 ### Embedded in another card (`custom:button-card`, a custom field, ...)
 
