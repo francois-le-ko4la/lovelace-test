@@ -8,10 +8,15 @@
 > options not released yet. For the latest release, see the [documentation site](https://francois-le-ko4la.github.io/lovelace-test/).
 <!-- /dev-banner -->
 
-Color shows the state at a glance: green is fine, red needs attention. This
+Color shows the state at a glance: green is fine, red is a zone to watch. This
 page goes from the simplest option, one line of YAML, to a fully restyled card:
-stop as soon as you have what you need. New here? Install the card first: see
-[Installation](../README.md#prerequisites).
+stop reading when you have what you need. The card must be installed first:
+see [Prerequisites](../README.md#prerequisites).
+
+> [!NOTE]
+>
+> Nothing on this page can damage Home Assistant. To undo a change, remove the
+> lines you added, press **Save**, then reload the page.
 
 - **[Pick a ready-made theme](#predefined-theme).** One line, such as
   `theme: battery_adaptive`, and the bar changes color with the value: a
@@ -24,17 +29,21 @@ stop as soon as you have what you need. New here? Install the card first: see
 - **[Choose a color by name](#token-color).** No zones needed: `bar_color: red`
   paints the bar, `color: red` the icon. A name such as `red` or `teal`
   follows the colors of your Home Assistant theme; any CSS color works too.
+- **Color from a condition** (Jinja, a template written in text)? Use a
+  Template card: [`color`](configuration.md#color-jinja) and
+  [`bar_color`](configuration.md#bar_color-jinja). Not available on a
+  Multi-Card or Multi-Feature row.
 - **[Restyle the whole card](#css)** _(advanced, optional)_. CSS variables
   change the bar's background, the icon's shape, the markers... in a Home
   Assistant theme or with card_mod / uix (add-ons installed from HACS). The
   [card structure](#card-mod-and-card-structure) gives the selectors.
-- **[Size the card](#card-sizing).** How the card picks its height in a
-  Sections or Masonry view, a stack, a grid or a button-card, and how to
-  change it.
+- **[Size the card](#card-sizing)** _(advanced, optional)_. How the card picks
+  its height in a Sections or Masonry view, a stack, a grid or a button-card,
+  and how to change it.
 - **Something looks wrong?** Nothing is broken: remove the lines you added,
-  press **Save**, then refresh the page; the card goes back to its default
-  look. A bar in a single color is normal without `theme` or `custom_theme`;
-  with one, compare your YAML's indentation with the example.
+  press **Save**, then reload the page; the card goes back to its default look.
+  A bar in a single color is normal without `theme` or `custom_theme`; with
+  one, check that the spaces at the start of each line match the example.
 - **An error message on the card?** See [Troubleshooting](troubleshooting.md).
 - **Time left on a dishwasher or washing machine?** This page is only about
   colors: see [Show a remaining time](cookbook.md#laundry-mystery).
@@ -100,7 +109,7 @@ see [`bar_color_mode`](#bar_color_mode).
 
 <a id="battery-adaptive"></a>
 
-### Battery, adapts to charging (`battery_adaptive`)
+### Battery (`battery_adaptive`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -115,7 +124,8 @@ Use this for a phone or laptop battery. Unplugged, it uses the zones of
 the zones of [`critical_when_extreme`](#critical-extreme): green from 30 to
 70 %, red under 10 % and over 90 %, since a battery ages faster when kept full.
 
-The card detects charging the same way as
+Its ranges are those of the two themes above. The card detects charging the
+same way as
 `icon_animation: battery_charging`: from an attribute, the state, or another
 entity of the same device.
 
@@ -351,7 +361,7 @@ theme: critical_when_extreme
 
 <a id="critical-extreme-center"></a>
 
-### Critical when extreme, centered (`critical_when_extreme_center`)
+### Centered extreme (`critical_when_extreme_center`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -418,9 +428,9 @@ yellow, and the icon turns from `mdi:lightbulb-outline` to `mdi:lightbulb` as
 the light gets brighter. Never red. Designed by
 [@harmonie-durrant](https://github.com/harmonie-durrant).
 
-Colors blend between the stops of **Show ranges**, and the icon switches at
-50 %. With [`bar_color_mode`](#bar_color_mode), the 5 stops become equal zones
-instead: 0–20 %, 20–40 %, and so on.
+Colors blend between the stops listed under **Show ranges** below, and the icon
+switches at 50 %. With [`bar_color_mode`](#bar_color_mode), the 5 stops become
+equal zones instead: 0–20 %, 20–40 %, and so on.
 
 <br />
 <details>
@@ -686,8 +696,8 @@ Works on the card, the badge, the tile feature and each row of a Multi-Card or
 Multi-Feature. The Template and Badge Template variants color with Jinja
 instead: [`color`](configuration.md#color-jinja) and
 [`bar_color`](configuration.md#bar_color-jinja). A Multi-Card or Multi-Feature
-row has no Jinja color: use `custom_theme` there, or a Template card for a color
-that depends on a condition.
+row has no Jinja color: use `custom_theme` there (zones follow the row's own
+value only), or a Template card for a color that depends on a condition.
 
 Your own color zones, e.g. a battery red under 20 %, green up to 80 %, orange
 above:
@@ -718,7 +728,7 @@ custom_theme:
 Paste it in the card's code editor (**Show code editor** in the card editor)
 and replace `sensor.phone_battery_level` with your own sensor. A value on a
 limit takes the zone that starts there: at exactly 20 %, the bar is green. A
-value in a gap between two zones keeps the card's default color; below the
+value that falls between two zones keeps the card's default color; below the
 first zone or above the last, it takes that zone's color.
 
 Each entry of [`custom_theme`](configuration.md#custom_theme) needs `min` and
@@ -748,9 +758,8 @@ custom_theme:
 > [!NOTE]
 >
 > `min`/`max` set one zone; `min_value`/`max_value` set the whole bar's scale.
-> The `min`/`max` values are in the entity's native unit. For a sensor whose
-> values naturally match the percentage scale (e.g. a battery at 0–100 %), the
-> zone boundaries are also 0–100.
+> `min`/`max` are in the sensor's own unit (°C, ppb...), not in %. The bar still
+> shows 0 to 100 unless you set `min_value`/`max_value`.
 >
 > Zones don't need to be contiguous or declared in order — see
 > [`custom_theme`](configuration.md#custom_theme) in the configuration reference
@@ -765,7 +774,7 @@ custom_theme:
 
 <a id="bar_color_mode"></a>
 
-## `bar_color_mode`
+## Blocks or gradient (`bar_color_mode`)
 
 The `bar_color_mode` parameter controls how theme colors are rendered on the
 progress bar. It needs a theme: set `theme` or `custom_theme`. Without one, the
@@ -864,34 +873,8 @@ picture: they follow your theme too.
 
 ### Standard colors
 
-| Color name    | CSS variable               |
-| :------------ | :------------------------- |
-| `primary`     | `var(--primary-color)`     |
-| `accent`      | `var(--accent-color)`      |
-| `red`         | `var(--red-color)`         |
-| `pink`        | `var(--pink-color)`        |
-| `purple`      | `var(--purple-color)`      |
-| `deep-purple` | `var(--deep-purple-color)` |
-| `indigo`      | `var(--indigo-color)`      |
-| `blue`        | `var(--blue-color)`        |
-| `light-blue`  | `var(--light-blue-color)`  |
-| `cyan`        | `var(--cyan-color)`        |
-| `teal`        | `var(--teal-color)`        |
-| `green`       | `var(--green-color)`       |
-| `light-green` | `var(--light-green-color)` |
-| `lime`        | `var(--lime-color)`        |
-| `yellow`      | `var(--yellow-color)`      |
-| `amber`       | `var(--amber-color)`       |
-| `orange`      | `var(--orange-color)`      |
-| `deep-orange` | `var(--deep-orange-color)` |
-| `brown`       | `var(--brown-color)`       |
-| `light-grey`  | `var(--light-grey-color)`  |
-| `grey`        | `var(--grey-color)`        |
-| `dark-grey`   | `var(--dark-grey-color)`   |
-| `blue-grey`   | `var(--blue-grey-color)`   |
-| `black`       | `var(--black-color)`       |
-| `white`       | `var(--white-color)`       |
-| `disabled`    | `var(--disabled-color)`    |
+The 26 names of the picture above: each name `x` maps to `var(--x-color)`, so
+`red` gives `var(--red-color)`. You can also write `var(--red-color)` yourself.
 
 ### Text
 
@@ -1032,19 +1015,15 @@ You do not need this section for a ready-made theme. The `--epb-*` variables
 below restyle the card. Set them in a Home Assistant theme (all cards using it)
 or with card_mod / uix (one card).
 
-> [!NOTE]
->
-> Nothing here can damage Home Assistant. If a card looks wrong after a change,
-> remove the lines you added, save, then reload the page: the card returns to
-> its default look. For a Home Assistant theme file, remove the line there too.
+For a Home Assistant theme file, undo a change by removing the line there too.
 
 ### Usage
 
-#### Theme
+#### In a Home Assistant theme
 
 The progress bar background defaults to `var(--divider-color)`, a neutral
 semi-transparent color. Depending on your Home Assistant theme, this may lack
-contrast or clash with your design.
+contrast or not match your design.
 
 You can override it globally by defining `--epb-progress-bar-background-color`
 directly in your theme YAML — no need to configure each card individually:
@@ -1060,21 +1039,17 @@ my_custom_theme:
 > When declaring CSS variables in a theme YAML file, omit the `--` prefix — Home
 > Assistant adds it automatically.
 
-This applies to all cards using that theme.
+This applies to all cards using that theme. Add the line in your themes file,
+then reload the themes (**Tools → YAML → Themes**).
 
-#### card_mod / uix
+#### In card_mod / uix
 
-Needs the [card_mod](https://github.com/thomasloven/lovelace-card-mod) or
-[UIX](https://github.com/Lint-Free-Technology/uix) add-on, installed from HACS:
-without it, these lines do nothing.
-
-All public CSS hooks can also be scoped to a single card using
-[card_mod](https://github.com/thomasloven/lovelace-card-mod) - or
-[UIX (UI eXtension)](https://github.com/Lint-Free-Technology/uix), a drop-in
-replacement built on the same heritage. Same configuration, same result: only
-the top-level key changes, `card_mod:` → `uix:` (theme-level keys become
-`uix-<thing>(-yaml):` too, if you use those). Everything below works identically
-under either key.
+To style one card, install the
+[card_mod](https://github.com/thomasloven/lovelace-card-mod) or
+[UIX](https://github.com/Lint-Free-Technology/uix) add-on from HACS: without
+it, these lines do nothing. Both take the same configuration; only the
+top-level key changes, `card_mod:` → `uix:` (theme-level keys become
+`uix-<thing>(-yaml):` too, if you use those).
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -1322,7 +1297,7 @@ card_mod: # or: uix:
 
 <a id="card-mod-and-card-structure"></a>
 
-## Card structure for card_mod / uix (advanced)
+## Card structure (advanced)
 
 You do not need this section for a ready-made theme. Selectors for card_mod /
 uix. Prefer the [`--epb-*` variables](#css) when one
