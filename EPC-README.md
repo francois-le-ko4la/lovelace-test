@@ -223,12 +223,12 @@ Multi-Feature. The [option map] shows which ones each accepts.
 That's enough to get started. Past that, here's where the rest of the depth
 lives — pick whichever guide matches what you're trying to do:
 
-| Guide                                  | What's in it                                                                                                                                                   |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🍳 [Cookbook][cookbook]                | Ready-made recipes (washing machine brands, an SSL countdown, a sun-tracking bar), a screenshot of every visual effect, and each variant's options at a glance |
-| 🎨 [Theme Guide]                       | All 12 built-in themes with their exact value ranges, the full `--epb-*` CSS API, and the DOM reference for `card_mod`/UI-X styling                            |
-| 📖 [Full Configuration Reference][FCR] | Every option, every variant — type, default, and a working example                                                                                             |
-| 🗺️ [Option map]                        | Which options each of the 7 variants accepts, in one table                                                                                                     |
+| Guide                                                 | What's in it                                                                                                                                                   |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🍳&nbsp;[Cookbook][cookbook]                          | Ready-made recipes (washing machine brands, an SSL countdown, a sun-tracking bar), a screenshot of every visual effect, and each variant's options at a glance |
+| 🎨&nbsp;[Theme&nbsp;Guide][Theme Guide]               | All 12 built-in themes with their exact value ranges, the full `--epb-*` CSS API, and the DOM reference for `card_mod`/UI-X styling                            |
+| 📖&nbsp;[Full&nbsp;Configuration&nbsp;Reference][FCR] | Every option, every variant — type, default, and a working example                                                                                             |
+| 🗺️&nbsp;[Option&nbsp;map][Option map]                 | Which options each of the 7 variants accepts, in one table                                                                                                     |
 
 ## 🚨 Errors, Deprecations & Troubleshooting
 
