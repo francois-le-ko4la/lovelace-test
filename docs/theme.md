@@ -844,9 +844,9 @@ missing? [Open an issue](https://github.com/francois-le-ko4la/lovelace-entity-pr
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
-    srcset="images/theme-color-names-dark-ed9c8b.png">
-  <img src="images/theme-color-names-light-763674.png"
-    alt="The 26 color names, each as a full bar in its color"
+    srcset="images/theme-color-names-dark-2c2f50.png">
+  <img src="images/theme-color-names-light-cfec8e.png"
+    alt="The 26 color names, each next to a dot of its color"
     width="750"/>
 </picture>
 
