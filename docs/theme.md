@@ -8,25 +8,41 @@
 > options not released yet. For the latest release, see the [documentation site](https://francois-le-ko4la.github.io/lovelace-test/).
 <!-- /dev-banner -->
 
-Three ways to color the card, from the simplest:
+Color is what turns a bar into an answer: green means all is well, red means
+look now. This page shows every way to get there, from one line of YAML to a
+fully restyled card. Start at the top and stop as soon as you have what you
+need.
 
-- [`theme`](#predefined-theme): one line picks a ready-made set of color zones
-  (battery, CPU, temperature...). Most people only need this.
-- [`custom_theme`](#custom-theme): your own zones, e.g. red under 20 %.
-- [CSS variables](#css) (`--epb-*`): restyle the card from a Home Assistant
-  theme or card_mod (advanced).
-
-A single color goes in `color`, `bar_color` or `icon_color`: any
-[color name](#token-color) listed below, or a CSS color.
+- **[Pick a ready-made theme](#predefined-theme).** One line, `theme: <value>`,
+  and the bar changes color with the value: a battery, a CPU, a temperature...
+- **[Draw your own zones](#custom-theme).** Red under 20 %, green up to 80 %:
+  `custom_theme` sets the limits you want. [`bar_color_mode`](#bar_color_mode)
+  then chooses how the zones are painted: one solid color, blocks or a gradient.
+- **[Choose a color by name](#token-color).** No zones needed: `bar_color: red`
+  paints the bar, `color: red` the icon. Any name like `red` or `teal` works,
+  matched to your Home Assistant theme, or any CSS color.
+- **[Restyle the whole card](#css)** _(advanced)_. CSS variables change the
+  bar's background, the icon's shape, the markers... in a Home Assistant theme
+  or with card_mod. The [card structure](#card-mod-and-card-structure) gives
+  the selectors.
+- **[Size the card](#card-sizing).** How the card picks its height in a
+  Sections or Masonry view, a stack, a grid or a button-card, and how to
+  change it.
+- **Something looks wrong?** Nothing is broken: remove the lines you added and
+  save, the card goes back to its default look. A bar in a single color is
+  normal without `theme` or `custom_theme`. For an error message on the card,
+  see [Troubleshooting](troubleshooting.md).
 
 ## Predefined theme
 
-The card's built-in color-zone presets (Card and Badge), set with one line,
-`theme: <value>`. They are not Home Assistant themes.
+The card's built-in color-zone presets, set with one line, `theme: <value>`.
+They are not Home Assistant themes. They work on every kind of card: the card,
+the badge, the tile feature, the templates and each row of a multi-card.
 
-Under each picture, **Show YAML** opens the lines to copy: paste them in the
-card's code editor (**Show code editor** in the card editor), then replace the
-`entity:` value with your own. Want your own limits, e.g. red under 20 %? See
+Under each picture, **Show ranges** gives the limits of each color and
+**Show YAML** the lines to copy: paste them in the card's code editor (**Show
+code editor** in the card editor), then replace the `entity:` value with your
+own. Want your own limits, e.g. red under 20 %? See
 [Custom theme](#custom-theme).
 
 | Value                                                      | Use for                          | Unit  |
@@ -60,7 +76,7 @@ card's code editor (**Show code editor** in the card editor), then replace the
 
 <a id="battery-adaptive"></a>
 
-### Battery (adapts to charging state)
+### Battery, adapts to charging (`battery_adaptive`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -101,7 +117,7 @@ theme: battery_adaptive
 
 <a id="critical-low"></a>
 
-### Critical when low (Battery...)
+### Critical when low (`critical_when_low`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -151,7 +167,7 @@ theme: critical_when_low
 
 <a id="optimal-low"></a>
 
-### Optimal when low
+### Optimal when low (`optimal_when_low`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -201,7 +217,7 @@ theme: optimal_when_low
 
 <a id="critical-high"></a>
 
-### Critical when high (CPU, RAM, disk usage...)
+### Critical when high (`critical_when_high`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -249,7 +265,7 @@ theme: critical_when_high
 
 <a id="optimal-high"></a>
 
-### Optimal when high
+### Optimal when high (`optimal_when_high`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -301,7 +317,7 @@ theme: optimal_when_high
 
 <a id="critical-extreme"></a>
 
-### Critical when extreme (Tank level, deviation...)
+### Critical when extreme (`critical_when_extreme`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -353,7 +369,7 @@ theme: critical_when_extreme
 
 <a id="critical-extreme-center"></a>
 
-### Critical when extreme, centered (`center_zero`)
+### Critical when extreme, centered (`critical_when_extreme_center`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -409,7 +425,9 @@ theme: critical_when_extreme_center
 
 [🔼 Back to top]
 
-### Light
+<a id="light"></a>
+
+### Light (`light`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -459,7 +477,9 @@ icon_tap_action:
 [🔼 Back to top]
 
 
-### Temperature
+<a id="temperature"></a>
+
+### Temperature (`temperature`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -514,7 +534,9 @@ icon_tap_action:
 
 [🔼 Back to top]
 
-### Humidity
+<a id="humidity"></a>
+
+### Humidity (`humidity`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -565,7 +587,9 @@ icon_tap_action:
 [🔼 Back to top]
 
 
-### VOC
+<a id="voc"></a>
+
+### VOC (`voc`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -630,7 +654,7 @@ icon_tap_action:
 
 <a id="pm25"></a>
 
-### PM 2.5
+### PM 2.5 (`pm25`)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"
@@ -761,11 +785,18 @@ custom_theme:
 ### `bar_color_mode`
 
 The `bar_color_mode` parameter controls how theme colors are rendered on the
-progress bar: `auto`, `segment`, `rainbow` or `rainbow_full`. It works with both
-predefined and custom themes, and only with one of them: without `theme` or
-`custom_theme`, the bar keeps a single color, and nothing is wrong. For a
-battery at 69% with `optimal_when_high`,
-`segment` shows each zone as a distinct solid block up to the current value:
+progress bar. It needs a theme: set `theme` or `custom_theme`. Without one, the
+bar keeps a single color (this is normal).
+
+| Value          | Description                                                                     |
+| :------------- | :------------------------------------------------------------------------------ |
+| `auto`         | Default. The bar is filled with the solid color of the current zone.            |
+| `segment`      | Each zone is drawn as a distinct colored block up to the current value.         |
+| `rainbow`      | A smooth gradient flows across all visible zone colors.                         |
+| `rainbow_full` | The track always shows the full gradient; a marker slides to the current value. |
+
+For a battery at 69% with `optimal_when_high`, `segment` shows each zone as a
+distinct solid block up to the current value:
 
 ```text
 [██ red ██][████ orange ████][██████ yellow ██████][████ light-green ▓▓▓]
@@ -780,6 +811,7 @@ visible zone colors instead.
 <summary>Show YAML</summary>
 
 ```yaml
+# segment
 type: custom:entity-progress-card
 entity: sensor.battery_level
 theme: optimal_when_high
@@ -787,25 +819,12 @@ bar_color_mode: segment
 ```
 
 ```yaml
+# rainbow
 type: custom:entity-progress-card
 entity: sensor.battery_level
 theme: optimal_when_high
 bar_color_mode: rainbow
 ```
-
-</details>
-<br />
-
-<br />
-<details>
-<summary>Show modes</summary>
-
-| Value          | Description                                                                     |
-| :------------- | :------------------------------------------------------------------------------ |
-| `auto`         | Default. The bar is filled with the solid color of the current zone.            |
-| `segment`      | Each zone is drawn as a distinct colored block up to the current value.         |
-| `rainbow`      | A smooth gradient flows across all visible zone colors.                         |
-| `rainbow_full` | The track always shows the full gradient; a marker slides to the current value. |
 
 </details>
 <br />
