@@ -42,8 +42,26 @@ LONE_BR = re.compile(r"^[ \t]*<br\s*/?>[ \t]*\n", re.M)
 
 # <picture> follows the OS scheme, Material's toggle only hides #only-light/dark.
 PICTURE = re.compile(
-    r'<picture>\s*<source media="\(prefers-color-scheme: dark\)"\s+srcset="([^"]+)"\s*/?>\s*'
-    r'<img src="([^"]+)"(.*?)/?>\s*</picture>', re.S)
+    r'<picture>(?P<sources>(?:\s*<source[^>]*>)*)\s*<img src="(?P<src>[^"]+)"(?P<attrs>.*?)/?>\s*</picture>',
+    re.S)
+SOURCE = re.compile(r'<source\s+media="([^"]+)"\s+srcset="([^"]+)"\s*/?>')
+DARK = "(prefers-color-scheme: dark)"
+
+
+def _picture(match: re.Match) -> str:
+    # Split on the theme: one <picture> per side, each keeping its other conditions.
+    sources = SOURCE.findall(match["sources"])
+    if not any(DARK in media for media, _ in sources):
+        return match[0]
+    dark = next((srcset for media, srcset in sources if media == DARK), match["src"])
+
+    def tag(media: str, srcset: str) -> str:
+        return f'<source media="{media}" srcset="{srcset}">'
+
+    light_extra = "".join(tag(m, s) for m, s in sources if DARK not in m)
+    dark_extra = "".join(tag(m.replace(f"{DARK} and ", ""), s) for m, s in sources if DARK in m and m != DARK)
+    return (f'<picture>{light_extra}<img src="{match["src"]}#only-light"{match["attrs"]}/></picture>'
+            f'<picture>{dark_extra}<img src="{dark}#only-dark"{match["attrs"]}/></picture>')
 
 
 def _local(markdown: str, repo_url: str, site_url: str) -> str:
@@ -68,7 +86,7 @@ def on_files(files, config):
 def on_page_markdown(markdown, page, config, files):
     markdown = BACK_TO_TOP.sub("", DEV_BANNER.sub("", markdown))
     markdown = _local(markdown, config.repo_url, config.site_url).replace("../README.md", "index.md")
-    markdown = PICTURE.sub(r'<img src="\2#only-light"\3/><img src="\1#only-dark"\3/>', markdown)
+    markdown = PICTURE.sub(_picture, markdown)
     # Raw HTML paths are not rewritten by MkDocs: a page is served one folder down.
     up = "../" * page.url.count("/")
     return re.sub(r'\b(src|srcset|href)="(?![a-z]+:|/|#|\.\./)', rf'\1="{up}', markdown)
