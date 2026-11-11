@@ -53,7 +53,7 @@ nav:
   - Home: index.md
   - Configuration: configuration.md
   - Cookbook: cookbook.md
-  - Theme: theme.md
+  - Theme Guide: theme.md
   - Troubleshooting: troubleshooting.md
   - Testing an RC: rc-testing.md
   - Contributing: contributing.md
@@ -65,6 +65,10 @@ not_in_nav: |
 
 markdown_extensions:
   - github-callouts
+  # GitHub nests list items at 2 spaces, Python-Markdown at 4.
+  - mdx_truly_sane_lists:
+      nested_indent: 2
+      truly_sane: false
   - admonition
   - attr_list
   - md_in_html

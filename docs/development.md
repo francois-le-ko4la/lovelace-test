@@ -638,7 +638,7 @@ handled as two distinct floors, not one:
 | Functional minimum  | `2024.0+`      | `98+`       | `94+`   | `15.4+` | `84+` |
 | Full visual effects | —              | `111+`      | `113+`  | `16.2+` | `97+` |
 
-(kept in sync with the table in the [README](../README.md#-installation) —
+(kept in sync with the table in the [README](../README.md#prerequisites) —
 update both when either floor changes.) Below the functional-minimum row, the
 card may not load at all. Between the two rows, it loads and works completely —
 every option, every interaction — but a handful of purely decorative touches (a

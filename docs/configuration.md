@@ -4090,6 +4090,9 @@ does **not** accept is anything the row shape settles on its behalf: `layout`,
 `bar_position`, `bar_single_line`, `density`, `frameless`, `marginless`,
 `multiline`, `height` and `min_width`. The multi-card sets
 [`layout` and `bar_position`](#multi-layout) for all its rows at once.
+As on the card, a row's [`color`](#color) and [`bar_color`](#bar_color) are
+plain values: for a color that follows the value, use [`theme`](#theme) or
+[`custom_theme`](#custom_theme).
 
 A stack's bars start at the same x on their own: [`bar_aligned`](#bar_aligned),
 on by default, gives every row the text column of the widest.
@@ -4397,7 +4400,7 @@ _This reference guide is adapted for entity-progress-card._
 [Card sizing]:
   https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/docs/theme.md#card-sizing
 [Accessibility]:
-  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/README.md#-accessibility
+  https://github.com/francois-le-ko4la/lovelace-entity-progress-card/blob/main/README.md#accessibility
 [official HA core]:
   https://github.com/home-assistant/core/tree/dev/homeassistant/components
 [jkaberg/hass-byd-vehicle]: https://github.com/jkaberg/hass-byd-vehicle

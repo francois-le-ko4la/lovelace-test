@@ -1,4 +1,4 @@
-# 🎨 Themes
+# 🎨 Theme Guide
 
 <!-- dev-banner -->
 > [!NOTE]
@@ -1001,7 +1001,7 @@ bar_color_mode: rainbow
 | `--epb-peak-average-opacity`          | Peak Marker  | Opacity    | `peak_marker` average mark opacity                                                                                                                    | `0.8`         |
 | `--epb-zero-mark-width`               | Marker       | Dimension  | Zero marker thickness                                                                                                                                 | `2px`         |
 | `--epb-zero-mark-color`               | Marker       | Color      | Zero marker color                                                                                                                                     | `#ff0000`     |
-| `--epb-alert-background-opacity`      | Alert        | Opacity    | `alert_when.highlight: background` tint opacity, browsers below the "Full visual effects" tier only (see [Prerequisites](../README.md#-installation)) | `0.3`         |
+| `--epb-alert-background-opacity`      | Alert        | Opacity    | `alert_when.highlight: background` tint opacity, browsers below the "Full visual effects" tier only (see [Prerequisites](../README.md#prerequisites)) | `0.3`         |
 | `--epb-ping-color`                    | Alert        | Color      | `ping` ring burst color, shared by `alert_when` (border and label) and `icon_animation: ping` (new in 1.6.2)                                          | `#ff6600`     |
 | `--epb-ping-spread`                   | Alert        | Dimension  | `ping` ring burst reach at the end of the animation (new in 1.6.2)                                                                                    | `20px`        |
 | `--epb-label-color`                   | Status Label | Color      | `status_label` pill text color                                                                                                                        | `#ffffff`     |
