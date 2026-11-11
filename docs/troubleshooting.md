@@ -35,27 +35,27 @@ your configuration or in an entity's state, and says so on the card itself.
 
 <!-- markdownlint-disable MD013 -->
 
-**`entity: Required property is missing.`**
+**`entity: Required property is missing.`**  
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/error-missing-entity-dark-8abb8f.png"><img src="images/error-missing-entity-light-9964f1.png" alt="Card showing: entity: Required property is missing." width="500"/></picture>  
 The card has no entity. Pick one in the editor, or add `entity:` to the YAML.
 
-**`decimal: Expected type: positive integer.`**
+**`decimal: Expected type: positive integer.`**  
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/error-invalid-value-dark-ba82c3.png"><img src="images/error-invalid-value-light-121be3.png" alt="Card showing: decimal: Expected type: positive integer." width="500"/></picture>  
 An option has a value it can't use (here, a negative `decimal`). Fix the option named before the colon.
 
-**`Not found in HA: entity.`**
+**`Not found in HA: entity.`**  
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/error-not-found-dark-32a40f.png"><img src="images/error-not-found-light-501298.png" alt="Card showing: Not found in HA: entity." width="500"/></picture>  
 No entity has this ID: a typo, or a removed entity. Check the ID in **Settings → Devices & services → Entities**.
 
-**`Unavailable`**
+**`Unavailable`**  
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/error-unavailable-dark-4c2fc0.png"><img src="images/error-unavailable-light-43c131.png" alt="Card showing: Unavailable" width="500"/></picture>  
 The device or integration behind the entity is offline. The card shows what Home Assistant reports: check the device or the integration, not the card.
 
-**`Unknown`**
+**`Unknown`**  
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/error-unknown-dark-362114.png"><img src="images/error-unknown-light-84c894.png" alt="Card showing: Unknown" width="500"/></picture>  
 The entity exists but has no value yet. Wait for its first value, or check the integration.
 
-**`<entity name> unavailable · Unavailable`**
+**`<entity name> unavailable · Unavailable`**  
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/error-max-entity-dark-792d61.png"><img src="images/error-max-entity-light-ca8306.png" alt="Card showing: Battery, EPB Demo unavailable · Unavailable" width="500"/></picture>  
 An entity in `min_value` or `max_value` is down: the line names it. Fix that entity, or use a fixed value.
 
@@ -272,13 +272,12 @@ compatibility overview].
 #### Try common quick checks first
 
 - **Already on the latest version?**  
-  **Fix:** check your installed version against the [latest release] — HACS
-  (or the Marketplace, built into Home Assistant since 2026.11, under
-  **Settings → Updates**) flags an update when one is available. It can lag
-  before it shows a new release though: if your version looks outdated but no
-  update is offered, open the card and use **⋮ → Redownload** (HACS) or
-  **⋮ → Install another version** (Marketplace) to install the current release
-  rather than waiting.
+  **Fix:** check your installed version against the [latest release] — the
+  Marketplace (HACS before Home Assistant 2026.11) flags an update under
+  **Settings → Updates** when one is available. It can lag before it shows a
+  new release though: if your version looks outdated but no update is offered,
+  open the card in the Marketplace and use **⋮ → Install another version** to
+  install the current release rather than waiting.
 - **A pre-release (RC) already fixes it?**  
   **Fix:** patches and new features often ship first as a release candidate
   (`x.y.z-rcN`) before the stable release. Check [all releases] (includes
@@ -288,7 +287,7 @@ compatibility overview].
   Resources**, with the type **JavaScript Module**. No **Resources** entry?
   Turn on **Advanced mode** in your user profile, or ask whoever set up Home
   Assistant.
-- **HACS or the Marketplace not detecting the card?**  
+- **The Marketplace not detecting the card?**  
   **Fix:** try clearing your browser cache or restarting Home Assistant.
 - **Card missing gradients/pulse animations, or looks a bit flat?**  
   **Fix:** likely just an older browser — see
@@ -403,7 +402,7 @@ operating system over HTTPS; elsewhere, the user agent line is all there is.
 It also flags a **duplicate resource load** on its own
 (`duplicate load: ⚠️ YES`, followed by the URLs loaded) — a common,
 hard-to-diagnose cause of erratic behavior where the card ends up installed
-**twice** (e.g. via HACS or the Marketplace _and_ a leftover manual resource in
+**twice** (e.g. via the Marketplace _and_ a leftover manual resource in
 **Settings → Dashboards → ⋮ → Resources**). If you see this warning, remove the
 extra resource entry first — it resolves most "impossible to reproduce" issues
 on its own.
@@ -495,9 +494,9 @@ or an advanced user, your feedback is valuable!
 
 If you recently **updated** the card and the issue started afterward:
 
-- with HACS, open the card, **⋮ → Redownload**, and pick the previous version;
-- with the Marketplace, restore a backup (it advises that over installing an
-  older version).
+- restore a backup (the Marketplace advises it);
+- or open the card in the Marketplace, **⋮ → Install another version**, and
+  pick the previous one.
 
 Your dashboards stay intact.
 
