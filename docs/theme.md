@@ -1,6 +1,6 @@
 <a id="top"></a>
 
-# 🎨 Theme Guide
+# Theme Guide
 
 <!-- dev-banner -->
 > [!NOTE]
@@ -11,7 +11,7 @@
 Color shows the state at a glance: green is fine, red is a zone to watch. This
 page goes from the simplest option, one line of YAML, to a fully restyled card:
 stop reading when you have what you need. The card must be installed first:
-see [Prerequisites](../README.md#prerequisites).
+see [Installation](../README.md#installation).
 
 > [!NOTE]
 >
@@ -20,8 +20,8 @@ see [Prerequisites](../README.md#prerequisites).
 
 - **[Pick a ready-made theme](#predefined-theme).** One line, such as
   `theme: battery_adaptive`, and the bar changes color with the value: a
-  battery, a CPU, a temperature... The limits are fixed: a battery turns red
-  under 10 %.
+  battery, a CPU, a temperature... The limits are fixed: `critical_when_low`,
+  for example, turns red under 10 %.
 - **[Draw your own zones](#custom-theme)** (value ranges, each with its
   color). Red under 20 %, green up to 80 %: `custom_theme` sets the limits you
   want. [`bar_color_mode`](#bar_color_mode)
@@ -31,8 +31,9 @@ see [Prerequisites](../README.md#prerequisites).
   follows the colors of your Home Assistant theme; any CSS color works too.
 - **Color from a condition** (Jinja, a template written in text)? Use a
   Template card: [`color`](configuration.md#color-jinja) and
-  [`bar_color`](configuration.md#bar_color-jinja). Not available on a
-  Multi-Card or Multi-Feature row.
+  [`bar_color`](configuration.md#bar_color-jinja). A `theme` set on the same
+  card wins over both: use one or the other. Not available on a Multi-Card or
+  Multi-Feature row.
 - **[Restyle the whole card](#css)** _(advanced, optional)_. CSS variables
   change the bar's background, the icon's shape, the markers... in a Home
   Assistant theme or with card_mod / uix (add-ons installed from HACS). The
@@ -45,8 +46,9 @@ see [Prerequisites](../README.md#prerequisites).
   A bar in a single color is normal without `theme` or `custom_theme`; with
   one, check that the spaces at the start of each line match the example.
 - **An error message on the card?** See [Troubleshooting](troubleshooting.md).
-- **Time left on a dishwasher or washing machine?** This page is only about
-  colors: see [Show a remaining time](cookbook.md#laundry-mystery).
+- **Time left on a washing machine?** This page is only about colors: see
+  [The Laundry Mystery](cookbook.md#laundry-mystery); the same idea works for
+  any appliance that reports a remaining time, such as a dishwasher.
 
 <a id="predefined-theme"></a>
 
@@ -124,7 +126,7 @@ Use this for a phone or laptop battery. Unplugged, it uses the zones of
 the zones of [`critical_when_extreme`](#critical-extreme): green from 30 to
 70 %, red under 10 % and over 90 %, since a battery ages faster when kept full.
 
-Its ranges are those of the two themes above. The card detects charging the
+Its ranges are those of these two themes. The card detects charging the
 same way as
 `icon_animation: battery_charging`: from an attribute, the state, or another
 entity of the same device.
@@ -692,12 +694,14 @@ icon_tap_action:
 
 ## Custom theme
 
-Works on the card, the badge, the tile feature and each row of a Multi-Card or
-Multi-Feature. The Template and Badge Template variants color with Jinja
-instead: [`color`](configuration.md#color-jinja) and
+`custom_theme` replaces `theme`: set one, not both. Works on the card, the
+badge, the tile feature and each row of a Multi-Card or Multi-Feature. The
+Template and Badge Template variants color with Jinja instead:
+[`color`](configuration.md#color-jinja) and
 [`bar_color`](configuration.md#bar_color-jinja). A Multi-Card or Multi-Feature
 row has no Jinja color: use `custom_theme` there (zones follow the row's own
-value only), or a Template card for a color that depends on a condition.
+value only). For rows colored by a condition, stack Template cards (a
+`vertical-stack`) instead of a Multi-Card.
 
 Your own color zones, e.g. a battery red under 20 %, green up to 80 %, orange
 above:
@@ -728,8 +732,9 @@ custom_theme:
 Paste it in the card's code editor (**Show code editor** in the card editor)
 and replace `sensor.phone_battery_level` with your own sensor. A value on a
 limit takes the zone that starts there: at exactly 20 %, the bar is green. A
-value that falls between two zones keeps the card's default color; below the
-first zone or above the last, it takes that zone's color.
+value that falls between two zones uses your `color` if set, otherwise the
+card's default color; below the first zone or above the last, it takes that
+zone's color.
 
 Each entry of [`custom_theme`](configuration.md#custom_theme) needs `min` and
 `max`; a color key (`color`, `bar_color`, `icon_color`) and `icon` are optional.
@@ -758,14 +763,14 @@ custom_theme:
 > [!NOTE]
 >
 > `min`/`max` set one zone; `min_value`/`max_value` set the whole bar's scale.
-> `min`/`max` are in the sensor's own unit (°C, ppb...), not in %. The bar still
-> shows 0 to 100 unless you set `min_value`/`max_value`.
+> `min`/`max` are in the sensor's own unit: % for a battery, °C or ppb for
+> others.
 >
 > Zones don't need to be contiguous or declared in order — see
 > [`custom_theme`](configuration.md#custom_theme) in the configuration reference
 > for exactly how gaps, overlaps, and incomplete zones behave.
 >
-> `custom_theme` never changes the default range, `0`–`100`:
+> `custom_theme` never changes the bar's default range, `0`–`100`:
 >
 > - a zone past it (e.g. up to `120` on a `%` sensor) is cut at `100`, not
 >   stretched to fit;
@@ -1290,7 +1295,7 @@ card_mod: # or: uix:
 >
 > Unlike the `--epb-*` variables, `.shape` is an internal class name, not a
 > versioned public hook — see the
-> [Class Name Updates & Migration Guide](#class-name-migration) if it's ever
+> [Old class names](#class-name-migration) if it's ever
 > renamed in a future release.
 
 [🔼 Back to top]
@@ -1540,6 +1545,9 @@ version, replace the old names with the new ones:
 | `progress-bar-low-zero`          | `zero`                   | Zero mark for center-zero bars                                                                  |
 | `progress-bar-low-wm`            | `low`                    | Low watermark marker                                                                            |
 | `progress-bar-high-wm`           | `high`                   | High watermark marker                                                                           |
+
+`name` is both an old name (now `name-main`) and a new one (was `name-group`):
+rename `name` to `name-main` first, then `name-group` to `name`.
 
 [🔼 Back to top]
 

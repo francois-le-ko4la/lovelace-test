@@ -116,3 +116,9 @@
 .md-typeset td:first-child code {
   word-break: normal;
 }
+
+/* Callouts and folded blocks read at the body size, not Material's smaller one. */
+.md-typeset .admonition,
+.md-typeset details {
+  font-size: inherit;
+}

@@ -1,6 +1,6 @@
 <a id="top"></a>
 
-# ⚙️ Full Configuration Reference
+# Full Configuration Reference
 
 <!-- dev-banner -->
 > [!NOTE]
@@ -10,15 +10,60 @@
 
 ## Introduction
 
-This document provides an in-depth overview of all available options,
-accompanied by detailed examples to help you configure the system precisely to
-your needs. Whether you’re optimizing for customizing features, or ensuring
-compatibility, this guide will serve as your comprehensive reference.
+This page lists every option of the card, one by one, with an example. To
+install the card or see ready-made cards, start with the [README](../README.md)
+or the [Cookbook](cookbook.md); to see an effect before you use it, open the
+Cookbook's [Visual Effects](cookbook.md#visual-effects). The visual editor sets
+most options for you: the data types below only matter if you write YAML by
+hand.
+
+These options only change how the card looks: to undo one, remove it and save.
+Something shows an error? See [Troubleshooting](troubleshooting.md).
+
+- **[Conventions](#conventions)**: how an option is written (types, badges,
+  signatures). Skip it if you use the visual editor.
+- **[Card, Badge and Tile Feature](#standard)**: the options of the three
+  standard variants: [data](#data-options), [styling](#styling-options) and
+  [actions](#behavior-and-actions).
+- **[Template and Badge Template](#template)**: the same options, plus the
+  fields written in Jinja.
+- **[Multi-Card and Multi-Feature](#multi)**: several entities in one card or
+  one tile feature.
 
 For which variant accepts which option, and whether its visual editor offers it,
 see the [option map](option-map.md).
 
 ## Conventions
+
+You can skip this section if you use the visual editor: go straight to
+[Data Options](#data-options). It explains how each option below is written.
+
+### Reading an option
+
+This syntax provides an instant overview of configuration options, making it
+easier to set up parameters correctly.
+
+#### Supported values
+
+When an option only accepts a predefined set of values, we indicate it using the
+➡️ symbol, followed by the list of allowed choices.
+
+_Example_:
+
+> **`layout`** [String] ➡️ {`horizontal`| `vertical`} _(optional, default:
+> `horizontal`)_:
+
+#### Jinja signatures
+
+When an option supports a Jinja template, we use the ➡️ symbol to indicate the
+type of value that the Jinja expression must return. This helps ensure the
+template produces the correct data type expected by the configuration.
+
+_Example_:
+
+> **`name`** [JINJA] ➡️ string
+
+[🔼 Back to top]
 
 In this documentation, the following types are used to describe configuration
 parameters. Here is what they mean:
@@ -138,7 +183,8 @@ secondary: '{{ states(entity, with_unit=True) }}'
 > In the visual editor (HA 2026.2+), every Jinja field has a 🐛 icon in its
 > top-right corner — click it to test your template live: it shows the exact
 > value your expression currently renders to (or the error, if it doesn't
-> parse), right below the field, without saving the card first.
+> parse), right below the field, without saving the card first. On an older
+> Home Assistant, save the card and check the result instead.
 
 ##### Supported HTML
 
@@ -300,7 +346,8 @@ to ensure clarity and ease of use:
 ##### Compatibility
 
 Throughout this documentation, compatibility badges indicate which components
-work with specific configuration options:
+work with specific configuration options. No badge for a variant means the
+option does nothing there; the [option map](option-map.md) has the full matrix.
 
 | Badge                                                    | Component                     | Description                                          |
 | :------------------------------------------------------- | ----------------------------- | ---------------------------------------------------- |
@@ -309,6 +356,8 @@ work with specific configuration options:
 | [![Feature OK][Feature-OK]](#compatibility)              | **Tile Feature Compatible**   | This option works with the tile feature              |
 | [![Template OK][Template-OK]](#compatibility)            | **Template Compatible**       | This option supports Jinja2 templating               |
 | [![Badge Template OK][BadgeTemplate-OK]](#compatibility) | **Badge Template Compatible** | This option supports Jinja2 templating within badges |
+| [![Multi-Card OK][MultiCard-OK]](#compatibility)         | **Multi-Card Compatible**     | This option works with the multi-card                |
+| [![Multi-Feature OK][MultiFeature-OK]](#compatibility)   | **Multi-Feature Compatible**  | This option works with the multi-feature             |
 
 ##### Feature hosts
 
@@ -331,58 +380,14 @@ manually in YAML mode.
 
 [🔼 Back to top]
 
-#### Parameter specification
-
-This syntax provides an instant overview of configuration options, making it
-easier to set up parameters correctly.
-
-##### Supported values
-
-When an option only accepts a predefined set of values, we indicate it using the
-➡️ symbol, followed by the list of allowed choices.
-
-_Example_:
-
-> **`layout`** [String] ➡️ {`horizontal`| `vertical`} _(optional, default:
-> `horizontal`)_:
-
-##### Jinja
-
-When an option supports a Jinja template, we use the ➡️ symbol to indicate the
-type of value that the Jinja expression must return. This helps ensure the
-template produces the correct data type expected by the configuration.
-
-_Example_:
-
-> **`name`** [JINJA] ➡️ string
-
-[🔼 Back to top]
-
-#### Typical description
-
-**`title`**
-
-[![Card OK][Card-OK]](#compatibility)
-
-> **`option`** type _(required/optional, default: xyz)_
-
-Description of this awesome option.
-
-_Example_:
-
-```yaml
-option: sensor.hp_envy_6400_series_tri_color_cartridge
-```
-
-> [!NOTE]
->
-> the most important note!
-
-[🔼 Back to top]
-
 <a id="standard"></a>
 
-## entity-progress-card / entity-progress-badge / entity-progress-feature
+## Card, Badge and Tile Feature
+
+Options of three variants: the card (`custom:entity-progress-card`), the badge
+(`custom:entity-progress-badge`) and the tile feature
+(`custom:entity-progress-feature`, in a Tile card's `features:`). The badges at
+the top of each option say which of them it applies to.
 
 ### Data Options
 
@@ -397,7 +402,8 @@ Options related to entity data, attributes, value display logic, and metadata.
 
 > **`entity`** [String] _(required)_
 
-Entity ID.
+The entity the card shows, such as `sensor.phone_battery`. In the visual editor,
+pick it from the list.
 
 _Example_:
 
@@ -418,8 +424,8 @@ entity: sensor.hp_envy_6400_series_tri_color_cartridge
 
 > [!IMPORTANT]
 >
-> Timers are supported (1.0.43). `attribute`, `min`, `max` parameters are not
-> considered.
+> Timers are supported (since 1.0.43). `attribute`, `min_value` and
+> `max_value` are ignored for a timer.
 
 [🔼 Back to top]
 
@@ -492,7 +498,7 @@ You can provide a simple string for a static label.
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 name: ABC
 ```
 
@@ -504,7 +510,7 @@ a space automatically.
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 name:
   - type: text
     text: my text
@@ -577,7 +583,7 @@ _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 unit: ABC
 ```
 
@@ -613,24 +619,26 @@ The `decimal` value will be determined based on the following priority:
   value:
   - If the value represents a `timer`, the timer default is used.
   - If the value represents a `counter`, the counter default is used.
-  - If the value represents a `duration`, or if the unit is one of j, d, h, min,
-    s, ms, or μs, the duration default is used.
+  - If the value represents a `duration`, or if the unit is one of d (or `j`,
+    the French abbreviation), h, min, s, ms, or μs, the duration default is
+    used.
   - If the unit is `%` (the default unit), the `percentage` default is used.
   - Otherwise, the other default is applied (for units like °C, kWh, etc.).
 
 _Default values:_
 
-- `decimal` = 0 for percentage (%)
-- `decimal` = 0 for timers, durations, or time-based units (seconds, minutes,
-  hours, etc.)
-- `decimal` = 0 for Counter
-- `decimal` = 2 for other unit (°C, kWh...)
+| Value                                   | `decimal` |
+| :-------------------------------------- | :-------- |
+| Percentage (%)                          | `0`       |
+| Timer, duration, time units (s, min, h) | `0`       |
+| Counter                                 | `0`       |
+| Other units (°C, kWh...)                | `2`       |
 
 _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 decimal: 1
 ```
 
@@ -658,6 +666,66 @@ Defines the minimum value to be used when calculating the percentage.
 This allows the percentage to be relative to both a minimum (`min_value`, which
 represents 0%) and a maximum (`max_value`, which represents 100%).
 
+`min_value` accepts three forms — like `max_value`, each mode uses its own
+explicit key, so there is nothing to guess from the value's shape (see
+[Value shapes & shortcuts](#value-shapes--shortcuts) — the same shape is reused
+by several other options):
+
+- a fixed numeric value (float or integer) — same as before,
+- `{ entity: ..., attribute: ... }` — an entity ID whose state is used as the
+  minimum (`attribute` is optional, to read a specific attribute instead of the
+  state),
+- `{ jinja: ... }` — a Jinja template that dynamically returns a number.
+
+In the visual editor, three buttons (Fixed value / Entity / Template) let you
+switch between the three modes.
+
+> [!NOTE]
+>
+> The Jinja mode is available on the Card and the Badge. On the Tile Feature,
+> only the fixed value and entity modes apply.
+
+> [!NOTE]
+>
+> A `counter` or a `number` carries its own range, which the card uses when you
+> set no bounds — see [`counter` and `number` entities](#counter-number-range).
+
+_Fixed value example_:
+
+```yaml
+type: custom:entity-progress-card
+# ...your other options
+min_value: 10
+```
+
+Suppose you are measuring the weight of a connected litter box, where:
+
+- `min_value` = 6 (the minimum weight representing an empty box, i.e., 0%).
+- `max_value` = 11 (the maximum weight representing a full box, i.e., 100%).
+- `value` = 8 (the current weight).
+- `percentage` = 40%
+
+_Entity example_:
+
+```yaml
+type: custom:entity-progress-card
+# ...your other options
+min_value:
+  entity: sensor.night_baseline_power
+  attribute: today  # optional
+```
+
+_Jinja example_:
+
+```yaml
+type: custom:entity-progress-card
+# ...your other options
+min_value:
+  jinja: "{{ states('input_number.floor') | float }}"
+```
+
+##### Edge cases: `center_zero` and themes
+
 When `center_zero` is enabled and `min_value` isn't set, it defaults to the
 negative of `max_value` instead of `0` — e.g. `-100` if `max_value` is also left
 at its default, or `-3000` if `max_value: 3000`. Without this, the negative half
@@ -684,64 +752,6 @@ would have no range at all (`0` to `0`) and could never show anything. Set
 > the theme already defines how far its negative branch realistically extends,
 > which is a better default than an arbitrary mirror of `max_value`.
 
-`min_value` accepts three forms — like `max_value`, each mode uses its own
-explicit key, so there is nothing to guess from the value's shape (see
-[Value shapes & shortcuts](#value-shapes--shortcuts) — the same shape is reused
-by several other options):
-
-- a fixed numeric value (float or integer) — same as before,
-- `{ entity: ..., attribute: ... }` — an entity ID whose state is used as the
-  minimum (`attribute` is optional, to read a specific attribute instead of the
-  state),
-- `{ jinja: ... }` — a Jinja template that dynamically returns a number.
-
-In the visual editor, a chip selector (Fixed value / Entity / Template) lets you
-switch between the three modes.
-
-> [!NOTE]
->
-> The Jinja mode is available on the Card and the Badge. On the Tile Feature,
-> only the fixed value and entity modes apply.
-
-> [!NOTE]
->
-> A `counter` or a `number` carries its own range, which the card uses when you
-> set no bounds — see [`counter` and `number` entities](#counter-number-range).
-
-_Fixed value example_:
-
-```yaml
-type: custom:entity-progress-card
-····
-min_value: 10
-```
-
-Suppose you are measuring the weight of a connected litter box, where:
-
-- `min_value` = 6 (the minimum weight representing an empty box, i.e., 0%).
-- `max_value` = 11 (the maximum weight representing a full box, i.e., 100%).
-- `value` = 8 (the current weight).
-- `percentage` = 40%
-
-_Entity example_:
-
-```yaml
-type: custom:entity-progress-card
-····
-min_value:
-  entity: sensor.night_baseline_power
-  attribute: today  # optional
-```
-
-_Jinja example_:
-
-```yaml
-type: custom:entity-progress-card
-····
-min_value:
-  jinja: "{{ states('input_number.floor') | float }}"
-```
-
 [🔼 Back to top]
 
 #### `max_value`
@@ -764,7 +774,7 @@ explicit key, so there is nothing to guess from the value's shape (see
   state),
 - `{ jinja: ... }` — a Jinja template that dynamically returns a number.
 
-In the visual editor, a chip selector (Fixed value / Entity / Template) lets you
+In the visual editor, three buttons (Fixed value / Entity / Template) let you
 switch between the three modes.
 
 > [!NOTE]
@@ -860,7 +870,7 @@ _Fixed value example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 max_value: 255
 ```
 
@@ -868,7 +878,7 @@ _Entity example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 max_value:
   entity: sensor.total_capacity
   attribute: today  # optional
@@ -878,7 +888,7 @@ _Jinja example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 max_value:
   jinja: "{{ states('input_number.ceiling') | float }}"
 ```
@@ -977,7 +987,7 @@ _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 state_content:
   - state
   - current_position
@@ -1026,7 +1036,7 @@ _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 custom_info: >-
   {% if states('sensor.temperature') | float > 25 %}
     <span style="color: red;">{{ states('sensor.temperature') }} °C – Hot</span>
@@ -1069,7 +1079,7 @@ _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 multiline: true
 custom_info: >-
   {% if states('sensor.temperature') | float > 25 %}
@@ -1104,7 +1114,7 @@ _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 name_info: >-
   {% if states('sensor.temperature') | float > 25 %}
     <span style="color: red;">{{ states('sensor.temperature') }} °C – Hot</span>
@@ -1118,6 +1128,8 @@ name_info: >-
 > - This field supports HTML for advanced formatting — see
 >   [Supported HTML](#supported-html) for the allowed tags and styles.
 > - If the template evaluates to an empty string, nothing will be displayed.
+
+_Preview_: [Cookbook](cookbook.md#effect-bar-stack).
 
 [🔼 Back to top]
 
@@ -1303,6 +1315,17 @@ instead of only seeing their difference.
 
 Customize the look and feel: icons, layout, colors, sizes, and visual themes.
 
+| I want to…                         | Options                                                                                                                                                                                                                         |
+| :--------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Change the icon                    | [`icon`](#icon), [`color`](#color), [`icon_animation`](#icon_animation), [`force_circular_background`](#force_circular_background)                                                                                              |
+| Color the bar by value             | [`theme`](#theme), [`custom_theme`](#custom_theme), [`bar_color_mode`](#bar_color_mode), [`interpolate`](#interpolate)                                                                                                          |
+| Color the bar with one color       | [`bar_color`](#bar_color)                                                                                                                                                                                                       |
+| Shape the bar                      | [`bar_size`](#bar_size), [`bar_position`](#bar_position), [`bar_segments`](#bar_segments), [`bar_ring`](#bar_ring), [`bar_effect`](#bar_effect), [`bar_orientation`](#bar_orientation), [`bar_max_width`](#bar_max_width)      |
+| Add markers or alerts              | [`watermark`](#watermark), [`peak_marker`](#peak_marker), [`alert_when`](#alert_when), [`trend_indicator`](#trend_indicator), [`status_label`](#status_label)                                                                    |
+| Format the text and the value      | [`text_effect`](#text_effect), [`unit_position`](#unit_position), [`unit_spacing`](#unit_spacing), [`value_compact`](#value_compact), [`value_sign`](#value_sign)                                                               |
+| Change the layout                  | [`layout`](#layout), [`density`](#density), [`content_order`](#content_order), [`height`](#height), [`min_width`](#min_width), [`frameless`](#frameless), [`marginless`](#marginless), [`center_zero`](#center_zero)             |
+| Hide parts of the card             | [`hide`](#hide)                                                                                                                                                                                                                 |
+
 [🔼 Back to top]
 
 #### `icon`
@@ -1317,7 +1340,7 @@ _Examples:_ `mdi:lightbulb`, `mdi:thermometer`...
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 icon: mdi:grain
 ```
 
@@ -1346,7 +1369,7 @@ _Examples:_ `"green"`, `"rgb(68, 115, 158)"`, `"#FF5733"`,
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 color: rgb(110, 65, 171)
 ```
 
@@ -1436,6 +1459,8 @@ automatically nudges the sweep to compensate instead of changing the icon. This
 compensation is tuned against MDI's `battery-charging*` icons; other icon packs,
 or `battery-bluetooth*`, aren't verified and may not line up.
 
+_Preview_: [Cookbook](cookbook.md#effect-icon-animation).
+
 _Example_:
 
 ```yaml
@@ -1524,7 +1549,7 @@ _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 badge_icon: >-
   {% if states('sensor.temperature') | float > 30 %}
     mdi:weather-sunny-alert
@@ -1584,7 +1609,7 @@ _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 badge_color: >-
   {% if states('sensor.temperature') | float > 30 %}
     red
@@ -1611,7 +1636,7 @@ _Examples:_ `"blue"`, `"rgb(68, 115, 158)"`, `"#FF5733"`,
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 bar_color: rgb(110, 65, 171)
 ```
 
@@ -1654,7 +1679,7 @@ _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 bar_size: medium
 ```
 
@@ -1811,6 +1836,8 @@ strength indicator — instead of a continuous fill. Both the track and the fill
 are segmented, so gaps are visible in both the empty and filled portions of the
 bar. With [`center_zero`](#center_zero), each arm is segmented independently.
 
+_Preview_: [Cookbook](cookbook.md#effect-bar-segments).
+
 _Example_:
 
 ```yaml
@@ -1867,6 +1894,8 @@ bar_ring:
   gap: 90
 ```
 
+_Preview_: [Cookbook](cookbook.md#effect-bar-ring).
+
 [🔼 Back to top]
 
 #### `bar_effect`
@@ -1902,17 +1931,19 @@ _Available options_:
   bubbles (`bar_orientation: up` with `bar_position: background`, `overlay` in
   `layout: vertical`, or the upright bar of `layout: vertical`)
 
+_Preview_: [Cookbook](cookbook.md#effect-bar-effects).
+
 _Examples_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 bar_effect: radius
 ```
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 bar_effect:
   - radius
   - shimmer
@@ -1920,7 +1951,7 @@ bar_effect:
 ```
 
 ```yaml
-····
+# ...your other options
 bar_effect: |-
   {% if states(xxx) | float > 22 %}
     shimmer, gradient
@@ -1983,6 +2014,43 @@ Controls how theme colors are applied to the progress bar fill.
 > linear themes (e.g. `light`), zone boundaries are derived automatically by
 > splitting 0–100% into equal segments (5 levels → 0–20%, 20–40%, …).
 
+_Preview_: [Cookbook](cookbook.md#effect-segment).
+
+_Examples_:
+
+```yaml
+type: custom:entity-progress-card
+entity: sensor.battery_level
+theme: optimal_when_high
+bar_color_mode: segment
+```
+
+```yaml
+type: custom:entity-progress-card
+entity: sensor.battery_level
+custom_theme:
+  - min: 0
+    max: 20
+    color: red
+  - min: 20
+    max: 80
+    color: green
+  - min: 80
+    max: 100
+    color: orange
+bar_color_mode: rainbow
+```
+
+```yaml
+type: custom:entity-progress-card
+entity: sensor.living_room_temperature
+theme: temperature
+max_value: 40
+bar_color_mode: rainbow_full
+```
+
+##### Edge cases
+
 > [!NOTE]
 >
 > `bar_color_mode` also works with [`center_zero`](#center_zero): each arm
@@ -2030,39 +2098,6 @@ Controls how theme colors are applied to the progress bar fill.
 > `rainbow` mode — it falls back to the entity's own negotiated color (e.g. a
 > cover is pink open / grey closed) before the card's generic default, the same
 > fallback chain the single-color `auto` mode already uses.
-
-_Examples_:
-
-```yaml
-type: custom:entity-progress-card
-entity: sensor.battery_level
-theme: optimal_when_high
-bar_color_mode: segment
-```
-
-```yaml
-type: custom:entity-progress-card
-entity: sensor.battery_level
-custom_theme:
-  - min: 0
-    max: 20
-    color: red
-  - min: 20
-    max: 80
-    color: green
-  - min: 80
-    max: 100
-    color: orange
-bar_color_mode: rainbow
-```
-
-```yaml
-type: custom:entity-progress-card
-entity: sensor.living_room_temperature
-theme: temperature
-max_value: 40
-bar_color_mode: rainbow_full
-```
 
 [🔼 Back to top]
 
@@ -2224,6 +2259,8 @@ When set to `true`, a circular shape will appear behind the icon, regardless of
 the HA version, entity domain or action defined. This helps create a cleaner,
 more consistent visual appearance with Mushroom card.
 
+_Preview_: [Cookbook](cookbook.md#effect-force-circular-background).
+
 _Example_:
 
 ```yaml
@@ -2333,6 +2370,8 @@ _Icons_:
 _Default value_:
 
 - `false`
+
+_Preview_: [Cookbook](cookbook.md#effect-trend-indicator).
 
 [🔼 Back to top]
 
@@ -2445,6 +2484,8 @@ _Default value_:
 
 - Not configured (no marks)
 
+_Preview_: [Cookbook](cookbook.md#effect-peak-marker).
+
 [🔼 Back to top]
 
 #### `status_label`
@@ -2504,6 +2545,8 @@ _Map definition_ — use this form to also set `position`/`color_source`:
 > status_label:
 >   jinja: "{{ {'label': 'hot', 'color': '#ff0000'} if is_state('sensor.status', 'hot') else {'label': 'ok', 'color': '#00ff00'} }}"
 > ```
+
+_Preview_: [Cookbook](cookbook.md#effect-status-label).
 
 _Example_:
 
@@ -2574,7 +2617,7 @@ _Example_:
 ```yaml
 type: custom:entity-progress-card
 entity: sensor.temperature
-····
+# ...your other options
 bar_position: overlay
 text_effect: halo
 ```
@@ -2730,6 +2773,8 @@ entity: sensor.cpu_usage
 density: single_column
 ```
 
+_Preview_: [Cookbook](cookbook.md#effect-density-compact).
+
 [🔼 Back to top]
 
 #### `layout`
@@ -2758,7 +2803,7 @@ _Examples:_
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 layout: vertical
 ```
 
@@ -3185,6 +3230,8 @@ With `value: 60` and `growth_percent: true`, a cover at `66%` will display
 `+10%` (i.e. `(66 - 60) / 60 * 100`), representing how far the current value has
 grown relative to the center point — rather than the bar's raw fill ratio.
 
+_Preview_: [Cookbook](cookbook.md#effect-center-zero).
+
 [🔼 Back to top]
 
 #### `theme`
@@ -3200,25 +3247,41 @@ grown relative to the center point — rather than the bar's raw fill ratio.
 > `temperature`|`humidity`|`voc`|`pm25`} _(optional)_
 
 Allows customization of the progress bar's appearance using a predefined theme.
-This theme dynamically adjusts the `icon`, `color` and `bar-color` parameters
-based on the battery level, eliminating the need for manual adjustments or
-complex Jinja2 templates.
+This theme dynamically adjusts the `icon`, `color` and `bar_color` options from
+the current value, eliminating the need for manual adjustments or complex
+Jinja2 templates. Each theme's colors and limits:
+[Predefined themes](theme.md#predefined-themes); your own limits (e.g. red
+under 20 %): [`custom_theme`](#custom_theme).
 
 _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 theme: light
+```
+
+_Your own limits_ (a battery red under 20 %, green above), with
+[`custom_theme`](#custom_theme) instead of `theme`:
+
+```yaml
+type: custom:entity-progress-card
+entity: sensor.phone_battery
+custom_theme:
+  - min: 0
+    max: 20
+    color: red
+  - min: 20
+    max: 100
+    color: green
 ```
 
 > [!WARNING]
 >
-> The `battery`, `cpu`, and `memory` parameters are deprecated and SHOULD no
-> longer be used. Although these parameters are still valid, they MUST be
-> replaced by `optimal_when_low` or `optimal_when_high`. These new parameters,
-> introduced in version `1.1.7`, eliminate the need for multiple theme
-> definitions and are sufficient to replace the deprecated themes.
+> The theme values `battery`, `cpu` and `memory` are deprecated (since
+> `1.1.7`). They still work: replace `battery` with `optimal_when_high`, and
+> `cpu` or `memory` with `optimal_when_low`. See
+> [Deprecated options](troubleshooting.md#deprecated-options).
 
 > [!NOTE]
 >
@@ -3246,7 +3309,7 @@ theme: light
 Defines a list of custom theme rules based on value ranges. Setting this
 variable disables the `theme` variable.
 
-In the visual editor, a chip selector (Preset / Custom) switches between the
+In the visual editor, two buttons (Preset / Custom) switch between the
 `theme` dropdown and this list of zones — each zone is its own row with min,
 max, colors and an icon.
 
@@ -3264,6 +3327,8 @@ _Map definition:_
 _Order of Priority for the Icon:_
 
 - see [`icon`](#icon) parameter.
+
+_Preview_: [Cookbook](cookbook.md#effect-custom-theme).
 
 _Example_:
 
@@ -3367,11 +3432,13 @@ range.
 > [`bar_color_mode`](#bar_color_mode) set to `auto` (the default) — outside
 > either condition, `interpolate` is disabled automatically.
 
+_Preview_: [Cookbook](cookbook.md#effect-interpolate).
+
 _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 custom_theme:
   - min: 0
     max: 20
@@ -3483,7 +3550,7 @@ _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 disable_unit: true
 ```
 
@@ -3551,7 +3618,7 @@ value, unlike [`peak_marker`](#peak_marker)'s):
   - `line_size` (string, optional): overrides `watermark.line_size` for this
     side only - only read when this side ends up drawn as a `line`.
 
-In the visual editor, a chip selector (Fixed value / Entity / Template) lets you
+In the visual editor, three buttons (Fixed value / Entity / Template) let you
 switch `value`'s mode, mirroring `min_value`/`max_value`; a "Show low"/"Show
 high" toggle replaces the old `disable_low`/`disable_high`. Each side's own
 Type/Line size/Opacity/Color fields show the global value until you pick
@@ -3585,7 +3652,7 @@ _Entity example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 watermark:
   low:
     entity: sensor.night_baseline_power
@@ -3597,7 +3664,7 @@ _Jinja example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 watermark:
   low:
     jinja: "{{ states('input_number.night_floor') | float }}"
@@ -3611,7 +3678,7 @@ this shape internally, but writing it out explicitly is clearer:
 
 ```yaml
 type: custom:entity-progress-card-template
-····
+# ...your other options
 watermark:
   high:
     value:
@@ -3650,11 +3717,13 @@ bar position automatically — they are never raw percentages of the bar.
 > `as: percent`, the value is a direct position on the full bar (0 = left edge,
 > 100 = right edge), bypassing the two-half mapping.
 
+_Preview_: [Cookbook](cookbook.md#effect-watermark).
+
 _Example_:
 
 ```yaml
 type: custom:entity-progress-card
-····
+# ...your other options
 watermark:
   type: striped # red and yellow stripes
   high:
@@ -3741,7 +3810,7 @@ explicit key, so there is nothing to guess from the value's shape:
   the state),
 - `{ jinja: ... }` — a Jinja template that dynamically returns a number.
 
-In the visual editor, a chip selector (Fixed value / Entity / Template) lets you
+In the visual editor, three buttons (Fixed value / Entity / Template) let you
 switch between the three modes, same as `min_value`/`max_value`. A second,
 top-level chip (Simple / Advanced) switches between `above`/`below` and `jinja`
 — Advanced hides `above`/`below` entirely.
@@ -3836,6 +3905,8 @@ alert_when:
     {% else %}false{% endif %}
 ```
 
+_Preview_: [Cookbook](cookbook.md#effect-alert-when).
+
 [🔼 Back to top]
 
 ### Behavior And Actions
@@ -3844,7 +3915,9 @@ Define interactions on tap, double tap, or hold gestures.
 
 [🔼 Back to top]
 
-#### `xyz_action`
+<a id="xyz_action"></a>
+
+#### `tap_action`, `hold_action`, `double_tap_action` (`xyz_action`)
 
 [![Card OK][Card-OK]](#compatibility) [![Badge OK][Badge-OK]](#compatibility)
 [![Template OK][Template-OK]](#compatibility)
@@ -3937,7 +4010,7 @@ _Example_:
 ```yaml
 type: custom:entity-progress-card
 entity: light.living_room
-····
+# ...your other options
 tap_action:
   action: navigate
   navigation_path: /lovelace/lights
@@ -3959,7 +4032,7 @@ entity: sensor.pv1_power
 bar_stack:
   entities:
     - entity: sensor.pv2_power
-····
+# ...your other options
 tap_action:
   action: more-info
   entity: sensor.pv_total_power
@@ -3967,7 +4040,12 @@ tap_action:
 
 <a id="template"></a>
 
-## entity-progress-card-template / entity-progress-badge-template
+## Template and Badge Template
+
+Options of the card template (`custom:entity-progress-card-template`) and the
+badge template (`custom:entity-progress-badge-template`): the
+[common options](#common-options) of the card, plus the fields written in Jinja
+([specific options](#specific-options)).
 
 ### Common options
 
@@ -4176,6 +4254,13 @@ based on entity states.
 
 See [`color`](#color).
 
+> [!NOTE]
+>
+> Template and Badge Template only. A Multi-Card or Multi-Feature row takes a
+> plain value: for a color that follows the value, use [`theme`](#theme) or
+> [`custom_theme`](#custom_theme); for one that depends on a condition, stack
+> Template cards instead of a Multi-Card.
+
 _Example_:
 
 ```yaml
@@ -4203,6 +4288,13 @@ and complex color logic.
 
 See [`bar_color`](#bar_color).
 
+> [!NOTE]
+>
+> Template and Badge Template only. A Multi-Card or Multi-Feature row takes a
+> plain value: for a color that follows the value, use [`theme`](#theme) or
+> [`custom_theme`](#custom_theme); for one that depends on a condition, stack
+> Template cards instead of a Multi-Card.
+
 _Example_:
 
 ```yaml
@@ -4220,7 +4312,11 @@ bar_color: >-
 
 <a id="multi"></a>
 
-## entity-progress-multi-card / entity-progress-multi-feature
+## Multi-Card and Multi-Feature
+
+Options of the multi-card (`custom:entity-progress-multi-card`) and the
+multi-feature (`custom:entity-progress-multi-feature`, in a Tile card's
+`features:`).
 
 > [!NOTE]
 >
@@ -4244,9 +4340,13 @@ does **not** accept is anything the row shape settles on its behalf: `layout`,
 `bar_position`, `bar_single_line`, `density`, `frameless`, `marginless`,
 `multiline`, `height` and `min_width`. The multi-card sets
 [`layout` and `bar_position`](#multi-layout) for all its rows at once.
-As on the card, a row's [`color`](#color) and [`bar_color`](#bar_color) are
-plain values: for a color that follows the value, use [`theme`](#theme) or
-[`custom_theme`](#custom_theme).
+
+> [!NOTE]
+>
+> No Jinja on a row: its [`color`](#color) and [`bar_color`](#bar_color) are
+> plain values, as on the card. For a color that follows the value, use
+> [`theme`](#theme) or [`custom_theme`](#custom_theme); for one that depends on
+> a condition, stack Template cards instead of a Multi-Card.
 
 A stack's bars start at the same x on their own: [`bar_aligned`](#bar_aligned),
 on by default, gives every row the text column of the widest.
@@ -4283,10 +4383,14 @@ pins the text column to a fixed width, over both — in your Home Assistant them
 
 ### `entities`
 
+[![Multi-Card OK][MultiCard-OK]](#compatibility)
+[![Multi-Feature OK][MultiFeature-OK]](#compatibility)
+
 > **`entities`** [List] ➡️ list of maps _(required)_
 
-Each item is a row config — at minimum an `entity`, plus any of the row options
-listed above. Any option set at the **top level** of the multi config (outside
+Each item is a row config — at minimum an `entity` (a bare entity id is
+accepted as shorthand for `entity: …`), plus any of the row options listed
+above. Any option set at the **top level** of the multi config (outside
 `entities`) is applied to every row as a shared default; a row can override it
 individually.
 
@@ -4297,7 +4401,7 @@ _Example (`entity-progress-multi-card`, standalone)_:
 
 ```yaml
 type: custom:entity-progress-multi-card
-bar_size: small
+bar_size: small # the default in a Multi, shown for clarity
 entities:
   - entity: sensor.printer_black_cartridge
     bar_color: black
@@ -4340,7 +4444,7 @@ features:
 
 <a id="multi-value"></a> <a id="multi-show_value"></a>
 
-### The value, and which side it sits on
+### The value: `hide` and `reverse_secondary_info_row`
 
 A row shows its entity's value by default — it is a whole card, with its own
 text. Take it off with [`hide`](#hide), top level for every row or on a single
@@ -4413,9 +4517,10 @@ entities:
 
 ### `rows`
 
-[![Card OK][Card-OK]](#compatibility)
+[![Multi-Card OK][MultiCard-OK]](#compatibility)
 
-> **`rows`** [Integer] ➡️ _(optional, default: one row per entity)_
+> **`rows`** [Integer] ➡️ _(optional, default: one row per entity, `3` with
+> `layout: vertical`)_
 
 `entity-progress-multi-card` only. Sets how many Sections grid rows the card
 occupies (see Home Assistant's own `grid_options`). Unlike the Tile feature, a
@@ -4440,7 +4545,7 @@ entities:
 
 ### `layout` and `bar_position`
 
-[![Card OK][Card-OK]](#compatibility)
+[![Multi-Card OK][MultiCard-OK]](#compatibility)
 
 > **`layout`** [String] ➡️ `horizontal` | `vertical` _(optional, default:
 > `horizontal`)_
@@ -4456,8 +4561,8 @@ fills the column behind the texts.
 
 The bar fills from the bottom; a row set to
 [`bar_orientation: down`](#bar_orientation) fills from the top. Left unset,
-[`rows`](#multi-rows) is 3. [`content_order`](#content_order) takes the lines of
-a `vertical` card.
+[`rows`](#multi-rows) defaults to 3. [`content_order`](#content_order) takes
+the lines of a `vertical` card.
 
 _Example_:
 
@@ -4477,6 +4582,8 @@ entities:
 
 [![Card OK][Card-OK]](#compatibility)
 [![Template OK][Template-OK]](#compatibility)
+[![Multi-Card OK][MultiCard-OK]](#compatibility)
+[![Multi-Feature OK][MultiFeature-OK]](#compatibility)
 
 > **`bar_aligned`** [Boolean | String] ➡️ _(optional, default: `true` on a
 > Multi, `false` on a card)_
@@ -4540,7 +4647,7 @@ card:
 
 ---
 
-_This reference guide is adapted for entity-progress-card._
+Next: the [Cookbook](cookbook.md), with a capture of each effect.
 
 [🔼 Back to top]: #top
 [yaml-only]: https://img.shields.io/badge/YAML-Only-orange.svg?style=flat
@@ -4550,6 +4657,10 @@ _This reference guide is adapted for entity-progress-card._
 [Template-OK]: https://img.shields.io/badge/Template-OK-green.svg?style=flat
 [BadgeTemplate-OK]:
   https://img.shields.io/badge/Badge%20Template-OK-green.svg?style=flat
+[MultiCard-OK]:
+  https://img.shields.io/badge/Multi--Card-OK-purple.svg?style=flat
+[MultiFeature-OK]:
+  https://img.shields.io/badge/Multi--Feature-OK-purple.svg?style=flat
 [String]: #string
 [Float]: #float
 [Integer]: #integer

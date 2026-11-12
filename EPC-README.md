@@ -72,6 +72,8 @@ tank level, shown as a bar with its color and icon.
 - **41 languages**: the editor and the card's messages follow your Home
   Assistant language ([list](#-language--numbers)).
 
+<a id="installation"></a>
+
 ## 📦 Installation
 
 Requires Home Assistant 2024.0 or newer. The Home Assistant app and any recent
@@ -269,6 +271,8 @@ The card is designed to work well for everyone, out of the box.
 
 </details>
 
+<a id="language-and-numbers"></a>
+
 ## 🌍 Language & numbers
 
 The card uses the language of your Home Assistant profile and formats numbers
@@ -372,7 +376,8 @@ keeps the GitHub Actions up to date.
 
 ## 👥 Contributing
 
-Want more features? Want to improve this card? Contributions are welcome! 🚀  
+Want more features? Want to improve this card? Contributions are welcome! 🚀
+
 Check out the [Contributing Guide] to get started.
 
 ## 🙏 Credits & Acknowledgements

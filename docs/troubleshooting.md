@@ -282,7 +282,8 @@ compatibility overview].
 - **A pre-release (RC) already fixes it?**  
   **Fix:** patches and new features often ship first as a release candidate
   (`x.y.z-rcN`) before the stable release. Check [all releases] (includes
-  pre-releases) — your issue may already be fixed there.
+  pre-releases) — your issue may already be fixed there. To try one, see
+  [Testing a Release Candidate](rc-testing.md).
 - **Card not loading?**  
   **Fix:** check that the card is listed in **Settings → Dashboards → ⋮ →
   Resources**, with the type **JavaScript Module**. No **Resources** entry?
