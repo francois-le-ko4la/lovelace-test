@@ -86,6 +86,8 @@ editor, skip it and go to [Data Options](#data-options).
 
 ### Reading an option
 
+#### Overview
+
 Each option starts with its [compatibility labels](#compatibility), then a
 one-line summary:
 
@@ -114,6 +116,8 @@ _Example_:
 [🔼 Back to top]
 
 ### Input types
+
+#### Standard types
 
 These types describe what each option accepts.
 
@@ -668,7 +672,7 @@ min_value:
   jinja: "{{ states('input_number.floor') | float }}"
 ```
 
-##### Edge cases: `center_zero` and themes
+**Edge cases: `center_zero` and themes**
 
 When `center_zero` is enabled and `min_value` isn't set, it defaults to the
 negative of `max_value` instead of `0` — e.g. `-100` if `max_value` is also left
@@ -728,7 +732,7 @@ switch between the three modes.
 
 <a id="counter-number-range"></a>
 
-##### `counter` and `number` entities bring their own range
+**`counter` and `number` entities bring their own range**
 
 A [`counter`](https://www.home-assistant.io/integrations/counter/) carries
 `minimum`/`maximum`, and a
@@ -1149,7 +1153,7 @@ Details per mode:
 - **`net`**: one segment for the total, in the bar's own color or theme (no
   per-entity `color`); with `center_zero`, a balance that goes either way.
 
-##### `subtract` and overflow
+**`subtract` and overflow**
 
 `subtract: true` on an entity means "this value counts against the total instead
 of with it" — what that looks like depends on the mode:
@@ -1668,7 +1672,7 @@ bar_position: overlay
 > `background` and `icon` don't apply to that context. Badge and Badge Template
 > take `default` and `icon` only.
 
-##### `icon`: a ring around the icon
+**`icon`: a ring around the icon**
 
 The bar becomes a ring around the icon, filling clockwise from the top. The card
 keeps its size and its text; only the straight bar goes.
@@ -1979,7 +1983,7 @@ max_value: 40
 bar_color_mode: rainbow_full
 ```
 
-##### Edge cases: `bar_color_mode`
+**Edge cases: `bar_color_mode`**
 
 > [!NOTE]
 >
