@@ -15,10 +15,10 @@ gap is a missing test, example or demo card, not an option that misbehaves.
 | Gap | Options |
 | :-- | :-- |
 | Editor field missing (0) | None |
-| No section in configuration.md (0) | None |
-| Named in no test (8) | [`bar_scale`](configuration.md#bar_scale), [`double_tap_action`](configuration.md#xyz_action), [`fast_refresh`](configuration.md#fast_refresh), [`force_circular_background`](configuration.md#force_circular_background), [`hold_action`](configuration.md#xyz_action), [`icon_double_tap_action`](configuration.md#xyz_action), [`icon_hold_action`](configuration.md#xyz_action), [`min_width`](configuration.md#min_width) |
+| No section in configuration.md (5) | `double_tap_action`, `hold_action`, `icon_double_tap_action`, `icon_hold_action`, `icon_tap_action` |
+| Named in no test (8) | [`bar_scale`](configuration.md#bar_scale), `double_tap_action`, [`fast_refresh`](configuration.md#fast_refresh), [`force_circular_background`](configuration.md#force_circular_background), `hold_action`, `icon_double_tap_action`, `icon_hold_action`, [`min_width`](configuration.md#min_width) |
 | Not on the demo dashboard (3) | [`disable_unit`](configuration.md#disable_unit), [`rows`](configuration.md#rows), [`text_shadow`](configuration.md#text_shadow) |
-| No YAML example in the docs (5) | [`double_tap_action`](configuration.md#xyz_action), [`hold_action`](configuration.md#xyz_action), [`icon_double_tap_action`](configuration.md#xyz_action), [`icon_hold_action`](configuration.md#xyz_action), [`text_shadow`](configuration.md#text_shadow) |
+| No YAML example in the docs (5) | `double_tap_action`, `hold_action`, `icon_double_tap_action`, `icon_hold_action`, [`text_shadow`](configuration.md#text_shadow) |
 
 ## Matrix
 
@@ -55,29 +55,29 @@ an option that misbehaves.
 | [`color`](configuration.md#color) | ✅ | ✅ | ✅ | ✅ | ✕ | ✅ | ✅ | — | 45 | 8 | 21 | 16 | ✅ |
 | [`content_order`](configuration.md#content_order) | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✅ | — | 6 | 3 | 7 | 3 | ✅ |
 | [`custom_info`](configuration.md#custom_info) | ✅ | ✕ | ✅ | ✕ | ✕ | ✅ | ✅ | — | 6 | 2 | 17 | 4 | ✅ |
-| [`custom_theme`](configuration.md#custom_theme) | ✅ | ✕ | ✅ | ✕ | ✅ | ✅ | ✅ | — | 6 | 6 | 12 | 3 | ✅ |
+| [`custom_theme`](configuration.md#custom_theme) | ✅ | ✕ | ✅ | ✕ | ✅ | ✅ | ✅ | — | 6 | 8 | 12 | 3 | ✅ |
 | [`decimal`](configuration.md#decimal) | ✅ | ✕ | ✅ | ✕ | ✕ | ✅ | ✅ | — | 11 | 9 | 33 | 8 | ✅ |
 | [`density`](configuration.md#density) | ✅ | ✅ | ✕ | ✕ | ✕ | ✕ | ✕ | `default` | 11 | 6 | 26 | 7 | ✅ |
 | [`disable_unit`](configuration.md#disable_unit) ¹ | 📝 | ✕ | 📝 | ✕ | ✕ | 📝 | 📝 | `false` | 5 | 1 | 0 | 9 | ⚠️ Demo |
-| [`double_tap_action`](configuration.md#xyz_action) | ✅ | ✅ | ✅ | ✅ | ✕ | ✅ | ✅ | `{action: none}` | 3 | 0 | 4 | 0 | ⚠️ Examples, Tests |
-| [`entities`](configuration.md#entities) | ✕ | ✕ | ✕ | ✕ | ✕ | ✅ | ✅ | — | 24 | 12 | 16 | 28 | ✅ |
-| [`entity`](configuration.md#entity) | ✅ | ✅ | ✅ | ✅ | ✅ | ✕ | ✕ | — | 52 | 133 | 545 | 60 | ✅ |
+| `double_tap_action` | ✅ | ✅ | ✅ | ✅ | ✕ | ✅ | ✅ | `{action: none}` | 3 | 0 | 4 | 0 | ⚠️ Examples, Tests |
+| [`entities`](configuration.md#entities) | ✕ | ✕ | ✕ | ✕ | ✕ | ✅ | ✅ | — | 24 | 13 | 16 | 28 | ✅ |
+| [`entity`](configuration.md#entity) | ✅ | ✅ | ✅ | ✅ | ✅ | ✕ | ✕ | — | 52 | 135 | 545 | 59 | ✅ |
 | [`fast_refresh`](configuration.md#fast_refresh) | ✕ | ✅ | ✕ | ✅ | ✕ | ✕ | ✕ | `false` | 2 | 3 | 5 | 0 | ⚠️ Tests |
 | [`force_circular_background`](configuration.md#force_circular_background) | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✕ | `false` | 4 | 2 | 7 | 0 | ⚠️ Tests |
 | [`frameless`](configuration.md#frameless) | ✅ | ✅ | ✅ | ✅ | ✕ | ✕ | ✕ | `false` | 7 | 4 | 23 | 3 | ✅ |
 | [`height`](configuration.md#height) | ✅ | ✅ | ✕ | ✕ | ✕ | ✕ | ✕ | — | 24 | 3 | 31 | 3 | ✅ |
 | [`hide`](configuration.md#hide) | ✅ | ✅ | ✅ | ✅ | ✕ | ✅ | ✅ | `[icon, name]` | 18 | 9 | 59 | 16 | ✅ |
-| [`hold_action`](configuration.md#xyz_action) | ✅ | ✅ | ✅ | ✅ | ✕ | ✅ | ✅ | `{action: none}` | 3 | 0 | 4 | 0 | ⚠️ Examples, Tests |
+| `hold_action` | ✅ | ✅ | ✅ | ✅ | ✕ | ✅ | ✅ | `{action: none}` | 3 | 0 | 4 | 0 | ⚠️ Examples, Tests |
 | [`icon`](configuration.md#icon) | ✅ | ✅ | ✅ | ✅ | ✕ | ✕ | ✕ | — | 42 | 18 | 45 | 19 | ✅ |
 | [`icon_animation`](configuration.md#icon_animation) | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✅ | — | 11 | 10 | 28 | 2 | ✅ |
-| [`icon_double_tap_action`](configuration.md#xyz_action) | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✕ | `{action: none}` | 2 | 0 | 1 | 0 | ⚠️ Examples, Tests |
-| [`icon_hold_action`](configuration.md#xyz_action) | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✕ | `{action: none}` | 2 | 0 | 1 | 0 | ⚠️ Examples, Tests |
-| [`icon_tap_action`](configuration.md#xyz_action) | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✕ | `{action: none}` | 3 | 5 | 8 | 1 | ✅ |
+| `icon_double_tap_action` | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✕ | `{action: none}` | 2 | 0 | 1 | 0 | ⚠️ Examples, Tests |
+| `icon_hold_action` | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✕ | `{action: none}` | 2 | 0 | 1 | 0 | ⚠️ Examples, Tests |
+| `icon_tap_action` | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✕ | `{action: none}` | 3 | 5 | 8 | 1 | ✅ |
 | [`interpolate`](configuration.md#interpolate) | ✅ | ✕ | ✅ | ✕ | ✅ | ✅ | ✅ | `false` | 6 | 2 | 1 | 2 | ✅ |
 | [`layout`](configuration.md#layout) ¹ | ✅ | ✅ | ➖ | ➖ | ➖ | ✅ | ✕ | `horizontal` | 24 | 9 | 120 | 13 | ✅ |
 | [`marginless`](configuration.md#marginless) | ✅ | ✅ | ✅ | ✅ | ✕ | ✕ | ✕ | `false` | 8 | 3 | 18 | 1 | ✅ |
-| [`max_value`](configuration.md#max_value) | ✅ | ✕ | ✅ | ✕ | ✅ | ✅ | ✅ | `100` | 18 | 27 | 89 | 11 | ✅ |
-| [`min_value`](configuration.md#min_value) | ✅ | ✕ | ✅ | ✕ | ✅ | ✅ | ✅ | — | 17 | 14 | 50 | 11 | ✅ |
+| [`max_value`](configuration.md#max_value) | ✅ | ✕ | ✅ | ✕ | ✅ | ✅ | ✅ | `100` | 18 | 29 | 89 | 11 | ✅ |
+| [`min_value`](configuration.md#min_value) | ✅ | ✕ | ✅ | ✕ | ✅ | ✅ | ✅ | — | 17 | 15 | 50 | 11 | ✅ |
 | [`min_width`](configuration.md#min_width) | ✅ | ✅ | ✅ | ✅ | ✕ | ✕ | ✕ | — | 4 | 1 | 1 | 0 | ⚠️ Tests |
 | [`multiline`](configuration.md#multiline) | ✅ | ✅ | ✕ | ✕ | ✕ | ✕ | ✕ | `false` | 10 | 1 | 3 | 4 | ✅ |
 | [`name`](configuration.md#name) | ✅ | ✅ | ✅ | ✅ | ✕ | ✕ | ✕ | — | 45 | 24 | 465 | 35 | ✅ |
@@ -90,7 +90,7 @@ an option that misbehaves.
 | [`secondary`](configuration.md#secondary) | ✕ | ✅ | ✕ | ✅ | ✕ | ✕ | ✕ | — | 13 | 7 | 13 | 7 | ✅ |
 | [`state_content`](configuration.md#state_content) | ✅ | ✕ | ✅ | ✕ | ✕ | ✅ | ✅ | — | 9 | 2 | 8 | 6 | ✅ |
 | [`status_label`](configuration.md#status_label) | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✕ | `{position: right, color_source: bar}` | 11 | 3 | 29 | 4 | ✅ |
-| [`tap_action`](configuration.md#xyz_action) | ✅ | ✅ | ✅ | ✅ | ✕ | ✅ | ✅ | `{action: more-info}` | 5 | 5 | 15 | 1 | ✅ |
+| [`tap_action`](configuration.md#tap_action) | ✅ | ✅ | ✅ | ✅ | ✕ | ✅ | ✅ | `{action: more-info}` | 5 | 5 | 15 | 2 | ✅ |
 | [`text_effect`](configuration.md#text_effect) | ✅ | ✅ | ✕ | ✕ | ✕ | ✅ | ✅ | `none` | 8 | 1 | 9 | 6 | ✅ |
 | [`text_shadow`](configuration.md#text_shadow) ¹ | 📝 | 📝 | ✕ | ✕ | ✕ | 📝 | 📝 | `false` | 3 | 0 | 0 | 4 | ⚠️ Examples, Demo |
 | [`theme`](configuration.md#theme) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — | 39 | 20 | 137 | 14 | ✅ |

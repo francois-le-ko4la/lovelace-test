@@ -20,16 +20,16 @@ cross-variant compatibility badges).
 > [Installation](../README.md#installation). To use a YAML below, edit your
 > dashboard, add a card, choose **Manual**, paste the YAML, then **Save**:
 > nothing changes until you save. Something shows an error? See
-> [Troubleshooting](troubleshooting.md). Time left on a washing machine or a
-> dishwasher? See [The Laundry Mystery](#laundry-mystery).
+> [Troubleshooting](troubleshooting.md). Time left on a washing machine? See
+> [The Laundry Mystery](#laundry-mystery).
 
 ## Variant reference
 
 Which one to use, and how to configure it once you've picked: an overview to
 help you decide, then options, defaults, and quick examples. One chapter per
-variant after the overview, same structure throughout: `Options`,
-`Getting Started`, and for the Card and the Card Template, `Recipes` linking
-out to the walkthroughs below.
+variant after the overview (Multi-Card and Multi-Feature share one), same
+structure throughout: `Options`, `Getting Started`, and for the Card and the
+Card Template, `Recipes` linking out to the walkthroughs below.
 
 <a id="components"></a>
 
@@ -86,10 +86,10 @@ Use the Template version (card or badge) when:
 - You need to calculate the percentage manually from multiple sensor values
   (e.g., water tank level from height readings).
 - Your use case involves conditional logic, math, or non-linear scales.
-- You want to use Jinja2 templates (Home Assistant's template language, the
-  one of **Tools** > **Template**) directly in the YAML, without creating extra
-  helpers (**Settings** > **Devices & services** > **Helpers**) or sensors.
-  Not available in a Multi-Card row: stack Template cards instead.
+- You want to use Jinja2 templates (Home Assistant's template language, the one
+  of **Settings** ➡️ **Tools** ➡️ **Template**) directly in the YAML, without
+  creating extra helpers (**Settings** ➡️ **Devices & services** ➡️ **Helpers**)
+  or sensors. Not available in a Multi-Card row: stack Template cards instead.
 - You need maximum flexibility without being restricted by the standard options.
 
 If you don't write templates, use the standard card.
@@ -1431,7 +1431,7 @@ See [`bar_effect`](configuration.md#bar_effect) for the full list.
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-bar-segments-dark-57a697.png">
   <img src="images/effect-bar-segments-light-bcb482.png"
-    alt="bar_segments"
+    alt="A battery bar at 42 % split into ten blocks"
     width="369"/>
 </picture>
 
@@ -1460,7 +1460,7 @@ Works with any orientation, size, or color mode/effect.
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-bar-ring-dark-94518c.png">
   <img src="images/effect-bar-ring-light-4b3285.png"
-    alt="bar_ring"
+    alt="Four rings around a battery icon: dial, segments, hard and soft edge"
     width="500"/>
 </picture>
 
@@ -1503,7 +1503,7 @@ bar_ring:
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-interpolate-dark-58644a.png">
   <img src="images/effect-interpolate-light-132ff7.png"
-    alt="interpolate"
+    alt="A litter level at 20 %, its color blended between two zones"
     width="369"/>
 </picture>
 
@@ -1537,7 +1537,7 @@ custom_theme:
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-force-circular-background-dark-71f31a.png">
   <img src="images/effect-force-circular-background-light-3bd067.png"
-    alt="force_circular_background"
+    alt="An idle timer whose icon keeps its round grey disc"
     width="369"/>
 </picture>
 
@@ -1565,7 +1565,7 @@ force_circular_background: true
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-icon-animation-dark-478027.gif">
   <img src="images/effect-icon-animation-light-3071e5.gif"
-    alt="Animated icons: a washing machine, a charging battery, a spinning fan, a light"
+    alt="Animated icons: a washing machine, a charging battery, a fan, a light"
     width="807"/>
 </picture>
 
@@ -1574,7 +1574,8 @@ and `battery_charging` check the entity's own domain-specific status, no config
 needed beyond the name; the rest (`spin`, `pulse`, `bounce`, `shake`, `ping`,
 `reveal`) play on any entity with a genuine active/inactive state — see
 [`icon_animation`](configuration.md#icon_animation) for exactly how each one is
-detected.
+detected. In the capture, top row: washing machine, EV; bottom row: fan,
+light, in the order of the code blocks below.
 
 <br />
 <details>
@@ -1837,7 +1838,7 @@ the other five (`blended`, `area`, `triangle`, `round`, `line`) each look like.
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-segment-dark-7e699d.png">
   <img src="images/effect-segment-light-74b70a.png"
-    alt="bar_color_mode: segment"
+    alt="A temperature bar drawn in the theme's color blocks"
     width="369"/>
 </picture>
 
@@ -1904,7 +1905,7 @@ See [`bar_color_mode`](configuration.md#bar_color_mode) for `segment` and plain
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-status-label-dark-bff5a0.png">
   <img src="images/effect-status-label-light-de7ec5.png"
-    alt="status_label"
+    alt="Four temperatures, each with a pill: glacial, cool, temperate, scorching"
     width="750"/>
 </picture>
 
@@ -1951,7 +1952,7 @@ object form and `color_source`.
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-trend-dark-b83afd.png">
   <img src="images/effect-trend-light-287c61.png"
-    alt="trend_indicator"
+    alt="A temperature card with a trend icon in its top-right corner"
     width="369"/>
 </picture>
 
@@ -1978,7 +1979,7 @@ trend_indicator: true
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-peak-marker-dark-97d0f3.png">
   <img src="images/effect-peak-marker-light-f865e5.png"
-    alt="peak_marker"
+    alt="A battery bar with a small mark at the recent peak"
     width="369"/>
 </picture>
 
@@ -2013,7 +2014,7 @@ peak_marker:
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-custom-theme-dark-6d2b7d.png">
   <img src="images/effect-custom-theme-light-b752be.png"
-    alt="custom_theme"
+    alt="A litter level at 20 % in orange, icon set by its zone"
     width="369"/>
 </picture>
 
@@ -2052,7 +2053,7 @@ custom_theme:
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-bar-stack-dark-e151fb.png">
   <img src="images/effect-bar-stack-light-448549.png"
-    alt="bar_stack"
+    alt="Two stacked bars: a battery breakdown and a net power total"
     width="750"/>
 </picture>
 
@@ -2127,7 +2128,7 @@ auto-shaded colors.
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-center-zero-dark-0d72cb.png">
   <img src="images/effect-center-zero-light-a8e3ec.png"
-    alt="center_zero"
+    alt="A power card at -750 W, its bar filling left from the middle"
     width="369"/>
 </picture>
 
@@ -2160,7 +2161,7 @@ mode, which combines naturally with it.
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-hide-shape-dark-45efd2.png">
   <img src="images/effect-hide-shape-light-2122fe.png"
-    alt="hide: shape"
+    alt="A temperature card whose icon has no round background"
     width="369"/>
 </picture>
 
@@ -2190,7 +2191,7 @@ Same result, via CSS instead of YAML: the
   <source media="(prefers-color-scheme: dark)"
     srcset="images/effect-density-compact-dark-8bf5ed.png">
   <img src="images/effect-density-compact-light-0ffec8.png"
-    alt="density: compact"
+    alt="Two compact battery cards, the bar along the top edge"
     width="369"/>
 </picture>
 
@@ -2237,7 +2238,7 @@ how the number itself is shown.
   <source media="(prefers-color-scheme: dark)"
     srcset="images/format-unit-position-dark-9baaba.png">
   <img src="images/format-unit-position-light-a19e85.png"
-    alt="unit_position"
+    alt="A Litecoin balance with the symbol first: Ł42.00"
     width="369"/>
 </picture>
 
@@ -2268,7 +2269,7 @@ unit_spacing: no-space
   <source media="(prefers-color-scheme: dark)"
     srcset="images/format-value-compact-dark-206465.png">
   <img src="images/format-value-compact-light-6cca54.png"
-    alt="value_compact"
+    alt="A total energy shortened to 1.25MWh"
     width="369"/>
 </picture>
 
@@ -2286,8 +2287,8 @@ unit_spacing: no-space
 </details>
 <br />
 
-`1200` becomes `1.2k`, `1500000` becomes `1.5M` — locale-aware, trailing zeros
-trimmed (`1.2k`, not `1.20k`).
+`1200` becomes `1.2K`, `1500000` becomes `1.5M` — locale-aware, trailing zeros
+trimmed (`1.2K`, not `1.20K`).
 
 [🔼 Back to top]
 
@@ -2299,7 +2300,7 @@ trimmed (`1.2k`, not `1.20k`).
   <source media="(prefers-color-scheme: dark)"
     srcset="images/format-value-sign-dark-6cad82.png">
   <img src="images/format-value-sign-light-760ff1.png"
-    alt="value_sign"
+    alt="A net power card showing +700.00 W, sign included"
     width="369"/>
 </picture>
 
@@ -2336,7 +2337,8 @@ linked from the Card and Card Template `Recipes` above.
 The GIF at the top of the [README](../README.md) isn't a mockup — it's this
 project's own [demo dashboard](demo-dashboard.yaml) (the "EP Showcase" view),
 built from ordinary options combined a bit more generously than usual. Here's
-exactly how three of its cards are put together.
+exactly how four of its cards are put together; the others are in the same
+file.
 
 <a id="showcase-living-room"></a>
 
@@ -2346,7 +2348,7 @@ exactly how three of its cards are put together.
   <source media="(prefers-color-scheme: dark)"
     srcset="images/showcase-living-room-dark-f82ca7.png">
   <img src="images/showcase-living-room-light-3cc099.png"
-    alt="Living room"
+    alt="A living room at 21.5 °C on a blue-to-red bar, a Temperate pill"
     width="750"/>
 </picture>
 
@@ -2387,7 +2389,7 @@ condition needed for a fixed label.
   <source media="(prefers-color-scheme: dark)"
     srcset="images/showcase-garage-dark-f30a6e.gif">
   <img src="images/showcase-garage-light-3e9dac.gif"
-    alt="Garage"
+    alt="A tall garage card at 35 °C, a red hot pill, a bar ending in red"
     width="218"/>
 </picture>
 
@@ -2430,7 +2432,7 @@ Same `rainbow_full` idea as Living room, this time
   <source media="(prefers-color-scheme: dark)"
     srcset="images/showcase-energy-dark-6f38c2.png">
   <img src="images/showcase-energy-light-f38c8f.png"
-    alt="Energy"
+    alt="Consumption and production bars above a net bar centered on zero"
     width="750"/>
 </picture>
 
@@ -2586,9 +2588,10 @@ flexibility to adapt to entity variations based on the integration used.
 **Searching for Entities**
 
 Before configuring your card, it's essential to research the specific entities
-for your washing machine integration. To do this, you will need to explore Home
-Assistant's **Tools** page to pinpoint the necessary information. Let's take
-this personal integration as an example:
+for your washing machine integration: open **Settings** ➡️ **Devices & services**
+➡️ **Entities** and search for "washing", then look for the entities that
+show the program state, the progress or the time left. Let's take this
+personal integration as an example:
 
 - **`sensor.washing_machine_operation_state`**: This entity is very specific to
   my washing machine brand and the **Home Connect** integration that comes with

@@ -69,7 +69,7 @@ Entity field. Want your own limits, e.g. red under 20 %? See
 [Custom theme](#custom-theme).
 
 Icons: `light`, `temperature`, `humidity`, `voc` and `pm25` set their own; the
-other themes keep the entity's icon. `icon:` overrides both. Most pictures
+other themes keep the entity's icon. A theme's icon wins over `icon:`. Most pictures
 show the theme at several values, between a bar in blocks (top) and a gradient
 (bottom).
 
@@ -569,7 +569,6 @@ icon_tap_action:
 <br />
 [🔼 Back to top]
 
-
 <a id="voc"></a>
 
 ### VOC (`voc`)
@@ -1045,7 +1044,7 @@ my_custom_theme:
 > Assistant adds it automatically.
 
 This applies to all cards using that theme. Add the line in your themes file,
-then reload the themes (**Tools → YAML → Themes**).
+then reload the themes (**Settings** ➡️ **Tools** ➡️ **YAML** ➡️ **Themes**).
 
 #### In card_mod / uix
 
@@ -1688,4 +1687,3 @@ Still stuck? Ask on [Discord](https://discord.gg/tyMQ2SfyNG) or
 [🔼 Back to top]
 
 [🔼 Back to top]: #top
-

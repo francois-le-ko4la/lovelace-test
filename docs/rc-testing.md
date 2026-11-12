@@ -20,12 +20,12 @@ everyone gets it. Testing it helps catch problems before the stable release.
 The RC installs like any update, over your current version: your existing cards
 run it right away, with nothing to change in their YAML.
 
-- **HACS** (Home Assistant before 2026.11): open the repository > **⋮** (top
-  right) > **Redownload** > **Need a different version?**, then pick the
-  release candidate (`x.y.z-rcN`).
-- **Marketplace** (HACS's name from Home Assistant 2026.11): open the
-  repository > **⋮** (top right) > **Install another version**, then pick the
-  release candidate.
+- **HACS** (Home Assistant before 2026.11): **HACS** in the sidebar, search for
+  the card, then **⋮** ➡️ **Redownload** ➡️ **Need a different version?**, and
+  pick the release candidate (`x.y.z-rcN`).
+- **Marketplace** (HACS's name from Home Assistant 2026.11): **Settings** ➡️
+  **Marketplace**, search for the card, then **⋮** ➡️ **Install another
+  version**, and pick the release candidate (`x.y.z-rcN`).
 
 Then refresh the page without the cache: `Ctrl` + `F5` (`Cmd` + `Shift` + `R`
 on a Mac), or clear the browser cache.
@@ -60,11 +60,11 @@ add-on, or a terminal).
 2. Put them in a new folder, `/config/www/test/` (in a terminal:
    `mkdir -p /config/www/test`). Home Assistant serves the `www` folder as
    `/local/`.
-3. Add a resource: **Settings** > **Dashboards** > **Resources** > **⋮** >
+3. Add a resource: **Settings** ➡️ **Dashboards** ➡️ **Resources** ➡️ **⋮** ➡️
    **Add resource**, with the URL
    `/local/test/entity-progress-card.js?suffix=rc` and the type
    `JavaScript Module`. Then refresh the page without the cache.
-4. Duplicate a card, open its code editor (**⋮** > **Show code editor**) and
+4. Duplicate a card, open it in the card editor, select **Show code editor** and
    add `-rc` at the end of its type: `custom:entity-progress-card-rc` (the
    same for the other variants, e.g. `custom:entity-progress-feature-rc`). The
    stable and RC cards now run side by side.

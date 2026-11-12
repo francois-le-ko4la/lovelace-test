@@ -179,7 +179,7 @@ card looks. Before submitting a PR, check:
 #### Check a change in Home Assistant
 
 1. `npm run build:test` builds `dist/entity-progress-card_dev.js`.
-2. Add it as a resource (**Settings** > **Dashboards** > **Resources**), as in
+2. Add it as a resource (**Settings** ➡️ **Dashboards** ➡️ **Resources**), as in
    [Testing a Release Candidate](rc-testing.md#advanced-test-the-rc-next-to-the-stable-card).
 3. Import [`docs/demo-dashboard-dev.yaml`][demo-dashboard-dev.yaml] as a
    dashboard, and

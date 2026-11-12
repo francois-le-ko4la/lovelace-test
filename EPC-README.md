@@ -132,8 +132,8 @@ Download `entity-progress-card.js` from the latest release into `/config/www/`,
 then declare it as a resource:
 
 - Turn on **Advanced mode** in your user profile if **Resources** is missing.
-- Go to **Settings** > **Dashboards**, open the three-dot menu (**`⋮`**) at the
-  top right, then **Resources** > **Add resource**
+- Go to **Settings** ➡️ **Dashboards**, open the three-dot menu (**`⋮`**) at the
+  top right, then **Resources** ➡️ **Add resource**
 - URL: `/local/entity-progress-card.js`
 - Type: `JavaScript Module`
 - Save, then reload the page (**`CTRL`** + **`F5`** on a computer; on a tablet,
@@ -190,8 +190,9 @@ Home Assistant 2026.6 or newer. On an older version, go to [In YAML](#in-yaml).
 
 ### In YAML
 
-Add a card, choose **Manual**, and paste this, with your own entity ID
-(**Settings** > **Devices & services** > **Entities**):
+Open your dashboard, select **Edit dashboard**, then **Add card** and
+**Manual**. Paste this with your own entity ID (**Settings** ➡️
+**Devices & services** ➡️ **Entities**), then **Save**:
 
 ```yaml
 type: custom:entity-progress-card
@@ -200,12 +201,13 @@ name: Washing Machine
 icon: mdi:washing-machine
 ```
 
-Want the bar to turn red when a battery runs low? One line does it:
+Want the bar to turn red when a battery runs low (under 10 %)? One line does
+it:
 
 <!-- markdownlint-disable MD013 -->
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/theme-critical-low-dark-dbf8b1.png">
-  <img src="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/theme-critical-low-light-6df2e8.png" alt="critical_when_low theme: red, orange, yellow, then green as the level rises" width="750"/>
+  <img src="https://raw.githubusercontent.com/francois-le-ko4la/lovelace-entity-progress-card/main/docs/images/theme-critical-low-light-6df2e8.png" alt="Bars at 25, 50, 75 and 95 %: yellow, green, green, green" width="750"/>
 </picture>
 <!-- markdownlint-enable MD013 -->
 
@@ -215,6 +217,7 @@ entity: sensor.phone_battery_level
 theme: critical_when_low
 ```
 
+Your own limit, red under 20 %? Set your zones with a [custom theme].
 A battery you charge? `theme: battery_adaptive` also warns when it stays near
 100 % on the charger. Every theme, with its colors, is in the [Theme Guide].
 
@@ -488,11 +491,13 @@ This project is licensed under the [GPL-3.0 license].
 [Errors, Deprecations & Troubleshooting Guide]:
   https://francois-le-ko4la.github.io/lovelace-test/troubleshooting/
 [unavailable-entities]:
-  https://francois-le-ko4la.github.io/lovelace-test/troubleshooting/#unavailable-entities
+  https://francois-le-ko4la.github.io/lovelace-test/troubleshooting/#what-you-see-and-what-to-do
 [Contributing Guide]:
   https://francois-le-ko4la.github.io/lovelace-test/contributing/
 [Theme Guide]:
   https://francois-le-ko4la.github.io/lovelace-test/theme/
+[custom theme]:
+  https://francois-le-ko4la.github.io/lovelace-test/theme/#custom-theme
 [cookbook]:
   https://francois-le-ko4la.github.io/lovelace-test/cookbook/
 [Option map]:

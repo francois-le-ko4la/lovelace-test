@@ -45,7 +45,8 @@ An option has a value it can't use (here, a negative `decimal`). Fix the option 
 
 **`Not found in HA: entity.`**  
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/error-not-found-dark-32a40f.png"><img src="images/error-not-found-light-501298.png" alt="Card showing: Not found in HA: entity." width="500"/></picture>  
-No entity has this ID: a typo, or a removed entity. Check the ID in **Settings → Devices & services → Entities**.
+No entity has this ID: a typo, or a removed entity. Check the ID in **Settings**
+➡️ **Devices & services** ➡️ **Entities**.
 
 **`Unavailable`**  
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/error-unavailable-dark-4c2fc0.png"><img src="images/error-unavailable-light-43c131.png" alt="Card showing: Unavailable" width="500"/></picture>  
@@ -58,6 +59,9 @@ The entity exists but has no value yet. Wait for its first value, or check the i
 **`<entity name> unavailable · Unavailable`**  
 <picture><source media="(prefers-color-scheme: dark)" srcset="images/error-max-entity-dark-792d61.png"><img src="images/error-max-entity-light-ca8306.png" alt="Card showing: Battery, EPB Demo unavailable · Unavailable" width="500"/></picture>  
 An entity in `min_value` or `max_value` is down: the line names it. Fix that entity, or use a fixed value.
+
+**`Div0`**  
+`min_value` and `max_value` are equal: the bar has no range to fill. Give them different values.
 
 **`Custom element doesn't exist: entity-progress-card.`**, in red, instead of the card  
 Home Assistant hasn't loaded the card's file: see **Card not loading?** under [Try common quick checks first](#try-common-quick-checks-first).
@@ -149,10 +153,10 @@ template. See [Run the built-in diagnostic](#run-the-built-in-diagnostic).
 
 Then, in Home Assistant:
 
-1. **Tools → States**: look the entity up. If it is missing, check the
-   ID in the card's YAML.
-2. **Tools → Template**: paste the Jinja template. The error shown
-   there is the one the card receives.
+1. **Settings** ➡️ **Tools** ➡️ **States**: look the entity up. If it is
+   missing, check the ID in the card's YAML.
+2. **Settings** ➡️ **Tools** ➡️ **Template**: paste the Jinja template. The
+   error shown there is the one the card receives.
 3. If the entity is `unavailable` or `unknown`, the card shows what Home
    Assistant reports: fix the integration or the device, not the card.
 
@@ -275,20 +279,21 @@ compatibility overview].
 - **Already on the latest version?**  
   **Fix:** check your installed version against the [latest release] — the
   Marketplace (HACS before Home Assistant 2026.11) flags an update under
-  **Settings → Updates** when one is available. It can lag before it shows a
-  new release though: if your version looks outdated but no update is offered,
-  open the card in the Marketplace and use **⋮ → Install another version** to
-  install the current release rather than waiting.
+  **Settings** ➡️ **Updates** when one is available. It can lag before it shows
+  a new release though: if your version looks outdated but no update is offered,
+  go to **Settings** ➡️ **Marketplace**, search for the card, then **⋮** ➡️
+  **Install another version** to install the current release rather than
+  waiting.
 - **A pre-release (RC) already fixes it?**  
   **Fix:** patches and new features often ship first as a release candidate
   (`x.y.z-rcN`) before the stable release. Check [all releases] (includes
   pre-releases) — your issue may already be fixed there. To try one, see
   [Testing a Release Candidate](rc-testing.md).
 - **Card not loading?**  
-  **Fix:** check that the card is listed in **Settings → Dashboards → ⋮ →
-  Resources**, with the type **JavaScript Module**. No **Resources** entry?
-  Turn on **Advanced mode** in your user profile, or ask whoever set up Home
-  Assistant.
+  **Fix:** check that the card is listed in **Settings** ➡️ **Dashboards** ➡️
+  **⋮** ➡️ **Resources**, with the type **JavaScript Module**. No **Resources**
+  entry? Turn on **Advanced mode** in your user profile, or ask whoever set up
+  Home Assistant.
 - **The Marketplace not detecting the card?**  
   **Fix:** try clearing your browser cache or restarting Home Assistant.
 - **Card missing gradients/pulse animations, or looks a bit flat?**  
@@ -300,16 +305,17 @@ compatibility overview].
   (deprecated by Home Assistant) instead of **"JavaScript Module"**. HA loads
   classic scripts differently, and older builds couldn't survive it — the card
   failed to load and could freeze browser_mod pop-ups (see [issue #108]).
-  **Fix:** in **Settings → Dashboards → ⋮ → Resources**, open the entry, set
-  **Resource type → JavaScript Module**, then hard-refresh (reload without the
-  cache: `Ctrl`/`Cmd` + `Shift` + `R`). This changes only that entry, not your
-  dashboards. (Recent builds load correctly either way and print a console
-  warning when they detect the classic type.)
+  **Fix:** in **Settings** ➡️ **Dashboards** ➡️ **⋮** ➡️ **Resources**, open the
+  entry, set **Resource type → JavaScript Module**, then hard-refresh (reload
+  without the cache: `Ctrl`/`Cmd` + `Shift` + `R`). This changes only that
+  entry, not your dashboards. (Recent builds load correctly either way and print
+  a console warning when they detect the classic type.)
 - **The visual editor doesn't open — Home Assistant shows its YAML editor
   instead?**  
   **Fix:** the editor ships beside the card in
-  `entity-progress-card-editor.js`, and loads the first time you open one. A manual install needs that file next to
-  `entity-progress-card.js`; the console says why it didn't load
+  `entity-progress-card-editor.js`, and loads the first time you open one. A
+  manual install needs that file next to `entity-progress-card.js`; the console
+  says why it didn't load
   (`Visual editor unavailable: …`). Right after an update, hard-refresh: a card
   still cached from the previous version refuses the new editor.
 - **Still not working?**  
@@ -328,34 +334,35 @@ _Advanced_. Press **`F12`** (Mac: **`⌘`** + **`⌥`** + **`I`**), then open th
 
 - Keyboard: **`F12`** or **`Ctrl`** + **`Shift`** + **`K`** (Mac: **`⌘`** +
   **`⌥`** + **`K`**)
-- Menu: the **`≡`** menu (top-right) → **Web Developer → Web Console**
+- Menu: the **`≡`** menu (top-right) ➡️ **Web Developer** ➡️ **Web Console**
 
 **Chrome / Chromium**
 
 - Keyboard: **`F12`** or **`Ctrl`** + **`Shift`** + **`J`** (Mac: **`⌘`** +
   **`⌥`** + **`J`**)
-- Menu: the **`⋮`** menu (top-right) → **More tools → Developer tools**, then
-  the **Console** tab
+- Menu: the **`⋮`** menu (top-right) ➡️ **More tools** ➡️ **Developer tools**,
+  then the **Console** tab
 
 **Safari**
 
 - Keyboard: **`⌘`** + **`⌥`** + **`C`**
-- Menu: enable the Develop menu first, in **Safari → Preferences → Advanced →
-  Show Develop menu in menu bar**; then **Develop → Show JavaScript Console**
+- Menu: enable the Develop menu first, in **Safari** ➡️ **Preferences** ➡️
+  **Advanced** ➡️ **Show Develop menu in menu bar**; then **Develop** ➡️
+  **Show JavaScript Console**
 
 **Opera**
 
 - Keyboard: **`Ctrl`** + **`Shift`** + **`I`** (Mac: **`⌘`** + **`⌥`** +
   **`I`**)
-- Menu: the **O** menu (top-left) → **Developer → Developer tools**, then the
-  **Console** tab
+- Menu: the **O** menu (top-left) ➡️ **Developer** ➡️ **Developer tools**, then
+  the **Console** tab
 
 **Edge**
 
 - Keyboard: **`F12`** or **`Ctrl`** + **`Shift`** + **`I`** (Mac: **`⌘`** +
   **`⌥`** + **`I`**)
-- Menu: the **`⋯`** menu (top-right) → **More tools → Developer tools**, then
-  the **Console** tab
+- Menu: the **`⋯`** menu (top-right) ➡️ **More tools** ➡️ **Developer tools**,
+  then the **Console** tab
 
 </details>
 
@@ -395,8 +402,9 @@ To look at one card in particular:
 | `EPB.doctor.copy(2)`    | An issue report for card 2, the same as the editor's bug icon, copied when the browser allows (otherwise run `copy($_)` right after)                                                                                                                                                                |
 
 `EPB.doctor.dump()` prints an anonymized report — card and Home Assistant
-versions, browser, dark mode / reduced motion status, registered card types, whether the required HA
-components (`ha-card`, `ha-selector`, `action-handler`) are present, and where
+versions, browser, dark mode / reduced motion status, registered card types,
+whether the required HA components (`ha-card`, `ha-selector`,
+`action-handler`) are present, and where
 the visual editor is loaded from and whether it loaded — ready to copy/paste
 into your issue. Chrome, Edge and Opera only give their exact version and
 operating system over HTTPS; elsewhere, the user agent line is all there is.
@@ -405,9 +413,9 @@ It also flags a **duplicate resource load** on its own
 (`duplicate load: ⚠️ YES`, followed by the URLs loaded) — a common,
 hard-to-diagnose cause of erratic behavior where the card ends up installed
 **twice** (e.g. via the Marketplace _and_ a leftover manual resource in
-**Settings → Dashboards → ⋮ → Resources**). If you see this warning, remove the
-extra resource entry first — it resolves most "impossible to reproduce" issues
-on its own.
+**Settings** ➡️ **Dashboards** ➡️ **⋮** ➡️ **Resources**). If you see this
+warning, remove the extra resource entry first — it resolves most "impossible to
+reproduce" issues on its own.
 
 The `sha-256` lines give the first 12 characters of the card and editor files as
 your browser received them: compare them with the `sha256:` digest GitHub shows
@@ -418,8 +426,8 @@ need HTTPS.
 
 _Advanced_. For harder cases, the card can print detailed per-area logs to the
 browser console — no special build required. Open the card's entry in
-**Settings → Dashboards → ⋮ → Resources**, keep its URL as it is and add
-`?debug=…` at the end (`&debug=…` when the URL already has a `?`), e.g.:
+**Settings** ➡️ **Dashboards** ➡️ **⋮** ➡️ **Resources**, keep its URL as it is
+and add `?debug=…` at the end (`&debug=…` when the URL already has a `?`), e.g.:
 
 ```text
 /local/community/lovelace-entity-progress-card/entity-progress-card.js?debug=card,registration
@@ -496,8 +504,9 @@ or an advanced user, your feedback is valuable!
 
 If you recently **updated** the card and the issue started afterward, first
 [open an issue on GitHub](#open-an-issue-on-github) so the problem gets fixed
-in the next release. Meanwhile, open the card in the Marketplace,
-**⋮ → Install another version**, and pick the previous one.
+in the next release. Meanwhile, go to **Settings** ➡️ **Marketplace**, search
+for the card, then **⋮** ➡️ **Install another version**, and pick the previous
+one.
 
 Your dashboards stay intact.
 
