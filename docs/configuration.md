@@ -10,33 +10,74 @@
 
 ## Introduction
 
-This page lists every option of the card, one by one, with an example. To
+This page lists every option of the card, one by one, with an example. An
+entity is one thing Home Assistant tracks, such as a sensor or a light: the card
+shows one as a bar. To
 install the card or see ready-made cards, start with the [README](../README.md)
 or the [Cookbook](cookbook.md); to see an effect before you use it, open the
 Cookbook's [Visual Effects](cookbook.md#visual-effects). The visual editor (the
 form that opens when you edit a card) sets most options for you; YAML is the
-text view of the same settings (card menu > Show code editor).
+text view of the same settings (in the card editor, the three-dots menu > Show
+code editor).
 
 In an example, `# ...your other options` stands for the rest of your card: add
-only the new lines to your own YAML, don't replace it.
+only the new lines to your own YAML, don't replace it. An example that names an
+entity, without that line, is a complete card: paste it as a new card.
 
-These options only change how the card looks, nothing else in Home Assistant:
-to undo one, remove it and save. Something shows an error? See
-[Troubleshooting](troubleshooting.md).
+Most options only change how the card looks, nothing else in Home Assistant:
+to undo one, remove it and save. The exception is
+[actions](#behavior-and-actions): they decide what a tap does, such as switching
+a light.
 
-- **[Conventions](#conventions)**: how an option is written (types, badges,
-  signatures). Skip it if you use the visual editor.
+The card shows an error or looks wrong? See
+[Troubleshooting](troubleshooting.md#what-you-see-and-what-to-do).
+
+- **[I want to…](#i-want-to)**: find an option from what you want to see, such
+  as a bar red under 20 % or the time left.
+- **[Conventions](#conventions)**: how an option is written (types,
+  compatibility labels, signatures), for when you write YAML.
 - **[Card, Badge and Tile Feature](#standard)**: the options of the card, the
   badge and the tile feature: [data](#data-options),
   [styling](#styling-options) and [actions](#behavior-and-actions).
 - **[Template and Badge Template](#template)**: most of the card's options,
-  plus fields written in Jinja (a small formula between double braces, such as
-  `{{ states('sensor.phone_battery') }}`).
+  plus fields written in [Jinja](#jinja) (`{{ … }}`).
 - **[Multi-Card and Multi-Feature](#multi)**: several entities in one card or
   one tile feature.
 
 For which variant accepts which option, and whether its visual editor offers it,
 see the [option map](option-map.md).
+
+## I want to…
+
+Start from what you want to see: each link opens the option that does
+it.
+
+| I want to…                             | Options                                                                                                                                                                   |
+| :------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Show an attribute instead of the state | [`attribute`](#attribute)                                                                                                                                                 |
+| Turn red under 20 % (your own limits)  | [`custom_theme`](#custom_theme)                                                                                                                                           |
+| Color the bar by value                 | [`theme`](#theme), [`bar_color_mode`](#bar_color_mode), [`interpolate`](#interpolate)                                                                                     |
+| Color the bar with one color           | [`bar_color`](#bar_color)                                                                                                                                                 |
+| Change the icon                        | [`icon`](#icon), [`color`](#color), [`icon_animation`](#icon_animation), [`force_circular_background`](#force_circular_background)                                        |
+| Add a badge in the icon's corner       | [`badge_icon`](#badge_icon), [`badge_color`](#badge_color)                                                                                                                |
+| Size and place the bar                 | [`bar_size`](#bar_size), [`bar_position`](#bar_position), [`bar_orientation`](#bar_orientation), [`bar_single_line`](#bar_single_line), [`bar_max_width`](#bar_max_width) |
+| Add bar effects                        | [`bar_segments`](#bar_segments), [`bar_ring`](#bar_ring), [`bar_effect`](#bar_effect), [`bar_scale`](#bar_scale)                                                          |
+| Line up bars across cards              | [`bar_aligned`](#bar_aligned)                                                                                                                                             |
+| Add markers                            | [`watermark`](#watermark), [`peak_marker`](#peak_marker), [`trend_indicator`](#trend_indicator)                                                                           |
+| Add alerts and labels                  | [`alert_when`](#alert_when), [`status_label`](#status_label)                                                                                                              |
+| Format the value                       | [`unit_position`](#unit_position), [`unit_spacing`](#unit_spacing), [`value_compact`](#value_compact), [`value_sign`](#value_sign), [`text_effect`](#text_effect)         |
+| Show the time left of a timer helper   | [`unit`](#unit) (`timer`, `flextimer`)                                                                                                                                    |
+| Show an appliance's progress           | [appliance example](#appliance-progress), [`icon_animation`](#icon_animation) (`washing_machine`)                                                                         |
+| Arrange the card                       | [`layout`](#layout), [`density`](#density), [`content_order`](#content_order), [`reverse_secondary_info_row`](#reverse_secondary_info_row)                                |
+| Size the card                          | [`height`](#height), [`min_width`](#min_width), [`frameless`](#frameless), [`marginless`](#marginless)                                                                    |
+| Center the bar on zero                 | [`center_zero`](#center_zero)                                                                                                                                             |
+| Hide parts of the card                 | [`hide`](#hide)                                                                                                                                                           |
+| Put several entities in one bar        | [`bar_stack`](#bar_stack)                                                                                                                                                 |
+| Show several bars in one card          | [Multi-Card and Multi-Feature](#multi)                                                                                                                                    |
+| Color from a condition                 | [Template](#template): `color`, `bar_color` in Jinja                                                                                                                      |
+| Change what a tap does                 | [`tap_action`, `hold_action`, `double_tap_action`](#xyz_action)                                                                                                           |
+
+[🔼 Back to top]
 
 ## Conventions
 
@@ -45,14 +86,15 @@ editor, skip it and go to [Data Options](#data-options).
 
 ### Reading an option
 
-Each option starts with its compatibility labels, then a one-line summary:
+Each option starts with its [compatibility labels](#compatibility), then a
+one-line summary:
 
 > **`layout`** [String] ➡️ {`horizontal`|`vertical`} _(optional, default:
 > `horizontal`)_
 
 - **`layout`**: the option's name, as you write it in YAML.
 - **[String]**: the type of value it takes (see [Input types](#input-types)).
-- **➡️ {…}**: the only values it accepts.
+- **➡️ {…}**: pick one of these values; `|` separates them.
 - **_(optional, default: …)_**: you can leave it out, the card then uses the
   default; _(required)_ means the card needs it.
 
@@ -62,9 +104,8 @@ installed version on the card's page.
 
 #### Jinja signatures
 
-When an option supports a Jinja template, we use the ➡️ symbol to indicate the
-type of value that the Jinja expression must return. This helps ensure the
-template produces the correct data type expected by the configuration.
+For a Jinja field, ➡️ names what the template must produce: `[JINJA] ➡️ string`
+means text.
 
 _Example_:
 
@@ -76,82 +117,24 @@ _Example_:
 
 These types describe what each option accepts.
 
-#### String
+<a id="string"></a> <a id="float"></a> <a id="integer"></a>
+<a id="boolean"></a> <a id="list-array"></a> <a id="map-object"></a>
 
-A sequence of characters, including letters, numbers, or symbols.
+| Type         | Meaning                                         | Example                         |
+| :----------- | :---------------------------------------------- | :------------------------------ |
+| String       | Text: letters, numbers or symbols               | `option: 'xyz'`                 |
+| Float        | A number, decimals and negatives allowed        | `option: -1.3`                  |
+| Integer      | A whole number, 0 or more                       | `option: 1`                     |
+| Boolean      | `true` or `false`, to turn something on or off  | `option: true`                  |
+| List (Array) | Several values, each on its own line after `-`  | `option: [item1, item2]`        |
+| Map (Object) | Named values, one `key: value` per line         | `option: { key1: value1 }`      |
 
-Example:
-
-```yaml
-option: 'xyz'
-```
-
-[🔼 Back to top]
-
-#### Float
-
-A number that may include a decimal point (e.g., 3.14). Can also represent
-negative values.
-
-_Example_:
-
-```yaml
-option: -1.3
-```
-
-[🔼 Back to top]
-
-#### Integer
-
-A whole number. In this context, only positive integers are allowed (i.e., no
-decimals, no negatives).
-
-_Example_:
-
-```yaml
-option: 1
-```
-
-[🔼 Back to top]
-
-#### Boolean
-
-A value that can be either `true` or `false`. It is typically used for toggling
-features on or off.
-
-_Example_:
-
-```yaml
-option: true
-```
-
-[🔼 Back to top]
-
-#### List (Array)
-
-An ordered collection of elements, which can contain multiple values. Each
-element can be of any type. In YAML, this corresponds to a list indicated with
-dashes (`-`).
-
-_Example_:
+A list or a map can also be written over several lines:
 
 ```yaml
 option:
   - item1
   - item2
-  - item3
-```
-
-[🔼 Back to top]
-
-#### Map (Object)
-
-A set of key-value pairs, also called a dictionary or map. Each key is
-associated with a value that can be of any type.
-
-_Example_:
-
-```yaml
 object:
   key1: value1
   key2: value2
@@ -161,7 +144,8 @@ object:
 
 #### JINJA
 
-A static string or a Jinja template.
+A fixed text, or a Jinja template: a small formula between double braces, such
+as `{{ states('sensor.phone_battery') }}`.
 
 This field supports templating using [Home Assistant Jinja2
 templates][ha-jinja], allowing the option to be conditionally rendered.
@@ -186,7 +170,7 @@ secondary: '{{ states(entity, with_unit=True) }}'
 
 > [!TIP]
 >
-> In the visual editor (HA 2026.2+), every Jinja field has a 🐛 icon in its
+> In the visual editor (HA 2026.2+), every Jinja field has a bug icon (🐛) in its
 > top-right corner — click it to test your template live: it shows the exact
 > value your expression currently renders to (or the error, if it doesn't
 > parse), right below the field, without saving the card first. On an older
@@ -213,26 +197,21 @@ strings you don't control (media titles, network device names, …).
 > all) is stripped rather than kept, since none of these fields can wrap onto a
 > second line outside that one opt-in case.
 
-_Example_:
-
-```yaml
-option: "{{ state_attr('sensor.temperature', 'unit_of_measurement') }}"
-```
-
 ##### Returning a native type (not just text)
 
-A Jinja template is normally rendered as text - but Home Assistant's own
-template engine can preserve the template's _native_ type (list, dict, number,
-boolean…) instead of coercing it to a string, for the handful of fields built to
-read it that way (check each option's own description for whether it applies).
+You only need this for [`bar_effect`](#bar_effect),
+[`status_label`](#status_label) and [`badge_icon`](#badge_icon), when a template
+must return a list or an object instead of text. Home Assistant then keeps the
+template's _native_ type (list, dict, number, boolean…) instead of turning it
+into text.
 
-This only works when the rendered output boils down to a **single expression** -
+This only works when the rendered output is a **single expression** -
 either a bare `{{ ... }}` on its own, or an `{% if %}` / `{% elif %}` /
 `{% else %}` block where each branch is itself just one `{{ ... }}` (the tags
 themselves produce no text, so the actual output is still a single expression,
 whichever branch runs).
 
-_Examples_ (both forms tested live and confirmed to preserve the native type):
+_Examples_:
 
 ```yaml
 # inline conditional expression
@@ -251,10 +230,8 @@ option: |-
 
 > [!NOTE]
 >
-> Any literal text around the expression - even a stray word or extra
-> punctuation outside the `{{ }}` - forces normal text rendering instead: the
-> result becomes a plain string again, handled the same way any other Jinja text
-> output would be.
+> Any text around the expression - even one word or a punctuation mark outside
+> the `{{ }}` - turns the result back into plain text.
 
 [`bar_effect`](#bar_effect) is one such field - a template can return a real
 list (`{{ ['shimmer', 'gradient'] }}`) instead of the comma-separated string
@@ -276,15 +253,14 @@ each option's own section shows its full YAML.
 
 [`min_value`](#min_value), [`max_value`](#max_value),
 [`alert_when`](#alert_when)'s `above`/`below`, and the value inside
-[`watermark`](#watermark)'s `low`/`high` all accept the exact same three forms,
-reused as-is rather than reinvented per option:
+[`watermark`](#watermark)'s `low`/`high` all accept the same three forms:
 
 - A plain number: `min_value: 10`
 - Another entity's state, optionally a specific attribute:
   `min_value: { entity: sensor.foo, attribute: bar }`
 - A Jinja template: `min_value: { jinja: '{{ ... }}' }`
 
-#### Marks: shorthand is whatever varies
+#### Shortcuts for marks
 
 [`watermark`](#watermark)'s `low`/`high` and [`peak_marker`](#peak_marker)'s
 `min`/`max`/`average`/`range` are both a "mark": a per-item override object
@@ -298,16 +274,11 @@ both:
 | `watermark.low`/`.high`                      | **value**         | the threshold is the whole point — where the mark sits is what you're setting      |
 | `peak_marker.min`/`.max`/`.average`/`.range` | **color**         | the value comes from history automatically — color is the only knob worth one word |
 
-Neither is "more correct" — a mark's shorthand always stands for whichever
-single value is actually user-decided for that particular option. Check the
-option's own section for what that is there.
+#### One-line form
 
-#### Single-field collapse
-
-[`badge_icon`](#badge_icon)/[`badge_color`](#badge_color) have always been plain
-Jinja strings, no object form at all — there was never anything else to set
-alongside them. [`status_label`](#status_label) follows the same idea despite
-being a Map underneath: a plain string is shorthand for `{ jinja: '...' }`,
+[`badge_icon`](#badge_icon)/[`badge_color`](#badge_color) are plain Jinja
+strings. [`status_label`](#status_label) is a Map, but takes the same one-line
+form: a plain string is shorthand for `{ jinja: '...' }`,
 covering most cases, and the full Map form is there whenever
 `position`/`color_source` are actually needed.
 
@@ -318,23 +289,27 @@ covering most cases, and the full Map form is there whenever
 ### Compatibility labels
 
 Under each option name, small colored labels show which kinds of element accept
-it. No label for an element means the option does nothing there; the
-[option map](option-map.md) has the full matrix.
+it. No label for an element means the option does nothing there, with one
+exception: a Multi-Card or Multi-Feature row also takes the card options listed
+in [Multi-Card and Multi-Feature](#multi). The [option map](option-map.md) has
+the full matrix.
 
 | Label                                                    | Component                     | Description                                          |
 | :------------------------------------------------------- | ----------------------------- | ---------------------------------------------------- |
 | [![Card OK][Card-OK]](#compatibility)                    | **Card Compatible**           | This option works with the main card display         |
 | [![Badge OK][Badge-OK]](#compatibility)                  | **Badge Compatible**          | This option works with the card badge feature        |
 | [![Feature OK][Feature-OK]](#compatibility)              | **Tile Feature Compatible**   | This option works with the tile feature              |
-| [![Template OK][Template-OK]](#compatibility)            | **Template Compatible**       | This option supports Jinja2 templating               |
-| [![Badge Template OK][BadgeTemplate-OK]](#compatibility) | **Badge Template Compatible** | This option supports Jinja2 templating within badges |
+| [![Template OK][Template-OK]](#compatibility)            | **Template Compatible**       | This option works with the card template             |
+| [![Badge Template OK][BadgeTemplate-OK]](#compatibility) | **Badge Template Compatible** | This option works with the badge template            |
 | [![Multi-Card OK][MultiCard-OK]](#compatibility)         | **Multi-Card Compatible**     | This option works with the multi-card                |
 | [![Multi-Feature OK][MultiFeature-OK]](#compatibility)   | **Multi-Feature Compatible**  | This option works with the multi-feature             |
+| [![YAML Only][yaml-only]](#yaml-only)                    | **YAML Only**                 | Not in the visual editor: set it in YAML             |
 
 #### Feature hosts
 
 `entity-progress-feature` and `entity-progress-multi-feature` are card features:
-they sit in a host card's `features:` list.
+they sit in a host card's `features:` list. If you only use the card or the
+badge, you can skip this table.
 
 | Host card                   | Tested | Notes                                                                                                                     |
 | --------------------------- | :----: | ------------------------------------------------------------------------------------------------------------------------- |
@@ -387,13 +362,14 @@ entity: sensor.hp_envy_6400_series_tri_color_cartridge
 
 > [!NOTE]
 >
-> This parameter is optional with `custom:entity-progress-card-template` and
-> `entity-progress-badge-template`
+> This option is optional with `custom:entity-progress-card-template` and
+> `custom:entity-progress-badge-template`.
 
 > [!NOTE]
 >
-> Supported entities are not hardcoded, ensuring flexibility. If you need a
-> specific attribute, use the `attribute` parameter.
+> Any entity with a number as its state works (sensors, `number`,
+> `input_number`, `counter`, `timer`...). To read one of its attributes instead,
+> use [`attribute`](#attribute).
 
 > [!IMPORTANT]
 >
@@ -511,21 +487,29 @@ _Accepted types_:
 
 > **`unit`** [String] _(optional)_
 
-Allows representing standard unit.
+The text shown after the value, such as `°C` or `kWh`. Without it, the card
+uses the entity's own unit.
+
+| `unit`      | Shown as                                           |
+| :---------- | :------------------------------------------------- |
+| `°C`, `kWh` | the value, followed by that unit                   |
+| `%`         | the percentage between `min_value` and `max_value` |
+| `timer`     | a timer as HH:MM:SS                                |
+| `flextimer` | a timer as `42 s`, then `05:03`, then `1:02:03`    |
 
 _Unit selection_:
 
 - If a `unit` is manually specified in the configuration, it will be used.
 - Otherwise, if `max_value` is an entity, the default unit (%) will be used.
 - Otherwise, the `unit` is automatically determined based on the current value:
-  - If the entity is a `timer` the unit will be 's' (seconds).
+  - If the entity is a `timer`, it is shown as `flextimer`, with its minimum and
+    maximum in seconds.
   - If the entity is a `duration` (`device_class: duration`, or a time
     `unit_of_measurement`): the card works in the entity's own unit (e.g., `h`),
     and `min_value`, `max_value`, `watermark` and `alert_when` are read in that
     unit. Without a `unit`, the duration is displayed in a natural format (e.g.,
     2h 32min). A time `unit` (`d`, `h`, `min`, `s`, `ms`) converts the value,
-    and the bounds are then read in that unit. `timer` and `flextimer` display
-    HH:MM:SS, with the bounds in seconds.
+    and the minimum and maximum are then read in that unit.
   - If the entity is a `counter`, no unit ('') will be displayed.
   - Otherwise, the `unit` defined in Home Assistant for the entity will be used
     (e.g., °C, kWh, etc.).
@@ -545,32 +529,19 @@ _Unit selection_:
 
 > [!WARNING]
 >
-> Setting the unit to % will display the percentage value, while using a
-> different unit will show the value of the primary entity. Switching between
-> non-percentage units does not affect the displayed numeric value. For example,
-> by default, a timer is shown in seconds. If the unit is changed from s
-> (seconds) to min (minutes), no conversion is performed (for now), and the
-> value remains unchanged.
+> A time `unit` converts a duration sensor, not a `timer` entity: on a timer,
+> `s`, `min` or `h` show its seconds unchanged. To show a timer as a time, use
+> `timer` or `flextimer`.
 
 _Example_:
 
 ```yaml
 type: custom:entity-progress-card
 # ...your other options
-unit: ABC
+unit: timer # a timer as HH:MM:SS
 ```
 
-| `unit`        | Shown as                                            |
-| :------------ | :-------------------------------------------------- |
-| `°C`, `kWh`   | the value with that unit                            |
-| `s`           | a timer in seconds                                  |
-| `timer`       | a timer as HH:MM:SS, no unit                        |
-| `flextimer`   | like `timer`, shortened to the current value        |
-
-> [!TIP]
->
-> Disabling the Unit: To completely hide the unit from display, use
-> `hide: ['unit']` (see [`hide`](#hide)).
+To hide the unit, use `hide: ['unit']` (see [`hide`](#hide)).
 
 [🔼 Back to top]
 
@@ -866,9 +837,11 @@ max_value:
   jinja: "{{ states('input_number.ceiling') | float }}"
 ```
 
+<a id="appliance-progress"></a>
+
 _Appliance progress example_:
 
-Some appliance integrations expose a ready-made percentage — Home Connect
+If your appliance has a percentage sensor, this is all you need. Home Connect
 (Bosch/Siemens) has `sensor.<appliance>_program_progress` (0-100 %), so `entity`
 alone is enough, no `max_value` needed:
 
@@ -877,12 +850,12 @@ type: custom:entity-progress-card
 entity: sensor.washing_machine_program_progress
 ```
 
-Miele doesn't expose a percentage, but does expose `elapsed_time` and
-`remaining_time` (minutes) — combine them into a dynamic `max_value` so elapsed
-time becomes the progress. `unit: '%'` is required here: `entity` has
-`device_class: duration`, and without an explicit `unit` the card shows the
-elapsed time itself (e.g. "23 min") instead of the percentage — the bar fill is
-correct either way, only the text label is affected:
+If the appliance only gives an elapsed and a remaining time, as Miele does
+(`elapsed_time` and `remaining_time`, in minutes) — combine them into a dynamic
+`max_value` so elapsed time becomes the progress. `unit: '%'` is required here:
+`entity` has `device_class: duration`, and without an explicit `unit` the card
+shows the elapsed time itself (e.g. "23 min") instead of the percentage — the
+bar fill is correct either way, only the text label is affected:
 
 ```yaml
 type: custom:entity-progress-card
@@ -1115,42 +1088,74 @@ Combines several entities into the same progress bar. Available in the visual
 editor via a dedicated row editor (entity/attribute/color/subtract per row) and
 a Stacked/Proportional/Net mode switch.
 
+[Preview in the Cookbook](cookbook.md#effect-bar-stack).
+
 | Mode                    | What it looks like                                                    | Use it for                                          |
 | :---------------------- | :-------------------------------------------------------------------- | :-------------------------------------------------- |
 | `stacked` (the default) | Segments one after another, each at its real size; the rest is empty | A breakdown that may not fill the range (a battery) |
 | `proportional`          | Segments share the whole bar, each by its part of the total          | Several sensors toward one limit (circuits)         |
 | `net`                   | One plain segment: the total, subtractions included                   | A balance that goes either way (grid minus solar)   |
 
-_Preview_: [`bar_stack` in the Cookbook](cookbook.md#effect-bar-stack).
-
 | Key        | Type                               | Default   | Description                                                                                                                                                                                                            |
 | ---------- | ---------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `mode`     | `stacked` / `proportional` / `net` | `stacked` | See below                                                                                                                                                                                                              |
 | `entities` | List                               | —         | Each entry: `entity` _(required)_, `attribute` _(optional)_, `color` _(optional, falls back to an automatic shade of the main entity's own color; ignored in `net` mode)_, `subtract` _(optional boolean — see below)_ |
 
-- **`stacked`**: each entity keeps its own literal width on the
-  `min_value`/`max_value` scale, placed one after another (see _Order_ below).
-  Space left over past the last entity stays empty — useful for a breakdown that
-  doesn't necessarily add up to the full range (e.g. a home battery's charged /
-  reserved capacity, with the remainder implicitly "free").
-- **`proportional`**: the main entity and every `entities` value are added
-  together to drive the bar, and each segment's width is its _share_ of that
-  combined total — the bar is always filled edge-to-edge, like a "100% stacked"
-  chart in a spreadsheet. Useful for combining several sensors toward one shared
-  target (e.g. several circuits against a breaker limit).
-- **`net`**: the main entity and every `entities` value are added into a single
-  algebraic total, rendered as one plain segment (no per-entity breakdown, no
-  per-entity `color`) — the normal bar color/theme applies as if `bar_stack`
-  weren't there at all. Combined with `center_zero`, this is the way to show a
-  balance that can go either way — e.g. grid consumption minus solar production,
-  positive when you're drawing from the grid, negative when you're exporting
-  surplus.
+_Example (`stacked`, home battery breakdown)_:
+
+```yaml
+type: custom:entity-progress-card
+entity: sensor.battery_storage_soc # charged, e.g. 60
+bar_stack:
+  entities:
+    - entity: sensor.battery_storage_reserved # e.g. 20, locked
+      color: orange
+```
+
+_Example (`proportional`, combined circuits)_:
+
+```yaml
+type: custom:entity-progress-card
+entity: sensor.circuit_a_power
+max_value: 3000
+bar_stack:
+  mode: proportional
+  entities:
+    - entity: sensor.circuit_b_power
+    - entity: sensor.circuit_c_power
+```
+
+_Example (`net`, grid balance centered on zero)_:
+
+```yaml
+type: custom:entity-progress-card
+entity: sensor.grid_consumption_power # always >= 0
+min_value: -3000
+max_value: 3000
+center_zero: true
+bar_stack:
+  mode: net
+  entities:
+    - entity: sensor.solar_production_power # always >= 0
+      subtract: true
+```
+
+Details per mode:
+
+- **`stacked`**: each entity at its true width on the `min_value`/`max_value`
+  scale, one after another (see _Order_ below); the rest stays empty.
+- **`proportional`**: each entity takes its share of the total, so the bar is
+  always full.
+- **`net`**: one segment for the total, in the bar's own color or theme (no
+  per-entity `color`); with `center_zero`, a balance that goes either way.
+
+##### `subtract` and overflow
 
 `subtract: true` on an entity means "this value counts against the total instead
 of with it" — what that looks like depends on the mode:
 
-- In **`net`**, it's subtracted from the algebraic total (see the example
-  below).
+- In **`net`**, it's subtracted from the algebraic total (see the `net`
+  example above).
 - In **`stacked`/`proportional`** _combined with `center_zero`_, entities split
   into two independent arms instead of a single breakdown: every entity goes to
   the _positive_ arm (growing right from the zero point) by default — except the
@@ -1209,45 +1214,6 @@ anything once the bar itself is showing two independent, possibly-opposing arms.
 Without `center_zero`, the displayed value stays the plain sum, matching what
 the bar visually adds up to.
 
-_Example (`stacked`, home battery breakdown)_:
-
-```yaml
-type: custom:entity-progress-card
-entity: sensor.battery_storage_soc # charged, e.g. 60
-bar_stack:
-  entities:
-    - entity: sensor.battery_storage_reserved # e.g. 20, locked
-      color: orange
-```
-
-_Example (`proportional`, combined circuits)_:
-
-```yaml
-type: custom:entity-progress-card
-entity: sensor.circuit_a_power
-max_value: 3000
-bar_stack:
-  mode: proportional
-  entities:
-    - entity: sensor.circuit_b_power
-    - entity: sensor.circuit_c_power
-```
-
-_Example (`net`, grid balance centered on zero)_:
-
-```yaml
-type: custom:entity-progress-card
-entity: sensor.grid_consumption_power # always >= 0
-min_value: -3000
-max_value: 3000
-center_zero: true
-bar_stack:
-  mode: net
-  entities:
-    - entity: sensor.solar_production_power # always >= 0
-      subtract: true
-```
-
 > [!NOTE]
 >
 > There's no single Home Assistant-wide sign convention for grid power sensors.
@@ -1294,24 +1260,6 @@ instead of only seeing their difference.
 
 Customize the look and feel: icons, layout, colors, sizes, and visual themes.
 
-| I want to…                            | Options                                                                                                                                                                   |
-| :------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Turn red under 20 % (your own limits) | [`custom_theme`](#custom_theme)                                                                                                                                           |
-| Color the bar by value                | [`theme`](#theme), [`bar_color_mode`](#bar_color_mode), [`interpolate`](#interpolate)                                                                                     |
-| Color the bar with one color          | [`bar_color`](#bar_color)                                                                                                                                                 |
-| Change the icon                       | [`icon`](#icon), [`color`](#color), [`icon_animation`](#icon_animation), [`force_circular_background`](#force_circular_background)                                        |
-| Size and place the bar                | [`bar_size`](#bar_size), [`bar_position`](#bar_position), [`bar_orientation`](#bar_orientation), [`bar_single_line`](#bar_single_line), [`bar_max_width`](#bar_max_width) |
-| Add bar effects                       | [`bar_segments`](#bar_segments), [`bar_ring`](#bar_ring), [`bar_effect`](#bar_effect), [`bar_scale`](#bar_scale)                                                          |
-| Line up bars across cards             | [`bar_aligned`](#bar_aligned)                                                                                                                                             |
-| Add markers                           | [`watermark`](#watermark), [`peak_marker`](#peak_marker), [`trend_indicator`](#trend_indicator)                                                                           |
-| Add alerts and labels                 | [`alert_when`](#alert_when), [`status_label`](#status_label)                                                                                                              |
-| Format the value                      | [`unit_position`](#unit_position), [`unit_spacing`](#unit_spacing), [`value_compact`](#value_compact), [`value_sign`](#value_sign), [`text_effect`](#text_effect)         |
-| Show the time left (timer)            | [`unit`](#unit) (`timer`, `flextimer`)                                                                                                                                    |
-| Arrange the card                      | [`layout`](#layout), [`density`](#density), [`content_order`](#content_order), [`reverse_secondary_info_row`](#reverse_secondary_info_row)                                |
-| Size the card                         | [`height`](#height), [`min_width`](#min_width), [`frameless`](#frameless), [`marginless`](#marginless)                                                                    |
-| Center the bar on zero                | [`center_zero`](#center_zero)                                                                                                                                             |
-| Hide parts of the card                | [`hide`](#hide)                                                                                                                                                           |
-
 [🔼 Back to top]
 
 #### `icon`
@@ -1320,7 +1268,7 @@ Customize the look and feel: icons, layout, colors, sizes, and visual themes.
 
 > **`icon`** [String] _(optional)_
 
-Overwrites the entity icon.
+Replaces the entity's icon with the one you choose.
 
 _Examples:_ `mdi:lightbulb`, `mdi:thermometer`...
 
@@ -1373,7 +1321,9 @@ color: rgb(110, 65, 171)
 Makes the icon move while the device is running: a spinning fan, a pulsing
 media player. The animation stops when the device stops.
 
-Most options only play while the entity is genuinely "active": they are
+[Preview in the Cookbook](cookbook.md#effect-icon-animation).
+
+Most animations only play while the entity is genuinely "active": they are
 automatically disabled for entities without an active/inactive concept (plain
 sensors, numbers, batteries...) and for entities in a resting state (`off`,
 `idle`, `paused`, `closed`, `locked`, ...). `washing_machine` and
@@ -1444,9 +1394,6 @@ draws its own bolt/bluetooth glyph at a different position, so the card
 automatically nudges the sweep to compensate instead of changing the icon. This
 compensation is tuned against MDI's `battery-charging*` icons; other icon packs,
 or `battery-bluetooth*`, aren't verified and may not line up.
-
-_Preview_: [`icon_animation` in the
-Cookbook](cookbook.md#effect-icon-animation).
 
 _Example_:
 
@@ -1680,23 +1627,11 @@ bar_size: medium
 [![Template OK][Template-OK]](#compatibility)
 [![Badge Template OK][BadgeTemplate-OK]](#compatibility)
 
-> **`bar_position`** [String] _(optional, default: "default")_
+> **`bar_position`** [String] ➡️ {`default`|`below`|`compact_below`|`top`|
+> `bottom`|`overlay`|`background`|`icon`} _(optional, default: `default`)_
 
-Defines the position of the progress bar within the card.
-
-> [!WARNING]
->
-> If `bar_position` is `top`, `bottom`, `overlay`, or `background`, the
-> `bar_size` option is ignored (see [`bar_size`](#bar_size)). `below` still
-> honors it.
-
-_Example_:
-
-```yaml
-type: custom:entity-progress-card
-entity: light.led0
-bar_position: overlay
-```
+Defines the position of the progress bar within the card, or puts it around the
+icon (`icon`, see below).
 
 _Options:_
 
@@ -1710,6 +1645,20 @@ _Options:_
 | `overlay`       | Overlaid on top of the content                                       |  ✅  |    ✅    |    —    |
 | `background`    | Fills the entire card as a background layer, behind the content      |  ✅  |    ✅    |    —    |
 | `icon`          | A ring around the icon, in place of the bar — see below              |  ✅  |    ✅    |    —    |
+
+> [!WARNING]
+>
+> If `bar_position` is `top`, `bottom`, `overlay`, or `background`, the
+> `bar_size` option is ignored (see [`bar_size`](#bar_size)). `below` still
+> honors it.
+
+_Example_:
+
+```yaml
+type: custom:entity-progress-card
+entity: sensor.phone_battery
+bar_position: overlay
+```
 
 > [!NOTE]
 >
@@ -1772,10 +1721,6 @@ bar_color_mode: segment
 > [`density: single_line`](#density) clears it back to `default` instead: the
 > bar sits in the row itself there.
 
-_Default value_:
-
-- `default`
-
 [🔼 Back to top]
 
 #### `bar_single_line`
@@ -1804,10 +1749,6 @@ _Options_:
 | `true`  | Display the overlay bar in single-line mode          |
 | `false` | Display the overlay bar in default multi-line layout |
 
-_Default value_:
-
-- `false`
-
 [🔼 Back to top]
 
 #### `bar_segments`
@@ -1824,7 +1765,7 @@ strength indicator — instead of a continuous fill. Both the track and the fill
 are segmented, so gaps are visible in both the empty and filled portions of the
 bar. With [`center_zero`](#center_zero), each arm is segmented independently.
 
-_Preview_: [`bar_segments` in the Cookbook](cookbook.md#effect-bar-segments).
+[Preview in the Cookbook](cookbook.md#effect-bar-segments).
 
 _Example_:
 
@@ -1858,6 +1799,8 @@ exposes this as a numeric field.
 Shapes the ring drawn by [`bar_position: icon`](#bar_position). It has no effect
 with any other `bar_position`.
 
+[Preview in the Cookbook](cookbook.md#effect-bar-ring).
+
 - `start` [Number] _(default: 0)_: where the ring begins, in degrees clockwise
   from the top. With [`center_zero`](#center_zero), it places the zero instead
   and the arc is centred on it.
@@ -1882,8 +1825,6 @@ bar_ring:
   gap: 90
 ```
 
-_Preview_: [`bar_ring` in the Cookbook](cookbook.md#effect-bar-ring).
-
 [🔼 Back to top]
 
 #### `bar_effect`
@@ -1897,6 +1838,8 @@ _Preview_: [`bar_ring` in the Cookbook](cookbook.md#effect-bar-ring).
 
 Defines visual effects applied to the progress bar. You can use a single effect
 or combine multiple in a list.
+
+[Preview in the Cookbook](cookbook.md#effect-bar-effects).
 
 - If a **[String]** is provided (e.g. `"gradient"`), only one effect is applied.
 - If a **[List]** is provided (e.g. `["radius", "shimmer"]`), effects are
@@ -1918,8 +1861,6 @@ _Available options_:
 - wave: turns an upward fill into water, with a moving wave on top and rising
   bubbles (`bar_orientation: up` with `bar_position: background`, `overlay` in
   `layout: vertical`, or the upright bar of `layout: vertical`)
-
-_Preview_: [`bar_effect` in the Cookbook](cookbook.md#effect-bar-effects).
 
 _Examples_:
 
@@ -1981,6 +1922,9 @@ chips when a conflicting effect is active.
 
 Controls how theme colors are applied to the progress bar fill.
 
+Preview in the Cookbook: [`segment`](cookbook.md#effect-segment),
+[`rainbow_full`](cookbook.md#effect-rainbow).
+
 - `auto` — default behavior: the bar is filled with the solid color of the
   current theme zone. No change from previous versions.
 - `segment` — each color zone defined by the theme is rendered as a distinct
@@ -2001,9 +1945,6 @@ Controls how theme colors are applied to the progress bar fill.
 > without either one, `bar_color_mode` is reset to `auto` automatically. For
 > linear themes (e.g. `light`), zone boundaries are derived automatically by
 > splitting 0–100% into equal segments (5 levels → 0–20%, 20–40%, …).
-
-_Preview_: [`segment` in the Cookbook](cookbook.md#effect-segment),
-[`rainbow_full`](cookbook.md#effect-rainbow).
 
 _Examples_:
 
@@ -2233,6 +2174,8 @@ reverse: true
 This option forces a **circular background** to be displayed behind the icon
 shown on the card.
 
+[Preview in the Cookbook](cookbook.md#effect-force-circular-background).
+
 It also comes out on its own under [`bar_position: background`](#bar_position),
 where the bar fills the whole card: the disc protects the icon from a fill that
 usually carries the icon's own color.
@@ -2247,9 +2190,6 @@ this parameter.
 When set to `true`, a circular shape will appear behind the icon, regardless of
 the HA version, entity domain or action defined. This helps create a cleaner,
 more consistent visual appearance with Mushroom card.
-
-_Preview_: [`force_circular_background` in the
-Cookbook](cookbook.md#effect-force-circular-background).
 
 _Example_:
 
@@ -2270,6 +2210,8 @@ force_circular_background: true
 
 Displays a trend icon indicating the direction of the entity's value, positioned
 at the top right of the card.
+
+[Preview in the Cookbook](cookbook.md#effect-trend-indicator).
 
 What it actually follows is the **bar's own percentage**, not the entity's raw
 state — the value already projected between [`min_value`](#min_value) and
@@ -2357,13 +2299,6 @@ _Icons_:
 | `mdi:equal-box`         | Stable trend                    |
 | `mdi:progress-question` | Not enough data yet, or invalid |
 
-_Default value_:
-
-- `false`
-
-_Preview_: [`trend_indicator` in the
-Cookbook](cookbook.md#effect-trend-indicator).
-
 [🔼 Back to top]
 
 #### `peak_marker`
@@ -2378,6 +2313,8 @@ directly on the bar — reads at a glance where the current value sits relative 
 its own recent history. `range` paints the band between the minimum and the
 maximum instead: the span the value actually travelled. All four are absent by
 default (no mark shown) — set one to opt it in.
+
+[Preview in the Cookbook](cookbook.md#effect-peak-marker).
 
 The window slides: a new reading moves the marks at once, and a value that ages
 out of the window stops counting within a minute. The average weighs each value
@@ -2471,12 +2408,6 @@ peak_marker:
 > offer to enable `peak_marker` at all for an ineligible entity — it shows why
 > instead of a toggle that would silently do nothing.
 
-_Default value_:
-
-- Not configured (no marks)
-
-_Preview_: [`peak_marker` in the Cookbook](cookbook.md#effect-peak-marker).
-
 [🔼 Back to top]
 
 #### `status_label`
@@ -2495,6 +2426,8 @@ translucent tint of whatever color the progress bar currently shows (theme zone,
 `custom_theme` zone, or a plain `bar_color` override, whichever applies), and
 the border/text are that same color, lightened just enough to stay readable
 against the card.
+
+[Preview in the Cookbook](cookbook.md#effect-status-label).
 
 A plain string is shorthand for `{ jinja: '...' }`, covering most cases. Use the
 full Map form below whenever you also need `position`/`color_source` (see
@@ -2536,8 +2469,6 @@ _Map definition_ — use this form to also set `position`/`color_source`:
 > status_label:
 >   jinja: "{{ {'label': 'hot', 'color': '#ff0000'} if is_state('sensor.status', 'hot') else {'label': 'ok', 'color': '#00ff00'} }}"
 > ```
-
-_Preview_: [`status_label` in the Cookbook](cookbook.md#effect-status-label).
 
 _Example_:
 
@@ -2613,10 +2544,6 @@ bar_position: overlay
 text_effect: halo
 ```
 
-_Default value_:
-
-- `none`
-
 [🔼 Back to top]
 
 #### `text_shadow`
@@ -2646,6 +2573,8 @@ _Default value_:
 A preset that reshapes the card into a smaller footprint. Rather than juggling
 `layout`/`bar_position`/`hide`/`multiline` by hand to get there, each value sets
 them for you.
+
+[Preview in the Cookbook](cookbook.md#effect-density-compact).
 
 ##### `compact`
 
@@ -2763,8 +2692,6 @@ type: custom:entity-progress-card
 entity: sensor.cpu_usage
 density: single_column
 ```
-
-_Preview_: [`density` in the Cookbook](cookbook.md#effect-density-compact).
 
 [🔼 Back to top]
 
@@ -3075,6 +3002,8 @@ own convention or overriding it.
 Places the unit before the value instead of after - useful for currency symbols
 (`$100` rather than `100$`). Has no effect once `unit` is empty or hidden.
 
+[Preview in the Cookbook](cookbook.md#format-unit-position).
+
 ```yaml
 type: custom:entity-progress-card
 entity: sensor.account_balance
@@ -3082,8 +3011,6 @@ unit: $
 unit_position: before
 unit_spacing: no-space
 ```
-
-_Preview_: [`unit_position` in the Cookbook](cookbook.md#format-unit-position).
 
 [🔼 Back to top]
 
@@ -3096,6 +3023,8 @@ _Preview_: [`unit_position` in the Cookbook](cookbook.md#format-unit-position).
 Keeps a value readable whatever its magnitude, so a sensor that swings across
 the day doesn't force you to pick one unit and live with it. What it does
 depends on whether there is a unit:
+
+[Preview in the Cookbook](cookbook.md#format-value-compact).
 
 **With a unit that takes an SI prefix** — `W`, `Wh`, `VA`, `var`, `J`, `Hz`,
 `B`, `bit`, `A`, `V`, `Ω`, `Pa` — the scale moves into the unit and the number
@@ -3137,8 +3066,6 @@ value_compact: true
 > the better answer for a meter that always reads in kilowatts. `value_compact`
 > is for the ones that move.
 
-_Preview_: [`value_compact` in the Cookbook](cookbook.md#format-value-compact).
-
 [🔼 Back to top]
 
 #### `value_sign`
@@ -3152,6 +3079,8 @@ positive - `42` becomes `+42`. Zero stays unsigned. Most useful on
 `center_zero`/`bar_stack: { mode: net }` cards, where the sign clarifies the
 direction of a delta at a glance.
 
+[Preview in the Cookbook](cookbook.md#format-value-sign).
+
 ```yaml
 type: custom:entity-progress-card
 entity: input_number.epb_demo_power
@@ -3160,8 +3089,6 @@ min_value: -3000
 max_value: 3000
 value_sign: true
 ```
-
-_Preview_: [`value_sign` in the Cookbook](cookbook.md#format-value-sign).
 
 [🔼 Back to top]
 
@@ -3176,6 +3103,8 @@ _Preview_: [`value_sign` in the Cookbook](cookbook.md#format-value-sign).
 
 Centers the progress bar at zero, allowing for better visualization of values
 that fluctuate around zero (e.g., positive/negative changes).
+
+[Preview in the Cookbook](cookbook.md#effect-center-zero).
 
 By default, the center point is `0`. If your sensor has a non-zero nominal value
 (e.g., a voltage sensor around `230V`, or a pressure sensor with a non-zero
@@ -3228,8 +3157,6 @@ center_zero:
 With `value: 60` and `growth_percent: true`, a cover at `66%` will display
 `+10%` (i.e. `(66 - 60) / 60 * 100`), representing how far the current value has
 grown relative to the center point — rather than the bar's raw fill ratio.
-
-_Preview_: [`center_zero` in the Cookbook](cookbook.md#effect-center-zero).
 
 [🔼 Back to top]
 
@@ -3305,8 +3232,26 @@ custom_theme:
 
 > **`custom_theme`** [List] of [Map] _(optional)_
 
-Defines a list of custom theme rules based on value ranges. Setting this
-variable disables the `theme` variable.
+Your own color zones: each zone sets the color (and icon) the card takes between
+two values. Setting `custom_theme` turns `theme` off.
+
+[Preview in the Cookbook](cookbook.md#effect-custom-theme).
+
+_Simple example_ (a battery red under 20 %, green above; zones use the entity's
+value, 0-100 for a battery, and a value of exactly 20 is green, as a zone
+includes its `min` but not its `max`):
+
+```yaml
+type: custom:entity-progress-card
+# ...your other options
+custom_theme:
+  - min: 0
+    max: 20
+    color: red
+  - min: 20
+    max: 100
+    color: green
+```
 
 In the visual editor, two buttons (Preset / Custom) switch between the
 `theme` dropdown and this list of zones — each zone is its own row with min,
@@ -3326,8 +3271,6 @@ _Map definition:_
 _Order of Priority for the Icon:_
 
 - see [`icon`](#icon) parameter.
-
-_Preview_: [`custom_theme` in the Cookbook](cookbook.md#effect-custom-theme).
 
 _Example_:
 
@@ -3425,13 +3368,13 @@ When set to true, the icon and bar colors are interpolated between the current
 step and the next one based on the current value's position within the step
 range.
 
+[Preview in the Cookbook](cookbook.md#effect-interpolate).
+
 > [!NOTE]
 >
 > Requires an active [`theme`](#theme) or [`custom_theme`](#custom_theme), and
 > [`bar_color_mode`](#bar_color_mode) set to `auto` (the default) — outside
 > either condition, `interpolate` is disabled automatically.
-
-_Preview_: [`interpolate` in the Cookbook](cookbook.md#effect-interpolate).
 
 _Example_:
 
@@ -3462,6 +3405,8 @@ interpolate: true
 > **`hide`** [List] or [JINJA] (optional):
 
 Defines which elements should be hidden in the card.
+
+[Preview in the Cookbook](cookbook.md#effect-hide-shape).
 
 `hide` accepts either:
 
@@ -3497,8 +3442,6 @@ When using the list syntax, the following elements are available:
 > template's own result never brings them back. `value`/`unit` only ever affect
 > text rendered inside that same row, so they're moot there too - the editor
 > drops both chips instead of showing them with no visible effect.
-
-_Preview_: [`hide` in the Cookbook](cookbook.md#effect-hide-shape).
 
 _Static example_:
 
@@ -3570,6 +3513,8 @@ disable_unit: true
 The `watermark` option allows you to visually highlight specific value
 thresholds (low and high) within the progress bar, helping you better interpret
 the current state at a glance.
+
+[Preview in the Cookbook](cookbook.md#effect-watermark).
 
 _Map definition_:
 
@@ -3719,8 +3664,6 @@ bar position automatically — they are never raw percentages of the bar.
 > `as: percent`, the value is a direct position on the full bar (0 = left edge,
 > 100 = right edge), bypassing the two-half mapping.
 
-_Preview_: [`watermark` in the Cookbook](cookbook.md#effect-watermark).
-
 _Example_:
 
 ```yaml
@@ -3749,6 +3692,8 @@ watermark:
 Makes the card stand out when the value goes above or below a limit: unlike
 theme colors, the card itself changes (border, background, a label), which is
 easier to notice on a wall-mounted dashboard.
+
+[Preview in the Cookbook](cookbook.md#effect-alert-when).
 
 > [!NOTE]
 >
@@ -3905,8 +3850,6 @@ alert_when:
     {% else %}false{% endif %}
 ```
 
-_Preview_: [`alert_when` in the Cookbook](cookbook.md#effect-alert-when).
-
 [🔼 Back to top]
 
 ### Behavior And Actions
@@ -4048,13 +3991,18 @@ badge template (`custom:entity-progress-badge-template`): the
 ([specific options](#specific-options)). The labels under each option name say
 which of them accept it ([Compatibility labels](#compatibility)).
 
+> [!TIP]
+>
+> In the visual editor, the bug icon (🐛) next to a Jinja field shows what your
+> template gives, before you save ([details](#jinja)).
+
 ### Common options
 
 These options work as on the card, except:
 
 - `theme`: percentage themes only;
 - `alert_when`: its `jinja` field only;
-- `hide`: no `unit`, `name_info`, `info` or `state_content`;
+- `hide`: no `unit`, `name_info`, `info` (`custom_info`) or `state_content`;
 - `content_order`: no `name_info`, `state_content` or `value`.
 
 The card's other options (`min_value`, `max_value`, `unit`, `decimal`,
@@ -4073,9 +4021,9 @@ The card's other options (`min_value`, `max_value`, `unit`, `decimal`,
 | [`bar_single_line`](#bar_single_line)                       | boolean (optional)        | `false`      | single-line mode for overlay bars     |
 | [`bar_segments`](#bar_segments)                             | integer (optional)        | —            | Render bar as discrete segments       |
 | [`bar_ring`](#bar_ring)                                     | object (optional)         | —            | Start, gap and edge of the ring       |
-| [`bar_effect`](#bar_effect)                                 | string/list/jinja         | —            | Visual effects for the bar            |
+| [`bar_effect`](#bar_effect)                                 | string/list/Jinja (opt.)  | —            | Visual effects for the bar            |
 | [`bar_color_mode`](#bar_color_mode)                         | string (optional)         | `auto`       | Bar fill color rendering mode         |
-| [`bar_max_width`](#bar_max_width)                           | string (optional)         | -            | Limits the max width of the bar       |
+| [`bar_max_width`](#bar_max_width)                           | string (optional)         | —            | Limits the max width of the bar       |
 | [`bar_aligned`](#bar_aligned)                               | boolean/string (optional) | `false`      | Bars start at the same x              |
 | [`bar_orientation`](#bar_orientation)                       | string (optional)         | `ltr`        | Bar direction                         |
 | [`icon_animation`](#icon_animation)                         | string (optional)         | —            | Animate icon on active state          |
@@ -4094,11 +4042,14 @@ The card's other options (`min_value`, `max_value`, `unit`, `decimal`,
 | [`content_order`](#content_order)                           | list (optional)           | layout's own | Order of name, infos, value, bar      |
 | [`center_zero`](#center_zero)                               | boolean (optional)        | `false`      | Center the bar on 0                   |
 | [`theme`](#theme)                                           | string (optional)         | —            | Preset theme (percentage themes only) |
-| [`hide`](#hide)                                             | list (optional)           | —            | Hide parts of the card                |
+| [`hide`](#hide)                                             | list/Jinja (optional)     | —            | Hide parts of the card                |
 | [`watermark`](#watermark)                                   | map (optional)            | —            | Adds min/max overlays                 |
 | [`alert_when`](#alert_when)                                 | map (optional)            | —            | Highlight card (Jinja only)           |
 | **Behavior And Actions**                                    |                           |              |                                       |
 | [`xyz_action`](#xyz_action)                                 | map (optional)            | see defaults | Tap/double/hold actions               |
+
+`name`, `icon`, `color`, `bar_color`, `secondary`, `percent` and `fast_refresh`
+are in [Specific options](#specific-options).
 
 [🔼 Back to top]
 
@@ -4321,8 +4272,15 @@ bar_color: >-
 
 Options of the multi-card (`custom:entity-progress-multi-card`) and the
 multi-feature (`custom:entity-progress-multi-feature`, in a Tile card's
-`features:`). The labels under each option name say which of them accept it
-([Compatibility labels](#compatibility)).
+`features:`): several bars, one line per entity, for example every battery of
+the house. The labels below mark the options specific to Multi; a row also
+takes the card's own options (see below), whatever their labels.
+
+Each row is a real [`entity-progress-card`](#standard) in
+[`density: single_line`](#density) (`single_column` with
+[`layout: vertical`](#multi-layout)) — icon, name, value and bar on one line —
+so it keeps its own more-info tap, colors, state and text. The aggregator only
+stacks them and divides the available height between them.
 
 > [!NOTE]
 >
@@ -4330,17 +4288,6 @@ multi-feature (`custom:entity-progress-multi-feature`, in a Tile card's
 > add to, reorder and delete from, and a pencil on each row that opens that
 > row's own configuration. An option set on enough rows moves up to the card as
 > a shared default on its own.
-
-One card, or one tile feature, with several bars: one line per entity, for
-example every battery of the house.
-
-These two aggregate several progress rows into a single card
-(`entity-progress-multi-card`) or a single Tile feature
-(`entity-progress-multi-feature`), instead of one bar per entity. Each row is a
-real [`entity-progress-card`](#standard) in [`density: single_line`](#density)
-inside — icon, name, value and bar on one line — so it keeps its own
-more-info tap, colors, state and text. The aggregator only stacks them and
-divides the available height between them.
 
 Because a row is a whole card, every row option it accepts is the card's own:
 [`hide`](#hide), [`unit`](#unit), [`decimal`](#decimal),
@@ -4352,10 +4299,12 @@ does **not** accept is anything the row shape settles on its behalf: `layout`,
 
 > [!NOTE]
 >
-> No Jinja on a row: its [`color`](#color) and [`bar_color`](#bar_color) are
-> plain values, as on the card. For a color that follows the value, use
-> [`theme`](#theme) or [`custom_theme`](#custom_theme); for one that depends on
-> a condition, stack Template cards instead of a Multi-Card.
+> No Jinja on a row's [`color`](#color) or [`bar_color`](#bar_color): both are
+> plain values, as on the card ([`hide`](#hide) still takes a template). For a
+> color that follows the value, use [`theme`](#theme) or
+> [`custom_theme`](#custom_theme); for one that depends on a condition, stack
+> [Template](#template) cards instead of a Multi-Card, and give them one
+> [`bar_aligned`](#bar_aligned) name to keep the bars lined up.
 
 A stack's bars start at the same x on their own: [`bar_aligned`](#bar_aligned),
 on by default, gives every row the text column of the widest.
@@ -4453,7 +4402,7 @@ features:
 
 <a id="multi-value"></a> <a id="multi-show_value"></a>
 
-### The value: `hide` and `reverse_secondary_info_row`
+### Value and text of a row
 
 A row shows its entity's value by default — it is a whole card, with its own
 text. Take it off with [`hide`](#hide), top level for every row or on a single
@@ -4528,14 +4477,14 @@ entities:
 
 [![Multi-Card OK][MultiCard-OK]](#compatibility)
 
-> **`rows`** [Integer] ➡️ _(optional, default: one row per entity, `3` with
+> **`rows`** [Integer] _(optional, default: one row per entity, `3` with
 > `layout: vertical`)_
 
-`entity-progress-multi-card` only: the multi-feature always fills one tile
-row. Sets how many Sections grid rows the card
-occupies (see Home Assistant's own `grid_options`). Unlike the Tile feature, a
-card in the Sections grid can reliably span multiple rows, so bars are evenly
-divided across the full, measured height instead of being capped to one row.
+`entity-progress-multi-card` only: the multi-feature always fills one tile row.
+Sets how many Sections grid rows the card occupies (see Home Assistant's own
+`grid_options`). Unlike the Tile feature, a card in the Sections grid can
+reliably span multiple rows, so bars are evenly divided across the full,
+measured height instead of being capped to one row.
 
 _Example_:
 
@@ -4564,11 +4513,10 @@ entities:
 > `default`)_
 
 `entity-progress-multi-card` only (the multi-feature stays horizontal), set at
-the top level. `vertical` turns the
-rows into columns side by side, each one a [`density: single_column`](#density)
-card, as `horizontal` makes each row a `single_line` one: icon, name and value,
-then the bar standing upright under them. With `bar_position: overlay`, the bar
-fills the column behind the texts.
+the top level. `vertical` turns the rows into columns side by side, each one a
+[`density: single_column`](#density) card, as `horizontal` makes each row a
+`single_line` one: icon, name and value, then the bar standing upright under
+them. With `bar_position: overlay`, the bar fills the column behind the texts.
 
 The bar fills from the bottom; a row set to
 [`bar_orientation: down`](#bar_orientation) fills from the top. Left unset,
@@ -4698,4 +4646,10 @@ Next: the [Cookbook](cookbook.md), with a capture of each effect.
 [pytoyoda/ha_toyota]: https://github.com/pytoyoda/ha_toyota
 [mitch-dc/volkswagen_we_connect_id]:
   https://github.com/mitch-dc/volkswagen_we_connect_id
+
+
+
+
+
+
 

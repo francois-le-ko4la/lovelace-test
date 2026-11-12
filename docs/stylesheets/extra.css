@@ -130,3 +130,14 @@
   padding-top: 0.6em;
   border-top: 1px solid var(--md-default-fg-color--lightest);
 }
+
+/* Section titles keep the lead over the option titles (H4). */
+.md-typeset h2 {
+  font-weight: 600;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--md-default-fg-color--lighter);
+}
+
+.md-typeset h3 {
+  font-weight: 500;
+}
